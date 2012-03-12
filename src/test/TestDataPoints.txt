@@ -1,0 +1,38 @@
+just some data points for comparason. 
+mean and var of the frequency spectrum.
+
+ms 10 100000 -t 5
+mean=3.18366
+var=5.781153
+ 
+ms 10 100000 -t 5  -I 3 5 3 2 3.5
+mean=3.207915
+var=5.74796
+ 
+ms 10 100000 -t 5 -I 2 5 5 1
+mean=3.31317
+var=5.493567
+
+ms 10 100000 -t 5 -I 2 5 5 1 -G 1
+mean=2.963464
+var=4.871405
+
+ms 10 100000 -t 5 -I 2 5 5 1 -G 1 -r 10 1000000
+dito as expected. 
+
+
+ms 10 100000 -t 5  -I 2 5 5 1 -ej .1 1 2
+mean=2.897102
+var= 5.436443
+
+ms 10 100000 -t 5  -I 2 5 5 1 -ej 0 1 2
+mean=3.18239
+var=5.789914
+
+ms 10 100000 -t 5  -I 2 5 5 1 -n 1 .1
+mean=3.631213
+var=6.259082
+
+ms 10 100000 -t 5  -I 3 5 3 2 .1 -n 1 .1 -en .05 2 2 -em .06 2 3 7 -es .1 2 .5 -em .1 4 1 3 -em .1 3 4 1 -ej .2 2 1
+mean=3.479573
+var=7.638638 

@@ -1,0 +1,283 @@
+\documentclass[portrait,final]{baposter}
+%\documentclass[a4shrink,portrait,final]{baposter}
+% Usa a4shrink for an a4 sized paper.
+
+%\tracingstats=2
+
+\usepackage{times}
+\usepackage{calc}
+\usepackage{graphicx}
+\usepackage{amsmath} 
+\usepackage{amssymb}
+\usepackage{amsbsy} 
+\usepackage{relsize}
+\usepackage{multirow}
+\usepackage{bm}
+%\usepackage{natbib}
+
+\usepackage{graphicx}   
+\usepackage{multicol}
+
+\usepackage{pgfbaselayers}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+\usetikzlibrary{shadows}
+
+\usepackage{helvet}
+%\usepackage{bookman}
+\usepackage{palatino}
+
+
+\selectcolormodel{cmyk}
+
+
+\begin{document}
+\definecolor{lightersilver}{cmyk}{0,0,0,0.1}
+\definecolor{silver}{cmyk}{0,0,0,0.3}
+\definecolor{darksilver}{cmyk}{0,0,0,0.4}
+\definecolor{yellow}{cmyk}{0,0,0.9,0.0}
+\definecolor{reddishyellow}{cmyk}{0,0.22,1.0,0.0}
+\definecolor{black}{cmyk}{0,0,0.0,1.0}
+\definecolor{darkYellow}{cmyk}{0,0,1.0,0.5}
+\definecolor{darkSilver}{cmyk}{0,0,0,0.1}
+%\definecolor{darkSilver}{cmyk}{0,0,0,0.1}
+\definecolor{green}{rgb}{0.5,0.9,0.0}
+\definecolor{darkgreen}{rgb}{0,0.6,0}
+
+
+\definecolor{lightyellow}{cmyk}{0,0,0.4,0.0}
+\definecolor{lighteryellow}{cmyk}{0,0,0.1,0.0}
+\definecolor{lightestyellow}{cmyk}{0,0,0.05,0.0}
+
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+
+\begin{poster}%
+{
+grid=no,
+colspacing=0.7em,
+bgColorOne=white,%lightersilver, 
+bgColorTwo=white,%lightersilver,
+borderColor=darkgreen,%reddishyellow, 
+headerColorOne=green,%yellow,
+headerColorTwo=darkgreen,%reddishyellow, 
+headerFontColor=black,
+boxColorOne=lightersilver,
+boxColorTwo=lighteryellow,
+textborder=rounded,
+eyecatcher=yes,
+headerborder=open,
+headerheight=0.09\textheight,
+headershape=rounded,
+headershade=shade-tb,
+headerfont=\Large\textbf, %Sans Serif 
+boxshade=plain, 
+background=plain,
+linewidth=2pt
+}
+  % Eye Catcher must be on to center the rest
+{\includegraphics[height=1.9cm]{Arabidopsis_thaliana_inflorescenciasB.jpg}\hspace{.2cm} 
+} 
+{\huge MSMS\\ \LARGE Simulating the patterns of molecular evolution}
+{\sc \hspace{1cm} Mathematics and BioSciences Group
+\newline {\small http://www.mabs.at/ewing/msms/}}
+{
+\begin{minipage}{0.2625\textwidth}
+%\begin{center}
+\includegraphics[height=1cm]{uni_logo_farbe_01.pdf}
+\newline
+\includegraphics[height=1cm]{mfpl_logo3d_transparent.png}
+%\end{center}
+\end{minipage}
+}   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Now define the boxes that make up the poster
+%%%---------------------------------------------------------------------------
+%%% Each box has a name and can be placed absolutely or relatively.
+%%% The only inconvenience is that you can only specify a relative position 
+%%% towards an already declared box. So if you have a box attached to the 
+%%% bottom, one to the top and a third one which should be in between, you 
+%%% have to specify the top and bottom boxes before you specify the middle 
+%%% box.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\headerbox{Abstract}{name=abstract,column=0,row=0}{
+We have implemented a coalescent simulation program for a structured population
+with selection at a single diploid locus with high performance called {\it
+msms}\cite{ewing2010}. This program can be used to study the patterns of molecular
+evolution under a wide range of different senerios. One such senerio is the study of Arabidopsis thoughout
+Europe. Arabidopsis recolonized Europe after galcial retreat at the end of the
+last ice age. Detecting adaptive selection from the wide range of climates is
+complicated by the recolonization patterns which can confound tests of selective
+sweeps. By using {\it msms} we can study how current tests perform as well as
+devlope new tests.
+  \vspace{0.4em}
+}
+
+\headerbox{Power and False Positives}{name=power,row=0,span=1,column=2}{
+\begin{center}
+\subsection*{How strong does a selective sweep need to be before we can detect
+it?}
+\includegraphics[width=.9\textwidth]{a1000h0n50N100k.pdf}
+\includegraphics[width=.9\textwidth]{a1000h5n50N100k.pdf}
+\end{center}
+
+
+}
+
+\headerbox{{ msmsABC}}{name=abc,column=2,below=power}{
+
+The ability to simulate all kinds of selective scenarios efficiently opens the possibility to 
+estimate selection parameters via Approximate Bayesian Computation (ABC). 
+%{\it msmsABC} is  to be compatible with the ABC toolbox from
+%the CMPG lab at the University of Bern.
+
+\mbox{
+\begin{tikzpicture}[scale=.5]
+\draw (-1.5,0) node[anchor=north west]
+{\includegraphics[width=0.4\textwidth]{2dAlphaThetaL.pdf}}
+%(1.5,0.1) node[above] 
+%{\bfseries Estimation of some selection parameters}
+(-1.7,-2.75) node[left] {\large $\bs\alpha$}
+(1.5,-5.8) node[below] {\large $\bs\theta$};
+\end{tikzpicture}\quad 
+\begin{tikzpicture}[scale=0.5]
+\draw (-1.5,0) node[anchor=north west]
+{\includegraphics[width=0.4\textwidth]{2dPosTimeL.pdf}}  
+%(1.5,0) node[above] 
+%{\bfseries Position of Selected Site and Fixation Time}
+(-1.7,-1.5) node[left,rotate=90] {\bfseries Position}
+(1.5,-5.8) node[below] {\bfseries Fixation Time};
+\end{tikzpicture}
+}
+
+\vspace{0.5em}
+
+The figures show sucsessfull estimation of the mutation parameter $\theta$ and
+selection strength $\alpha$. However currently poor estimation of the position
+of the selected locus and time of fixation. However better performance is
+expected with iEHH type statistics. 
+
+}
+
+
+
+\headerbox{Conclusion}
+ {name=theend,below=abc,span=1,column=2}{
+ 
+ {\it MSMS}\cite{ewing2010} is a powerful coalescent simulator with selection at
+ a single locus. A wide range of applications are possible with the combination
+ of flexibility and speed that {\it msms} provides.  A specific application is
+ is an Arabadobis data set throughout Sweeden, where  seperating population
+ structure and local adaptation are challeging problems to detecting selective
+ sweeps. 
+ }
+
+\headerbox{Simulation Method}{name=sims,below=abstract,column=0}{
+
+{\it MSMS}\cite{ewing2010} uses an infinite sites mutation model and locus
+model.
+\vspace{.1cm}
+
+\includegraphics[width=1\textwidth]{../locus.pdf}
+
+Simulations are carried out in the following steps:
+\begin{enumerate}
+  \item A forward pass simulates selection with drift. The
+  result is the frequency of the selected allele over time for each deme.
+  \item The coalescent is then simulated in the pastward direction {\em
+  conditional} on the frequency of the selected locus.
+  \item Neutral mutations are added to the ancestral recombination graph.
+\end{enumerate}
+To sample the coalescent conditionally on frequency,  we assume discrete generations 
+during the selected phase. Two lineages can only be nonrecombinant
+descendants of a parent if they share the allele at the selected locus. Therefore the
+effective population size of the selected allele is scaled by the frequency.
+All other events are affected similarly. 
+\vspace{0.4em}
+}
+
+\headerbox{Performance: {\it msms } vs. {\it ms}}
+{name=speed,below=sims,column=0}{
+
+\begin{tikzpicture}
+\draw (-1.5,0.4) node[anchor=north west]
+{\includegraphics[width=0.8\textwidth]{fastL.pdf}}
+(1.5,0) node[above] 
+{\bfseries Speedup Ratio of {\it msms} vrs {\it ms}}
+(-1.7,-1) node[left,rotate=90] {\bfseries Speedup Factor}
+(1.5,-4.8) node[below] {\bfseries Recombination Rate $\bs\rho$};
+\end{tikzpicture}
+
+The figure shows the computing speed of {\it msms} without selection compared to
+{\sc ms} on a standard desktop PC:  AMD64 X2 Dual Core Processor 6000+, using Sun
+Java 1.6u18 64bit and gcc 4.2.3.
+{\it msms} is faster than {\sc ms} with intermediate to high
+recombination. The command line used was:
+
+{\tt ms 50 1000 -t 100 -r $\rho$ 10000}
+
+\vspace{0.4em}
+}
+
+
+
+\headerbox{Sweeps in Arabidopsis?}
+{name=data,column=1,row=0,span=1}{ 
+\begin{center}
+\begin{tikzpicture}
+\draw (0,0) node[anchor=north west] 
+{\includegraphics[width=\textwidth]{colourMap.pdf}}; 
+%(0,-20) node {wtf};
+\end{tikzpicture}
+\end{center}
+\vspace{-1cm}
+\begin{center}
+\section*{The Data}
+\end{center}
+\begin{itemize}
+  \item Arabidopsis genomes from Sweeden.
+  \item GPS positions.
+  \item Phenotypes.
+  \item Recoliniziation after the galical retreat is probably from two
+  different founding populations. 
+\end{itemize}
+
+\begin{center}
+\section*{Questions}
+\end{center}
+\begin{itemize}
+  \item Has Selective sweeps occured? If so are they localy adaptive sweeps?
+  \item Can we seperate dispersive effects from local adaptation?
+  \item When demeography is taken into account, what happens to the power tests?
+\end{itemize}
+
+\begin{center}
+\section*{Approach}
+\end{center}
+\begin{itemize}
+  \item We can model many deme models quicky with {\it msms}.
+  \item Can study behavour of ideal models, while comparing with real data. 
+  \item Devlope tests that condtion on demography or are insensitive to it. 
+\end{itemize}
+
+} 
+
+
+\headerbox{\normalsize Citations and Acknowledgements}
+{name=cite,below=data,column=1} { 
+\small 
+
+Funding from the DFG and the WWTF is gratefully acknowledged. Thanks also to
+Peter Pfaffelhuber, Cornelia Borck, Ines Hellmann, Pleuni Pennings and Jayne
+Ewing.
+
+\vspace{-1.2cm}
+\bibliographystyle{Science}
+\renewcommand\refname{}
+\bibliography{Bio}
+}
+
+
+\end{poster}% 
+\end{document}

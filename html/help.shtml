@@ -1,0 +1,24 @@
+<!--#include virtual="header.html" -->
+
+<div id="content">
+<h2>Getting help</h2>
+<p>
+The preferred method of getting help is to use the mailing list. We have 3 lists, help, news
+and discussion. You can subscribe to these list with the following links.
+<ul>
+	<li><a href="https://lists.sourceforge.net/lists/listinfo/ms2-news">News</a>
+	[<a href="http://sourceforge.net/mailarchive/forum.php?forum_name=ms2-news">archives</a>]
+	</li>
+	<li><a href="https://lists.sourceforge.net/lists/listinfo/ms2-help">Help</a>
+	[<a href="http://sourceforge.net/mailarchive/forum.php?forum_name=ms2-help">archives</a>]
+	</li>
+	<li><a href="https://lists.sourceforge.net/lists/listinfo/ms2-discussion">Discussion</a>
+	[<a href="http://sourceforge.net/mailarchive/forum.php?forum_name=ms2-discussion">archives</a>]
+	</li>
+</ul>
+However there is also a Forum <a href="http://sourceforge.net/apps/phpbb/ms2/">here</a>. Most 
+importantly if you have problems or questions, let us know, we are here to help.
+</div>
+
+
+<!--#include virtual="footer.html" -->

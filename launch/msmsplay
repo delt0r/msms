@@ -1,0 +1,11 @@
+#!/bin/bash
+# we use a python one liner because macs sux--they don't have a readlink -f function. 
+READLINK_PATH=`python -c  'import os,sys;print os.path.realpath(sys.argv[1])' $0 `
+READLINK_PATH=${READLINK_PATH%/*}
+#LOCAL_HOME=$STRIP_PATH/$READLINK_PATH
+JAR=$READLINK_PATH/../lib/msms.jar
+
+#echo $STRIP_PATH
+#echo $READLINK_PATH
+
+java -Xmx256M -cp $JAR at.mabs.gui.MSMSPlay $@

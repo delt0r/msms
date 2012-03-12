@@ -1,0 +1,51 @@
+<!--#include virtual="header.html" -->
+
+<div id="content">
+<h2>About</h2>
+
+<p>MSMS is a coalescent simulator that models itself off Hudsons ms
+in usage and includes selection. It is fast, often faster than ms, and
+portable running on Mac OSX, windows and Linux. By using this tool, one
+can study the patterns of selection in complicated demographic scenarios.</p>
+
+<p>The easiest way to get started is by simply downloading one of the
+full prepackaged installers and try it. This includes the manual with
+examples to help get you stated. Generally this program is command line
+compatible with ms, so if you know ms you will find msms easy to use.</p>
+
+<p>It should be noted to those who are not familiar with ms, that
+msms is a command line only program. There is no GUI, and you cannot use
+a mouse to set up simulations. The command line may look
+intimidating, but in reality it is quite easy to build up very
+complicated models if need be. The trick is to build the model up one
+step at a time.</p>
+
+<p>The program is written in the popular java programming language
+and the source is freely available under a GPL 3 license from GitHub. It
+was written with the intention of ease of extensibility, so there is a
+significant amount of developer documentation as well as normal user
+documentation. One can also make use of java's dynamic loading
+abilities so extensions or modules need not be compiled into the core
+version.</p>
+</div>
+
+
+<div id="oddcontent">
+<h2>How it works</h2>
+<p>When simulating a normal coalescent without selection, this
+program works much like any other coalescent simulation tool. It keeps
+track of lineages and goes back in time generation coalescent, migration
+and recombination events with the appropriate probability distributions.
+</p>
+<p>However, when selection is specified, first a forward simulation
+is run to generate a frequency history of the beneficial allele. This
+step assumes HWE in the diploid case, and includes genetic drift. The
+result is a history of frequency in each deme of all considered alleles.
+Now when the simulation performs the normal coalescent, the
+probabilities of the different events are now conditioned on the allele
+frequencies. This can be somewhat tricky because the frequency varies in
+a stochastic way over time. However, in many cases performance close to
+that of a plain coalescent simulation is often possible.
+</div>
+
+<!--#include virtual="footer.html" -->

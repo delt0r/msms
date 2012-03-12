@@ -1,0 +1,300 @@
+<!--#include virtual="header.html" -->
+<div id="content">
+	<h2>Smark fixes</h2>
+	Dec 9th 2011
+	<p>
+	It may look like there has not been much going on. I assure this is not the case. Other than going 
+	to some bigger meeting this year to get the word out about msms. Progress out back has been steady. 
+	<p>
+	Quite a lot more options have been added and preperations for future fetures have been made. Many 
+	minor bugfixes have been done and some fringe cases fixed. In particular the case were people are using 
+	the <tt>-Smark</tt> option to observe the selected allele has had some issues that should mostly be 
+	resolved. However there is still the case where the coalesent tree at the selected site has a MRCA
+	before any selection happens. In this case the <tt>-Smark</tt> option still gives incorrect results. 
+	<p>
+	Also added is a <tt>-version</tt> option to make tracking the version you are runing easier. I have a pretty
+	fine grain build number, so it will jump a few counts every release. 
+	<p>
+	Documentation at this point is lagging the code a bit. The <tt>-h</tt> option is the best way to get started 
+	with new switches for now. Hopefully we can get a expanded maunal out early next year. 
+</div>
+<div id="oddcontent">
+	<h3>Minor fixes</h3>
+	May 16th 2011
+	<p>
+	Title says it all. Also there is a updated manual. It is not fully updated yet so please also
+	use the <tt>-h</tt> option for the most up to date info. The maual is still a "beta". 
+</div>
+<div id="content">
+	<h3>Minor fixes and other news</h3>
+	Feb 8th 2011<p>
+	<p>
+	A minor update was released today. This does not affect most people as the biggest changes 
+	have been made behind the scenes. A few bugs have been fixed, all minor and a few performance 
+	improvements for special cases has been added. Now even on many core systems the <tt>-threads</tt>
+	option is closer to ideal performance. So if you have a 16 core or more machine, its easier than 
+	ever to use it. 
+	<p>
+	Unfortunately there is a performance issue with large numbers of samples. I am working on this now. 
+	However this does not affect anyone using less than about 100 samples and medium to high recombination
+	rates. 
+	<p>
+	<h3>Coming Soon</h3>
+	ABC estimation and stochastic maximum likelihood. 	
+</div>
+
+<div id="oddcontent">
+	<h2>Important update</h2>
+	December 7 2010<p>
+	<p>
+	This is an important update. There was a few bug in the forward simulation code
+	that was very difficult to find. This represents much of the work
+	I have done for the last month. However I do believe that this is now fixed. 
+	<p>
+	The question is, did this bug affect the output results? This is hard to say for 
+	certain. Since in fact the bug was a number of subtle errors that interacted only under
+	rather specific conditions, most people should not be affected. Furthermore if you
+	use the <tt>-SF</tt> you can't be affected. Even if you are I would expect the errors to
+	be very small if any. Triggering the bug should cause the program to crash rather than
+	give wrong results. 
+	<p>
+	In order to fix the errors I have rewritten parts of the forward simulation code. This section
+	of code is expected to get a even bigger revamp early next year when multiple selected 
+	loci are added. The missing feature right now is that it will often not warn you when you have
+	some command line options that don't make much sense. For example not specifying <tt>-SI</tt> or
+	<tt>-SF</tt> or not giving an error when you use the <tt>-SF</tt> option with a model that's 
+	not time invariant. This will be fixed shortly. 
+	<p>
+	Other than this set of bugs in the forward code, a number of minor bugs have also been fixed. 
+	In particular some of the new command line processing code had a few omissions and errors. 
+	These have been fixed. This would not lead to incorrect output as the program would report an
+	error condition. 
+	<p>
+	Please update to this version. The old 1.2.1 version is now considered past its best before date. 
+	<p>
+	Note that an updated manual is coming soon as well as msmsABC. Watch this space. 
+
+</div>
+
+<div id="content">
+	<h2>Release Candidate</h2>
+	October 21 2010<p>
+
+	<p>
+	Some big changes have made it into this release. So many that it is
+	a release candidate to indicate that that perhaps there could be a 
+	regression on some things. If you notice some differences please 
+	compare with the old version and report it. 
+	<p>
+	The biggest change does not affect end users so much. I have completely
+	rewritten the command line parsing code with my own code. This means 
+	that I can remove the args4j dependency and have more control over 
+	the parsing. Most importantly I can give better error messages 
+	regarding command line typos. This should make it easier to learn 
+	the command line. The changes make the way for big improvements to 
+	the current help as well. 
+	<p>
+	This change also should improve performance just a little. It was also
+	needed for the upcoming msmsABC that is currently in progress. And
+	its now much easier to add new options. So you will see the benefit 
+	via easier to expand functionality.
+	
+	<h4>Options with "tbs" now supported</h4>
+	We now fully support the "tbs" (to be specified) option as per ms. 
+	this permits options to be provided by way of the standard input. 
+	Quite a few R scripts and some ABC frameworks have used this feature in 
+	ms. Well now you can with msms. I think that with this option you now 
+	have 100% compatibility with ms.
+	
+	<h4>Multi thread support</h4>
+	If you are on a machine with many cores, you can now use them without 
+	starting msms many times. The <tt>-threads n</tt> option will run the
+	simulation with n threads. Note that this is not as fast as just running
+	the program n times. However it is often more convenient. 
+	<p>
+	If your simulations are already very fast it is unlikely you will see a
+	large performance increases using extra threads. However on simulations 
+	with high levels of recombination, you get almost linear speed up. 
+	<p>
+	You can also use "tbs" options with the thread option. However this 
+	has more overhead and could even be slower with fast simulations.
+	<p>
+	One thing to remember is that memory usage goes up with the number of
+	threads. So 2 threads uses approximately twice as much memory as 1. 
+</div>
+
+<div id="oddcontent">
+<h2>Update</h2>
+August 29 2010
+<p>
+A new release is now up. There are a few changes and improvements as well as a few more compatibility improvements
+with ms. 
+<p>
+The first major improvement is that condition on the number of segregating sites now works. This
+is the -s option in ms and I simply forgot to put it in. Using the <tt>-s</tt> option will tend to use more
+memory and be a little slower. This trend will get worse with deeper highly recombinant trees. However its not
+a huge difference in most cases of interest. 
+<p>
+The next big improvement is the addition of more boundary conditions. That is you can now set the frequency at a 
+particular time or in a particular deme rather than just fixation time. This option is just the old <tt>-SF</tt>
+option with more arguments. As an example, we want to condition on the frequency in deme 1 to be 0.5 at a time 
+of 0.01 pastward:
+<br>
+<tt>msms -ms 20 1000 -s 100 -SAA 1000 -SaA 500 -N 10000 -SF 0.01 1 0.5</tt>
+<br>
+If I want to condition on the total frequency of the beneficial allele in all demes at sampling time to be 0.8
+I would use the following:
+<br>
+<tt>msms -ms 20 1000 -s 100 -SAA 1000 -SaA 500 -N 10000 -SF 0 0.5</tt>
+<br>
+So the form is <tt>-SF fixationTime</tt> for a the fixation time. <tt>-SF time freq</tt> to condition on a 
+frequency or <tt>-SF time deme freq</tt> for the frequency in a given deme. 
+<p>
+Another thing that has changed is the first line of output is now the full command line. Note that for some ms 
+parsing tools you will need to be careful to use msms options last. We also now have a <tt>-seed</tt> switch and 
+we write out the seed value on the second line. This is a 64 bit number so we used hex. But the <tt>-seed</tt>
+option can use hex(prepend with "0x") or decimal.
+<p>
+Unfortunately none of the new improvements have made it into the manual yet. This is next along with some more 
+examples. 
+<p>
+Finally some mac users had problems downloading new versions because Firefox cached the download. To avoid this
+problem we will now include the version number in the link and file names. 
+</div>
+
+<div id="content">
+<h3>Coming improvements</h3>
+August 24 2010
+<p>
+Despite the lack of "news" there has been plenty going on behind the scenes. 
+I have added some links to the mailing lists and forums with the getting help page
+in the menu. We are working on an ABC mode for msms that integrates with the ABCtoolkit. 
+There are some other new features coming soon for summary statistics output that make using
+msms in a pipeline much easier. This is just some of the things that are "coming soon". 
+
+</div>
+
+<div id="oddcontent">
+<h2>Accepted Publication</h2>
+June 15 2010, updated July 1st. 
+<p>The manuscript has been accepted in Bioinformatics. The link to
+the application note is <a href="http://bioinformatics.oxfordjournals.org/cgi/content/abstract/btq322?ijkey=z0g2yWSKSZ0zAbd&keytype=ref">here</a>.</p>
+<p>We have added some performance comparisons to the manual against
+ms and against itself with and without selection. Generally speaking msms
+is much faster for high recombination rates even with neutral models.</p>
+<p>Also some mailing lists have been set up, we encourage all uses to
+subscribe to the <a
+	href="https://lists.sourceforge.net/mailman/listinfo/ms2-news">news
+list</a>. The other lists can be found <a
+	href="https://sourceforge.net/mail/?group_id=325846">here</a>. The main
+sourceforge page is can be found <a
+	href="https://sourceforge.net/projects/ms2/">here</a> and there are
+forums available for help.</p>
+</div>
+
+
+<div id="content">
+<h3>Fixes and Tests</h3>
+May 5 2010
+<p>There were some minor bugs that have been fixed. These resulted
+in lockups in odd situations. Also, some more internal rescaling was
+fixed to be more consistent.
+
+<p>Finally, some simple tests were added. These tests compare mean
+and variance of tree length, tree height and segregating sites
+statistics with known correct values. I have found that these statistics
+are quite discriminating when it comes to finding bugs. Currently we are
+comparing test vectors with ms, however other programs such as SFSCode
+will be used for test vectors in the near future.
+
+<p>Please notice that these tests are statistical in nature. Thus,
+we expect it to fail on occasion by chance alone. Inspect the values
+displayed in the output and rerun the tests. Generally different tests
+should fail each time, or none at all. Remember this is compounded by
+the multiple test problem. That is each test vector results in 6 tests.
+So even with just 7 test vectors, we have a total of 42 tests. Hence, a
+p value of 0.05 would result in 2 failures each time. In this case, we
+simply choose a threshold that's good for discovering bugs while not
+failing every time.
+
+<p>In order to run the test, under Mac and Linux, there is a <tt>simpleTests</tt>
+script in the bin directory. Under windows use the following command
+line:<br>
+<tt>java -cp lib\msms.jar at.mabs.testing.BasicTests</tt>
+</div>
+
+<div id="oddcontent">
+<h3>More of the same</h3>
+March 23 2010
+<p>
+There was a regression in the recombination code when using selection. Please update to the latest version. 
+</p>
+</div>
+
+<div id="content">
+<h3>Update</h3>
+March 21 2010
+<p>
+A new version has been released today. This is a bug fix release, and it 
+fixes some internal scaling issues when selection is used. I do believe this will not affected results
+much, the error should be second order only at worst and would only show up with very
+small population sizes and very small selection parameters. 
+</p>
+<p>
+However fixing this scaling means that I needed to add a lot of 2's to the code
+base. I have double checked everything and expanded my tests to catch errors. I
+did not find any. But code has a habit of hiding bugs well. So if something 
+changes a lot between this version and the last, I probably missed a 2 somewhere. 
+</p>
+</div>
+
+<div id="oddcontent">
+<h2>Final Release Candidate</h2>
+March 9 2010
+<p>
+Today the final version 1.0rc release candidate is available. This should be
+more stable and even a little faster than previous releases. We also have the
+prepacked archive for easier installation with a Mac, Linux and Windows 
+launcher. Note you will need to have at least java version 1.6 
+(some times called 6) as per previous versions. This can be a little tricky 
+for Macs, however we hope the instructions on this web page and in the manual 
+are clear enough.
+</p>
+<p>Assuming no big changes need to be made, this should roll over to a full 
+version 1.0 with a public git repository and full developer documentation 
+in a few weeks. Please report all bugs both in the application and 
+documentation and even in the web site. But please note my comments about 
+the site below</p>
+<p>What I really want is a fairly easy Content Management System for the web 
+site that would include a few extras from what we have right now. For example,
+a mailing list, a wiki and forums would be nice. Suggestion are welcome. 
+Note that googgle source is nice, but lacks git support. Sorceforge has 
+serious issues with its very kludgy forums, and last I checked they don't 
+offer a full CMS and wiki.
+</p>
+<p>In the mean time I will probably set up a google groups just for the email list. Feedback is welcome. </p>
+</div>
+
+<div id="content">
+<h2>Release day is coming</h2>
+March 4 2010
+<p>With only days away till the version 1.0rc release, things are
+happening pretty fast. All user documentation will be done. However, some
+of the developer documentation will still need some work. At this stage,
+this is the web site we shall use which is all about very low
+maintenance. But if need be, we will migrate to a wiki based site. Mailing
+lists shall be set up shortly.</p>
+</div>
+
+<div id="oddcontent">
+<h3>Current plan</h3>
+<p>The current plan is to release a version 1 release candidate by
+March 10th. This would also be a clean slate on the git public
+repository. The license will most likely be GPL 3, but I am double
+checking with one or two of the packages that I use. In particular, I use
+args4j which uses an Apache type license. I don't think this will cause
+problems as I have not modified args4j in anyway.</p>
+<p>The documentation will also be released at the same time.</p>
+</div>
+
+<!--#include virtual="footer.html" -->

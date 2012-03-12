@@ -1,0 +1,317 @@
+\documentclass[portrait,final]{baposter}
+%\documentclass[a4shrink,portrait,final]{baposter}
+% Usa a4shrink for an a4 sized paper.
+
+%\tracingstats=2
+
+\usepackage{times}
+\usepackage{calc}
+\usepackage{graphicx} 
+\usepackage{amsmath} 
+\usepackage{amssymb}
+\usepackage{amsbsy} 
+\usepackage{relsize}
+\usepackage{multirow}
+\usepackage{bm}
+%\usepackage{natbib}
+
+\usepackage{graphicx}   
+\usepackage{multicol}
+
+\usepackage{pgfbaselayers}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground} 
+\usetikzlibrary{shadows}
+
+\usepackage{helvet}
+%\usepackage{bookman}
+\usepackage{palatino}
+
+
+\selectcolormodel{cmyk}
+
+
+\begin{document}
+\definecolor{lightersilver}{cmyk}{0,0,0,0.1}
+\definecolor{silver}{cmyk}{0,0,0,0.3}
+\definecolor{darksilver}{cmyk}{0,0,0,0.4}
+\definecolor{yellow}{cmyk}{0,0,0.9,0.0}
+\definecolor{reddishyellow}{cmyk}{0,0.22,1.0,0.0}
+\definecolor{black}{cmyk}{0,0,0.0,1.0}
+\definecolor{darkYellow}{cmyk}{0,0,1.0,0.5}
+\definecolor{darkSilver}{cmyk}{0,0,0,0.1}
+%\definecolor{darkSilver}{cmyk}{0,0,0,0.1}
+
+\definecolor{lightyellow}{cmyk}{0,0,0.4,0.0}
+\definecolor{lighteryellow}{cmyk}{0,0,0.1,0.0}
+\definecolor{lightestyellow}{cmyk}{0,0,0.05,0.0}
+
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+
+\begin{poster}%
+{
+grid=no,
+colspacing=0.7em,
+bgColorOne=white,%lightersilver, 
+bgColorTwo=white,%lightersilver,
+borderColor=reddishyellow, 
+headerColorOne=yellow,
+headerColorTwo=reddishyellow, 
+headerFontColor=black,
+boxColorOne=lightersilver,
+boxColorTwo=lighteryellow,
+textborder=rounded,
+eyecatcher=yes,
+headerborder=open,
+headerheight=0.07\textheight,
+headershape=rounded,
+headershade=shade-tb,
+headerfont=\Large\textsf, %Sans Serif
+boxshade=plain, 
+background=plain,
+linewidth=2pt
+}
+  % Eye Catcher must be on to center the rest
+{\includegraphics[height=1.9cm]{eyeCatch1.png}\hspace{.2cm} 
+\includegraphics[height=1.9cm]{eyeCatch2.png}} 
+{\sc\Huge Introducing {\it msms}}
+{\sc \hspace{1cm} Gregory Ewing and Joachim Hermisson
+\newline {\small http://www.mabs.at/ewing/msms/}}
+{
+\begin{minipage}{0.2625\textwidth}
+%\begin{center}
+\includegraphics[height=1cm]{uni_logo_farbe_01.pdf}
+\newline
+\includegraphics[height=1cm]{mfpl_logo3d_transparent.png}
+%\end{center}
+\end{minipage} 
+}   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Now define the boxes that make up the poster
+%%%---------------------------------------------------------------------------
+%%% Each box has a name and can be placed absolutely or relatively.
+%%% The only inconvenience is that you can only specify a relative position 
+%%% towards an already declared box. So if you have a box attached to the 
+%%% bottom, one to the top and a third one which should be in between, you 
+%%% have to specify the top and bottom boxes before you specify the middle 
+%%% box.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\headerbox{Abstract}{name=abstract,column=0,row=0}{
+
+We have implemented a coalescent simulation program for a structured population
+with selection at a single diploid locus. The program includes the functionality
+of the simulator {\it ms} to model population structure and demography, but adds
+a model for deme- and time-dependent selection using forward simulations. The
+program can be used, e.g.\, to study hard and soft selective sweeps in structured
+populations or the genetic footprint of local adaptation. The implementation is
+designed to be easily extendable and widely deployable. The interface and output
+format are compatible with {\it ms}. Performance is comparable even with
+selection included. We also discuss some applications. 
+  \vspace{0.4em}
+}
+
+\headerbox{{ msmsABC}}{name=abc,column=1,row=0}{
+
+The ability to simulate all kinds of selective scenarios efficiently opens the possibility to 
+estimate selection parameters via Approximate Bayesian Computation (ABC). 
+{\it msmsABC} is designed to be compatible with the ABC toolbox from
+the CMPG lab at the University of Bern.
+
+\vspace{1em}
+
+
+\begin{tikzpicture}
+\draw (-1.5,0) node[anchor=north west]
+{\includegraphics[width=0.8\textwidth]{2dAlphaThetaL.pdf}}
+(1.5,0.1) node[above] 
+{\bfseries Mutation Rate $\bs\theta$ and Selection Coefficient $\bs\alpha$}
+(-1.7,-2.75) node[left] {\large $\bs\alpha$}
+(1.5,-5.8) node[below] {\large $\bs\theta$};
+\end{tikzpicture}
+
+\vspace{0.5em}
+
+The posterior density support for estimation of neutral mutation rate $\theta$
+and selection strength $\alpha$. The true values fall in the 95\% confidence
+interval. These results were obtained in one million simulations co-estimating
+recombination rate, fixation time and the position of the selected locus. The
+simulation took about 4 hours.
+
+\vspace{1em}
+
+\begin{tikzpicture}
+\draw (-1.5,0) node[anchor=north west]
+{\includegraphics[width=0.8\textwidth]{2dPosTimeL.pdf}}  
+(1.5,0) node[above] 
+{\bfseries Position of Selected Site and Fixation Time}
+(-1.7,-2.5) node[left,rotate=90] {\bfseries Position}
+(1.5,-5.8) node[below] {\bfseries Fixation Time};
+\end{tikzpicture}
+
+\vspace{0.5em}
+
+The estimation of fixation time and position of the selected locus proved to be more difficult, the 
+true value was not included in the 95\% confidence interval but was still
+inside the 99\% confidence interval.
+
+However, as with all ABC methods, picking the right statistics can be difficult
+and we are currently investigating statistics that are the most informative with
+respect to selection parameter estimation. Thus we are confident we can improve
+the estimation of fixation time and position.
+
+\vspace{0.5em}
+}
+
+\headerbox{Conclusion}
+ {name=theend,below=abc,span=1,column=2}{
+ 
+ {\it MSMS}\cite{ewing2010} is a powerful coalescent simulator with selection
+ at a single locus. It is fast and compatible with {\it ms} which permits easy extension of
+ existing {\it ms} pipelines to include selection. A wide range of applications
+ are possible with the combination of flexibility and speed that {\it msms}
+ provides. Examples include ABC frameworks, power studies and selection test
+ development.  
+ 
+ \vspace{.4em} 
+ }
+
+\headerbox{Simulations}{name=sims,below=abstract,column=0}{
+
+{\it MSMS}\cite{ewing2010} uses an infinite sites mutation model and locus
+model.
+\vspace{.1cm}
+
+\includegraphics[width=1\textwidth]{locus.pdf}
+
+Simulations are carried out in the following steps:
+\begin{enumerate}
+  \item A forward pass simulates selection with drift. The
+  result is the frequency of the selected allele over time for each deme.
+  \item The coalescent is then simulated in the pastward direction {\em
+  conditional} on the frequency of the selected locus.
+  \item Neutral mutations are added to the ancestral recombination graph.
+\end{enumerate}
+To sample the coalescent conditionally on frequency,  we assume discrete generations 
+during the selected phase. Two lineages can only be nonrecombinant
+descendants of a parent if they share the allele at the selected locus. Therefore the
+effective population size of the selected allele is scaled by the frequency.
+All other events are affected similarly. 
+\vspace{0.4em}
+}
+
+\headerbox{Performance: {\it msms } vs. {\it ms}}
+{name=speed,below=sims,bottomaligned=theend,column=0}{
+
+\begin{tikzpicture}
+\draw (-1.5,0.4) node[anchor=north west]
+{\includegraphics[width=0.8\textwidth]{fastL.pdf}}
+(1.5,0) node[above] 
+{\bfseries Speedup Ratio of {\it msms} vrs {\it ms}}
+(-1.7,-1) node[left,rotate=90] {\bfseries Speedup Factor}
+(1.5,-4.8) node[below] {\bfseries Recombination Rate $\bs\rho$};
+\end{tikzpicture}
+
+The figure shows the computing speed of {\it msms} without selection compared to
+{\sc ms} on a standard desktop PC:  AMD64 X2 Dual Core Processor 6000+, using Sun
+Java 1.6u18 64bit and gcc 4.2.3.
+{\it msms} is faster than {\sc ms} with intermediate to high
+recombination. The command line used was:
+
+{\tt ms 50 1000 -t 100 -r $\rho$ 10000}
+
+\vspace{0.4em}
+} 
+
+\headerbox{\smaller Extension:Multiple Selected
+Loci}{column=2,row=0,bottomaligned=abc}{
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.5ex plus 0.5ex minus 0.2ex}
+
+\newcommand{\suck}{\hspace{-2pt}}
+{\setlength{\leftmargini}{8.5pt}
+\begin{itemize} 
+  \item Model $n$ loci each with $k$ alleles. 
+  \item Recombination rate between loci $i\suck \to\suck i\suck +\suck 1$ is
+  $R_i$.
+  \item $\bs{h}=\{a_i,\ldots,a_n\}\ a_i\suck \in [0,k)$ is a haplotype.
+  \item We track the frequencies of haplotypes.
+  \item $x_{\bs{h}}$ is the relative frequency of haplotype $\bs{h}$.
+  \item $s_{\bs{h}}$ is the selection coefficient of the haplotype.  
+  \item Only consider haploids in a single deme.
+  \item Assume infinite population size. 
+\end{itemize}}
+\vspace{-2.5ex}
+The \emph{amount} of haplotype $x'_{\bs{h}}$ after recombination followed by
+selection is,
+\vspace{-2ex}
+\begin{align*}
+	x'_{\bs{h}}=(1+s_{\bs{h}})\sum_{i=1}^{n-1}(1-R_i)x_{\bs{h}}+R_i
+	x_{i|\bs{h}}x_{\bs{h}|i+1}
+\\ 
+	x_{i|\bs{h}}
+	=\sum_{a_1=0}^{k-1}\sum_{a_2=0}^{k-1}\cdots\sum_{a_i=0}^{k-1}
+	x_{a_1,\ldots,a_i,h_{i+1},\ldots,h_n}
+\\
+	x_{\bs{h}|i}=\sum_{a_i=0}^{k-1}\sum_{a_{i+1}}^{k-1}\cdots\sum_{a_n=0}^{k-1}
+	x_{h_1,\ldots,h_{i-1},a_i,\ldots,a_n}
+\end{align*}
+Normalization and multinomal draws are performed. This gives the
+relative frequencies with drift for the next generation. 
+
+Both $x_{i|\bs{h}}$ and $x_{\bs{h}|i}$ can be calculated efficiently from
+the recursive definitions respectively:
+\vspace{-2ex}
+\begin{align*}
+	x_{i|\bs{h}}=\sum_{a_i=0}^{k-1} x_{i-1|a_i,h_{i+1},\ldots,h_{n}}
+	\\
+	x_{\bs{h}|i}=\sum_{a_i=0}^{k-1} x_{h_1,\ldots,h_{i-1},a_i|i-1}
+\end{align*}
+In practice it is straightforward to include:
+\vspace{-2.5ex}
+\begin{itemize}
+  \item Diploids.
+  \item Complex Demography.  
+  \item Frequency and time depend ant Selection.
+  \item Mutation at selected loci.
+\end{itemize}
+\vspace{-4.5ex}
+\begin{center}
+{\bfseries Coalescent Adjustments}
+\end{center}
+\vspace{-3ex}
+Migration and Coalescent remains equivalent to a $nk$ alleles model and needs
+little change from the single locus case. Recombination however needs to be
+adjusted. 
+
+Consider tracing a lineage pastward with haplotype $\bs{h}$. A recombination
+event is generated at some time with the appropriate probability. The probability
+weight that the ancestors have haplotypes $\bs{i}$ and $\bs{j}$ conditional on
+the recombination event and legality of ancestral haplotypes is:
+\vspace{-3ex}
+\begin{align*}
+	\Pr\{\bs{h},\bs{i},\bs{j}|\mathcal{R}(t)\} \propto x_{\bs{i}}x_{\bs{j}}
+\end{align*}
+  
+} 
+
+
+\headerbox{\smaller Citations and Acknowledgements}
+{name=cite,below=abc,column=1,bottomaligned=theend} { 
+\small 
+
+Funding from the DFG and the WWTF is gratefully acknowledged. Thanks also to
+Peter Pfaffelhuber, Cornelia Borck, Ines Hellmann, Pleuni Pennings and Jayne
+Ewing.
+
+\vspace{-1.2cm}
+\bibliographystyle{Science}
+\renewcommand\refname{}
+\bibliography{Bio}
+}
+
+
+\end{poster}% 
+\end{document}

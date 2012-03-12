@@ -1,0 +1,228 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{color}
+%\usepackage{url}
+%\usepackage{graphicx}
+
+\usepackage[perpage,symbol*]{footmisc}
+
+%\DefineFNsymbols*{daggers}{\dagger\ddagger{\dagger\dagger}{\ddagger\ddagger}*{**}}
+%\setfnsymbol{daggers}
+
+
+\begin{document}
+\title{Multiple Selected Loci}
+\maketitle
+
+\section{Introduction} 
+This document is meant   for internal purposes. Its much easier to
+communicate math and details of algorithms in a properly formatted \LaTeX
+document. 
+
+We are now considering adding multiple selected loci sooner rather than later
+into msms and as such we want to ensure than we are all can clearly see the
+math behind the proposed changes\footnote{And to ensure that it correct}. I do
+not believe this is as a big a change as I originally though as we will see. 
+
+I present this as a $k$ allele per loci with $n$ selected loci rather than just
+two. This is because it is much easier to implement a generic model on the
+computer than a particular case. In other words I am trying to follow the
+imagined implementation as much as possible. 
+
+The main assumption that is used is that the probability than a single strand of
+DNA has more than a single recombination event in a single generation is low
+enough to be ignored. I also do not consider gene conversion. 
+
+\section{Forward Simulation of Selection}
+
+\subsection{Overview and Definitions}
+
+\newcommand{\hap}{\mathbf{h}}
+\newcommand{\happ}{\mathbf{h'}}
+
+The extension to many selected loci is done by considering haplotype
+frequencies at each generation in each deme. So a forward simulation results in a
+list of haplotype frequencies that the coalescent simulation pass must then be
+conditional on. The coalescent extension is strait forward in that it is almost
+identical to a $k$ allele model with a minor change to the recombination events.
+A key difference however is that when we carry out the forward simulation we must
+take recombination into account as this can alter the haplotype frequencies.
+Fortunately this does not appear difficult to do\footnote{Note: difficult does
+not equal fast to implement!}.
+
+We assume that the $n$ loci are on a single strand of DNA and in natural order.
+That is, locus 1 is the ``left most'' locus while locus $n$ is the right most. In
+order to track $n$ loci each with $k$ alleles we consider haplotype frequencies
+rather than allele frequencies at each locus. We work with selection coefficients
+$w_{h,h'}$ for the $h$'th  haplotype where  $h$ is the haplotype number defined
+below, and the $h'$ is the haplotype of the second strand of DNA in the diploid
+case. Let the vector $\hap=(a_1,a_2,\ldots,a_n)$ denote a haplotype where $a_j$
+is the $a$'th allele at the $j$'th loci. The haplotype number for
+$\hap=(a_1,a_2,\ldots)$ is given by $h=\sum_i^n a_ik^{i-1}$.Let $x^d_h$ be the
+frequency of the $h$ haplotype in the current generation in the $d$'th deme. We
+also denote this as $x^d_{a_1,a_2,\ldots,a_n}$ for convenience, and we omit the
+deme superscript where context makes it clear that we dealing with per deme
+frequencies. We define the $c$ marginal frequency as:
+\begin{align}
+	x_{a_1,a_2,\ldots,a_c|c}&=\sum_{a_{c+1}}^k\sum_{a_{c+2}}^k \cdots
+	\sum_{a_n}^k x_{a_1,a_2,\ldots,a_n} \\
+	&=\sum_{a_c}^k x_{a_1,a_2,\ldots,a_{c-1}|c-1}
+\end{align}
+and {\color{red} WRONG! EPIC FAIL}
+\begin{align}
+	x_{c|a_{c+1},a_{c+2},\ldots,a_n}&=\sum_{a_1}^k\sum_{a_2}^k \cdots
+	\sum_{a_c}^k x_{a_1,a_2,\ldots,a_n} \\
+	&=1-x_{a_1,\ldots,a_c|c} 
+\end{align}
+We use the short hand $x_{\hap|c}=x_{a_1,\ldots,a_c|c}$ and
+$x_{c|\hap}=x_{c|a_{c+1},\ldots,a_n}$. The proportion of recombination events
+between locus $j$ and $j+1$ is denoted $R_j$ and we require
+that $\sum_j R_j<1$\footnote{The assumption is in fact that $\sum_j R_j\ll 1$}.
+Migration from deme $j$ to deme $i$ is defined as the proportion $m_{ij}$ of
+deme $i$ that is made  up of migrants from deme $j$ and  we set
+$m_{ii}=1-\sum_{j,j \neq i} m_{ij}$. 
+
+We avoid adding time or deme dependence on selection coefficients as this is quite
+a trivial extension while it would clutter the notation. Similar extensions
+with varying population sizes and deme structure also exist and are equally
+somewhat trivial extensions.
+
+\subsection{Life cycle}
+
+I assume the exact life cycle that is used will make minimal difference to the
+simulations compared to other approximations made. However this may not be the
+case, and hence I try to be very clear with how I see the current life cycle.
+Note that I will consider both haploid and diploid populations since both are
+important in theory and practice. 
+
+The life cycle is as follows (assuming diploid for now).
+\begin{enumerate}
+  \item  We assume that we have HWE and we now work with an
+  infinite population size. 
+  \item Recombination. This causes a change in haplotype frequencies. But not
+  allele frequencies. We now consider the resultant haplotype frequencies to be
+  the gamete frequencies.
+  \item Mutation. Both haplotype frequencies and allele frequencies can change.
+  \item Random mating and Selection. With the assumption of HWE this changes
+  haplotype frequencies and allele frequencies. We still use the infinite
+  population size approximation. 
+  \item Migration. We now reconstruct the deme haplotype frequencies taking
+  migration into account. 
+  \item Sampling. Finally we move from the infinite population size to a finite
+  population size with multinomial sampling, there by incorporating drift. 
+\end{enumerate}
+By assuming HWE we can track haplotype frequencies rather than genotypes for
+diploid cases.
+
+In practice we follow these steps quite closely in code\footnote{Or will
+when I write the code}. This makes the code easy to follow, does not effect
+performance, and makes it much easier to extend and expand.
+
+\subsection{Recombination} 
+
+Consider the frequencies $x'_{a_1,\ldots,a_n}$ of a given haplotype after
+recombination and we set $\hap=(a_1,\ldots,a_n)$. First lets consider
+recombinant between the first and second locus. The proportion of the population that has this recombination event is
+$R_1$ where $x_{a_1|1}$ have the correct allele at the first locus and
+$x_{1|a_2,\ldots,a_n}$ have the correct allele's at the remaining loci. So the
+proportion of newly formed $\hap$ haplotypes from recombination at between the
+first locus and second locus is:
+\begin{align}
+	x'_{R_1,\hap}&=R_1 x_{a_1|1} x_{1|a_2,\ldots,a_n} \\
+	&=R_1 x_{a_1|1} (1-x_{a_1|1}) \\
+	&=R_1 x_{\hap|1} (1-x_{\hap|1})
+\end{align}
+Summing over all recombination events and considering the proportion of $h$
+haplotypes that do not recombine this generation, we get:
+\begin{align}
+	x'_{\hap}=R x_{\hap}+\sum_{j=1}^{n-1} R_j x_{\hap|j} (1-x_{\hap|j})
+\end{align}
+Where $R=1-\sum_j R_j$ is the proportion of individuals that do not recombine
+this generation. 
+
+Recall that the assumption here is that recombination does not  ``cut'' the DNA
+in two places in any one generation. Otherwise we would have to consider
+$x_{c|\hap|c'}$ type marginal frequencies. However these events would happen
+with probability $R_cR_{c'}$ and for many cases can be ignored. Also I am ignoring
+gene conversion which would also require considering $x_{c|\hap|c'}$ marginal
+frequencies\footnote{This can be done of course}.
+
+\subsection{mutation}
+
+Mutation is easy to implement while just considering all haplotype to haplotype
+transitions with a hamming weight of 1. That is at most 1 locus changes between
+haplotypes. Multiple mutations are ignored which is a good approximation with
+realistic mutation rates. We don't bother with a formula. 
+
+
+\subsection{Selection}
+
+Selection is just a standard $k$ alleles selection step only the total number
+of ``alleles'' in this case is $nk$. We use the haplotype number $h$ rather
+than alleles for this derivation. To simplify notation\footnote{perhaps abuse
+of notation is a better word} we let $x$ now denote the  frequencies after
+recombination, and $x'$ denote the frequencies after selection. 
+
+\subsubsection{haploid}
+
+This case is much simpler than the diploid case and as such we complete this
+first. As defined above we let the selection coefficient for the $h$ haplotype
+be $w_h$. Restricting our discussion to a single deme, the amount of haplotype
+$h$ after selection is simply $x_hw_h$. Including normalization we get:
+\begin{align}
+	x'_h=\frac{x_hw_h}{\sum_z x_hw_h}
+\end{align} 
+
+\subsubsection{diploid}
+
+We now must consider homozygotes as well as heterozygous. We let selection
+coefficients be defined for the full genotype, so $w_{h,h'}$ is the selection
+coefficient for the genotype $h,h'$ and we require that $w_{h,h'}=w_{h',h}$. The
+frequency $x_h$ of the $h$ haplotype after selection but before migration is:
+\begin{align}
+	x'_h=\frac{x_h \sum_z w_{h,z}x_z}{\sum_{z'} x_{z'}\sum_z w_{z',z}x_z}
+\end{align}
+
+\subsection{Migration}
+
+Again we consider that $x_h$ now denotes the frequency after both recombination
+and selection but before migration of the $h$ haplotype. While $x'_h$ will
+denote the frequency after migration. Directly from the definition of $m_{ij}$
+we can write down the frequencies after migration as:
+\begin{align}
+	x'^d_h=\frac{\sum_j m_{dj} x^j_h}{\sum_z\sum_j m_{dj} x^j_z}
+\end{align}
+
+\section{Coalescent}
+
+Coalescent simulation are conditional haplotype frequencies. Migration and
+coalescent remain unchanged from the single selected bi-allelic locus. Recurrent
+mutation as an event is also easy to account for, however one must consider
+stopping conditions as we no longer have a clear case of single direction
+mutation (some loci/allele may be deleterious). However this is a
+implementation detail that is less critical since single ``fixation'' is a more
+special case in a many allele many loci model anyway. 
+
+The remaining event that does need some modification is recombination. However
+again this is not difficult. We consider a single lineage as we move past-ward
+in time, and is a member of the $\hap$ haplotype that has a recombination event.
+A cut point is generated at random according to some recombination model. It
+cuts the strand between the $l$'th and $l+1$ selected loci. The left part of
+the strand with the first $l$ loci alleles already fixed randomly picks one of
+the haplotypes that has the same alleles at these loci with probability
+proportional to the frequencies. That is the probability that the left strand will
+now be in the $\happ$ haplotype is (conditional that $\happ$ and $\hap$ have the
+same alleles for first $l$ loci)\footnote{I am running out of notation ideas}:
+\begin{align}
+	\Pr\{\hap \to \happ\}=\frac{x_{\happ}}{x_{\hap|l}}
+\end{align}
+A similar result holds for the right side of the cut(conditional that $\happ$
+and $\hap$ have the same alleles for last $n-l$ loci):
+\begin{align}
+	\Pr\{\hap \to \happ\}=\frac{x_{\happ}}{x_{l|\hap}}
+\end{align}
+
+\end{document}

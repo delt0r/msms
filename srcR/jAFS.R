@@ -1,0 +1,30 @@
+plotjAFS<-function(data,range,col=rainbow(1000),labels=list(),fntSize=2,legend=TRUE){
+	par(oma=c(0,0,0,8))
+	#set.panel(1,length(data))
+	par(mar=c(4,3,1,0))
+	lrange=log10(range)
+	#check ranges. plot
+	labelCount=0;
+	for(a in data){
+		#print(a)
+		a[a<range[1]]<-range[1]
+		a[a>range[2]]<-range[2]
+		d<-dim(a)
+		x<-c(1,d[1])
+		y<-c(1,d[2])
+		image(1:x[2],1:y[2],log10(a[,y[2]:1]),col=col,axes=FALSE,zlim=lrange,ylab='',xlab='')
+		l<-labels[[(labelCount%%length(labels))+1]]
+		mtext(l,side=1,line=1.5,cex=fntSize*.8)
+		labelCount<-labelCount+1
+		l<-labels[[(labelCount%%length(labels))+1]]
+		mtext(l,side=2,line=.75,cex=fntSize*.8)
+		labelCount<-labelCount+1
+		box()
+		axis(1,at=x,label=x-1,cex.axis=fntSize)
+		axis(2,at=y,label=y-1,cex.axis=fntSize)
+	}	
+	par(oma=c(0,0,0,3))
+	if(legend){
+		image.plot(legend.only=TRUE,legend.width=4,legend.shrink=1,zlim=lrange,col=col,nlevel=length(col),axis.args=list(at=0:10,label=10^(0:10),cex.axis=fntSize))
+	}
+}

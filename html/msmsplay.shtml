@@ -1,0 +1,104 @@
+<!--#include virtual="header.html" -->
+
+<div id="content">
+<h2>MSMSPlay</h2>
+<p>
+MSMSPlay is a GUI designed for simple exploration of basic population genetic theory. 
+Its meant for exploratory runs with some useful output in an interactive fashion. 
+<p>
+In order to just try it out, just run msmsplay or msmsplay.exe from the bin directory in the distribution. In windows or on macs you should be able to just double click it.
+<p>
+Across the top of the application are a set of buttons with a box for the msms command line just 
+below them. The buttons to the left are the history buttons and will let you move through the 
+commands that you have run in this session. Note this does not update the data below the text box.
+The buttons to the right are preset command line examples. The Complicated buttons command line is 
+quite slow. 
+<p>
+The text box can contain any valid msms command line. It doesn't care about line breaks and can 
+scroll down for large examples. I have made an attempt to get good error messages when things are 
+wrong. However, sometimes the error is unclear. We suggest that you slowly build up a command line, 
+testing smaller versions each time. 
+<p>
+The Run button does as it suggests and changes to a cancel button when running. This way if it is 
+going to take too long you can abort. However, be advised that if you have zero migration rates with
+migration, the program can become unresponsive. This happens because the forward or backward 
+simulations never finish and will go forever, generally using all the memory. We try to warn you 
+about such parameter choices, but it can't always catch it.
+<h3>The command line and Examples</h3>
+MSMS uses a command line interface and this is the same for MSMSPlay with the exception that
+you don't need to specify output options. The easiest way to get started is with the example 
+buttons or with the <a href="CheatSheet.pdf">cheat sheet[pdf]</a>
+<a href="CheatSheet.html">[html]</a>. For detailed information there is the 
+<a href="Manual.pdf">manual.</a>
+<p>
+Below is a breif description of the 3 button examples. 
+<h5>Simple</h5>
+<tt>-ms 20 1000 -t 100 -r 50 20</tt><br>
+We consider each "switch" or option in turn. <br>
+<tt><font color="red">-ms 20 1000</font> -t 100 -r 50 20</tt><br>
+The first option <tt>-ms</tt> is for compatibility with ms. 
+The two compulsory options are the number of samples and the number of replicates. 
+So in this example we have 20 samples and 1000 replicates.<br>
+<tt>-ms 20 1000 <font color="red">-t 100</font> -r 50 20</tt><br>
+The next option <tt>-t</tt> sets the mutation rate, or theta. This is a scaled mutation rate. <br>
+<tt>-ms 20 1000 -t 100 <font color="red">-r 50 20</font></tt><br>
+The final option <tt>-r</tt> sets the recombination rate. Here the recombination rate is set to
+50 with the number of recombination sites set to 20 per unit of neutral locus. 
+
+<h5>migration</h5>
+<tt>-ms 20 1000-t 100 -r 50 20 <font color="red">-I 2 10 10 .25</font></tt><br>
+The <tt>-I</tt> option must be used for all 
+migration simulations. It has a variable number of arguments depending on the number of subpopulations
+you want. Here we set the first argument to 2 for two subpopulations. 
+The next 2 numbers are the number 
+of samples from each subpopulation. Here we choose 10 samples from each deme. It must add up to the 
+total number of samples given with the <tt>-ms</tt> option. The final number is the migration between
+all demes. 
+<h5>Selection</h5>
+<tt>-ms 20 1000 -t 100 -r 500 20 <font color="red">-SAA 1000 -SaA 500 -N 10000 -SF 0 -Sp .5</font></tt><br>
+Selection requires a number of parameters to work properly. The first two options, <tt>-SAA</tt> and
+<tt>-SaA</tt> give the alpha selection coeffecient for both the homozygote and 
+heterozygote repectively.
+The next option <tt>-N</tt> gives the population size used for the forward simulations, this parameter
+is needed whenever selection is used. The <tt>-SF</tt> option gives the time of fixation of the 
+selected allele pastward from the present, in time units of 4N generations. Note that it is important that the selection parameters are choosen so that the 
+selected allele will eventually become fixed. The last option <tt>-Sp</tt> gives the position 
+of the selected locus. 
+
+
+<h4>Estimators</h4>
+We have displayed three popular parameter estimates. 
+<a href="http://en.wikipedia.org/wiki/Watterson_estimator">Wattersons theta</a>, 
+Pi(see Tajima's D) and 
+<a href="http://en.wikipedia.org/wiki/Tajima%27s_D">Tajima's D.</a>. Note that for Tajima's D we 
+currently use the same formula as the wiki, their however alternative formulations.
+<p>
+In each case we present the global average of the parameter over the replicates specified with the
+command line. For example, if the command line is:<br>
+<tt>-ms 20 1000 -t 100</tt><br>
+Then the estimates are for 1000 replicates. The value in the breaks is the sample standard
+deviation. This is <b>not</b> the standard error. 
+<p>
+An important point to consider is that Tajima's D is the average of Tajima's D calculated separately 
+for each simulation. Because of this the expected <b>average</b> Tajima's D is slightly negative for
+a neutral population with no growth, selection or migration. 
+<h4>Plots</h4>
+We also have plots for the three parameters, where we use a windowed estimator over the whole
+neutral locus. Wattersons theta is black with Pi as red. The shaded color regions indicated the 
+standard deviation of the sample and the line is the average over replications. These plots give no
+extra information over the previous 3 global estimates except when using selection. To see this try
+running the simulation with the selection preset (button in the top right hand corner). 
+<h4>Site Frequency Spectrum</h4>
+The global site frequency spectrum is also shown. This is perhaps the more informative figure, and 
+changes quite considerably with migration and selection changes. This histogram shows the number of 
+times that singletons(bar at 1), doubletons(bar at 2) etc, is observed.
+<h4>JSFS plots</h4>
+This was not suppose to be in the release version yet. Its not really working. Please ignore it.
+<br><br><br><br>
+If you are still not ignoring it, it is the joint site frequency spectrum. The slider on the right
+changes the scale, and the slider at the bottom changes the pair wise deme set (ie deme 1 vrs deme 2
+deme 1 vrs deme 3..). 
+</div>
+
+
+<!--#include virtual="footer.html" -->

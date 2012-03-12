@@ -1,0 +1,11 @@
+<!--#include virtual="header.html" -->
+
+<div id="content">
+Just replace the words "dot" and "at" with "." and "@" as required.
+<div id="code">
+gregory dot ewing at univie dot ac dot at
+</div>
+</div>
+
+
+<!--#include virtual="footer.html" -->

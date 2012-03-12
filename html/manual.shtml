@@ -1,0 +1,15 @@
+<!--#include virtual="header.html" -->
+
+<div id="content">
+<h2>Manual</h2>
+<p>The manual provides the primary user reference for this program. It is
+included in all standard downloads. However, it is provided here as a
+separate download for convenience.
+</p>
+<a href="Manual.pdf">PDF formatted manual</a>
+</p>
+<a href="CheatSheet.pdf">2 page cheat sheet</a>
+</div>
+
+
+<!--#include virtual="footer.html" -->

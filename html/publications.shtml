@@ -1,0 +1,14 @@
+<!--#include virtual="header.html" -->
+
+<div id="content">
+<h2>Publications</h2>
+<p>Please use the following reference when citing msms:
+</p>
+<b>
+Gregory Ewing and Joachim Hermisson, MSMS: A Coalescent Simulation Program Including Recombination, Demographic Structure, and Selection at a Single Locus 
+Bioinformatics 2010, doi: 10.1093/bioinformatics/btq322
+</b>
+</div>
+
+
+<!--#include virtual="footer.html" -->

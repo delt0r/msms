@@ -1,0 +1,114 @@
+<project name="msms" default="dist" basedir=".">
+	<description>
+
+	</description>
+	<!-- set global properties for this build -->
+	<property name="src" location="src" />
+	<property name="build" location="bin" />
+	<property name="dist" location="msms" />
+	<property name="version.num" value="3.2rc" />
+	<buildnumber file="ant/build.num" />
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the source ">
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac destdir="${build}" debug="true">
+			<src path="${src}" />
+			<exclude name="**/Test*.java" />
+			<classpath>
+				<pathelement path="${classpath}" />
+				<fileset dir="lib/">
+					<include name="*jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+
+
+	<target name="dist" depends="compile,doc" description="generate the distribution">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/lib" />
+		<mkdir dir="${dist}/tmpJar" />
+		<mkdir dir="${dist}/bin" />
+		<mkdir dir="${dist}/doc" />
+		<mkdir dir="${dist}/src" />
+
+		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+		<unjar dest="${dist}/tmpJar">
+			<patternset>
+				<exclude name="META-INF/**" />
+			</patternset>
+			<fileset dir="lib/">
+				<include name="*.jar" />
+				<exclude name="junit.jar" />
+			</fileset>
+		</unjar>
+		<copy todir="${dist}/tmpJar/">
+			<fileset dir="${build}/">
+			</fileset>
+		</copy>
+		<jar jarfile="${dist}/lib/msms.jar">
+			<fileset dir="${dist}/tmpJar/">
+			</fileset>
+			<manifest>
+				<attribute name="Main-Class" value="at.MSLike" />
+				<attribute name="Implementation-Version" value="${version.num} Build:${build.number}" />
+			</manifest>
+		</jar>
+		<delete dir="${dist}/tmpJar" />
+		<copy todir="${dist}/bin/">
+			<fileset dir="launch/">
+			</fileset>
+		</copy>
+		<zip destfile="${dist}/src/src.zip" basedir="${src}" />
+		<copy file="tex/Manual.pdf" todir="${dist}/doc" />
+		<copy file="tex/InternalManual.pdf" todir="${dist}/doc" />
+		<copy file="tex/CheatSheet.pdf" todir="${dist}/doc" />
+		<exec dir="${dist}/bin/" executable="chmod">
+			<arg line="+x msms msms.exe pvalue quantile simpleTest msmsplay msmsplay.exe" />
+		</exec>
+		<exec dir="" executable="zip">
+			<arg line="-r msms.zip msms" />
+		</exec>
+		<exec dir="" executable="tar">
+			<arg line="-cvjf msms.tar.bz2 msms" />
+		</exec>
+	</target>
+
+	<target name="doc" description="compile the docs ">
+		<exec dir="tex" executable="make">
+			<arg line="Manual.pdf" />
+		</exec>
+		<exec dir="tex" executable="make">
+			<arg line="InternalManual.pdf" />
+		</exec>
+		<exec dir="tex" executable="make">
+			<arg line="CheatSheet.pdf" />
+		</exec>
+		<exec dir="tex" executable="make">
+			<arg line="clean" />
+		</exec>
+	</target>
+
+	<target name="depoly" description="upload to the server ">
+		<exec executable="ant/bin/deploy.sh">
+			<arg line="msms${version.num}-b${build.number}" />
+		</exec>
+	</target>
+
+	<target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+		<delete file="msms.zip" />
+		<delete file="msms.tar.bz2" />
+	</target>
+</project>
+

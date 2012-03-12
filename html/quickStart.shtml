@@ -1,0 +1,67 @@
+<!--#include virtual="header.html" -->
+
+<div id="content">
+<h2>Quick Start</h2>
+<p>It will be assumed that <tt>msms</tt> is in the path. Thus, the
+command line starts with msms. If however this is not the case, you may
+need to prefix the command line with other java options and commands. We
+further assume no familiarity with ms. This page is only to get you
+started, please refer to the <a href="Manual.pdf">manual</a> 
+for more complete documentation, or the 
+<a href="CheatSheet.pdf">cheat sheet,</a> which is also in a plain 
+<a href="CheatSheet.html">html version here.</a>
+</p>
+
+<p>We will start with a simple example and then explain each option
+in turn. Here, we consider a single diploid population.
+<div id="code">msms -N 10000 -ms 10 1000 -t 1</div>
+This command tells <tt>msms</tt> to use an effective population size of
+10000 with the <tt>-N</tt> option. This option is unique to msms and is
+important even when not considering selection. For now, its important to
+use a large number. While selection is not included in this parameter,
+it does not affect run times in any way.</p>
+<p>The <tt>-ms 10 1000</tt> option is the same as the first two
+options to ms. The first is the number of samples, the second is the
+number of replicates. After this option, all the normal options of ms
+can be used and has the same meanings as per ms.</p>
+<p>The last option is <tt>-t 1</tt> and specifies the theta
+parameter. We typically assume a diploid population so theta is
+4*N*mutation rate. All parameters are scaled with N in some way.
+</div>
+
+<div id="oddcontent">
+<h3>Adding Selection</h3>
+<p>We consider the case of a selective sweep. In this case, we have
+a time invariant model, that is the parameters and structure of the
+demographics don't change over time.
+<div id="code">msms -N 10000 -ms 10 1000 -t 1 -SAA 100 -Sa 50 -SF
+0</div>
+The <tt>-SAA</tt> option sets the selection strength for homozygotes and
+the <tt>-SaA</tt> sets the strength for heterozygotes. Note that because
+we use the <tt>-SF</tt> option the heterozygotes selection strength must
+be lower than the homozygotes, otherwise the forward simulation will
+never go to fixation and simply run forever. The selection strength is
+again scaled with 4Ns. The <tt>-SF 0</tt> option tells the selection
+simulation to run until fixation and that fixation time is 0 time units
+into the past. Time is in 4N generations.</p>
+<p>It is important to note that in order to use the <tt>-SF</tt>
+option that the forward simulation will go to fixation and that the
+model is time invariant. The program tries to detect when these
+conditions are not met, but this cannot be guaranteed.</p>
+</div>
+
+<div id="content">
+<h3>Recombination</h3>
+<p>msms supports two models of recombination. An infinite sites
+model and a finite sites model where you can define number of sites.
+Regardless of what recombination model is used, the mutation model is by
+default always an infinite sites model.</p>
+<div id="code">msms -N 10000 -ms 10 1000 -t 1 -r 10 1000</div>
+<p>In this example we use the finite sites model of recombination by
+giving the <tt>-r</tt> option 2 arguments. The first is the
+recombination rate scaled with 4N. The second is the number of "sites"
+per unit of sequence. If we want to use an infinite sites recombination
+we simply omit the last argument.</p>
+</div>
+
+<!--#include virtual="footer.html" -->

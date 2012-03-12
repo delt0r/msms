@@ -1,0 +1,385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
+  "http://www.w3.org/TR/html4/loose.dtd">  
+<html > 
+<head><title>msms Cheat Sheet</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> 
+<meta name="generator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<meta name="originator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<!-- html --> 
+<meta name="src" content="CheatSheet.tex"> 
+<meta name="date" content="2010-09-27 17:38:00"> 
+<link rel="stylesheet" type="text/css" href="CheatSheet.css"> 
+</head><body 
+>
+   <div class="maketitle">
+                                                                                         
+                                                                                         
+                                                                                         
+                                                                                         
+
+<h2 class="titleHead">msms Cheat Sheet</h2>
+ <div class="author" ></div><br />
+<div class="date" ><span 
+class="cmr-12">September 27, 2010</span></div>
+   </div>
+                              <dl class="list1"><dt class="list">
+<span 
+class="cmtt-10">-ms </span>nsamples nrep            </dt><dd 
+class="list">
+                           <!--l. 27--><p class="indent" >    The total number of samples and number of replicates. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-N </span><span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub>                      </dt><dd 
+class="list">
+                           <!--l. 29--><p class="indent" >     Set <span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub>, note that event times are in discrete generation times in units
+                           of 4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub>. It is safe to set this very high when selection is not considered.<br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-t </span><span 
+class="cmmi-10">&#x03B8;</span>                        </dt><dd 
+class="list">
+                           <!--l. 32--><p class="indent" >    Set the value of <span 
+class="cmmi-10">&#x03B8; </span>= 4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">&#x03BC;</span><br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-T</span>                         </dt><dd 
+class="list">
+                           <!--l. 33--><p class="indent" >   Output gene trees.<br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-r </span><span 
+class="cmmi-10">&#x03C1; </span>[nsites]                 </dt><dd 
+class="list">
+                           <!--l. 34--><p class="indent" >    Set recombination rate <span 
+class="cmmi-10">&#x03C1; </span>=  4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">r </span>where <span 
+class="cmmi-10">r </span>is the recombination rate
+                           between the ends of a unit length sequence. If nsites are omitted then an
+                           infinite sites recombination model is used. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-G </span><span 
+class="cmmi-10">&#x03B1;</span>                       </dt><dd 
+class="list">
+                           <!--l. 37--><p class="indent" >    Set growth parameter of all populations to <span 
+class="cmmi-10">&#x03B1;</span>. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-I </span>npop n1 n2 &#x2026;[4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">m</span>]       </dt><dd 
+class="list">
+                           <!--l. 39--><p class="indent" >    Set up a structured population model. The sample configuration must
+                           add up to the same total number of samples as specified by <span 
+class="cmtt-10">-ms</span>.<br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-n </span><span 
+class="cmmi-10">i x</span>                      </dt><dd 
+class="list">
+                           <!--l. 42--><p class="indent" >    Set the size of subpopulation <span 
+class="cmmi-10">i </span>to <span 
+class="cmmi-10">xN</span><sub><span 
+class="cmmi-7">e</span></sub>. <br 
+class="newline" />&#x00A0;
+                                                                                         
+                                                                                         
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-g </span><span 
+class="cmmi-10">i &#x03B1;</span><sub><span 
+class="cmmi-7">i</span></sub>                     </dt><dd 
+class="list">
+                           <!--l. 43--><p class="indent" >     Set the growth rate of subpopulation <span 
+class="cmmi-10">i </span>to <span 
+class="cmmi-10">&#x03B1;</span><sub><span 
+class="cmmi-7">i</span></sub>.<br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-m </span><span 
+class="cmmi-10">i j M</span><sub><span 
+class="cmmi-7">ij</span></sub>                  </dt><dd 
+class="list">
+                           <!--l. 45--><p class="indent" >     Set the (<span 
+class="cmmi-10">i,j</span>) element of the migration matrix to <span 
+class="cmmi-10">M</span><sub><span 
+class="cmmi-7">ij</span></sub>.<br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-ma </span><span 
+class="cmmi-10">M</span><sub><span 
+class="cmr-7">11</span></sub> &#x2026;                  </dt><dd 
+class="list">
+                           <!--l. 47--><p class="indent" >    Set the entire migration matrix.<br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-eM </span><span 
+class="cmmi-10">t x</span>                     </dt><dd 
+class="list">
+                           <!--l. 48--><p class="indent" >    Set all elements of the migration matrix at time <span 
+class="cmmi-10">t </span>to <span 
+class="cmmi-10">x&#x2215;</span>(npop <span 
+class="cmsy-10">- </span>1)<br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-es </span><span 
+class="cmmi-10">t i p</span>                    </dt><dd 
+class="list">
+                           <!--l. 50--><p class="indent" >    Split subpopulation <span 
+class="cmmi-10">i </span>into subpopulation <span 
+class="cmmi-10">i </span>and npop+1 pastward. Each
+                           lineage currently in subpopulation <span 
+class="cmmi-10">i </span>is retained with probability <span 
+class="cmmi-10">p</span>, otherwise
+                           it  is  moved  to  the  new  population.  The  migration  rates  to  the  new
+                           subpopulation are zero and its population size is set to <span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub>. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-ej </span><span 
+class="cmmi-10">t i j</span>                    </dt><dd 
+class="list">
+                           <!--l. 55--><p class="indent" >    Join subpopulation <span 
+class="cmmi-10">i </span>to subpopulation <span 
+class="cmmi-10">j</span>. All migration matrix entries
+                           with subpopulation <span 
+class="cmmi-10">i </span>are set to zero. The population size of <span 
+class="cmmi-10">i </span>is also set to
+                           zero. With selection this population is ignored pastward from this time. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-e[X] </span><span 
+class="cmmi-10">t </span>&#x2026;                   </dt><dd 
+class="list">
+                           <!--l. 60--><p class="indent" >    Set some parameter pastward from time <span 
+class="cmmi-10">t</span>. Here <span 
+class="cmtt-10">[X] </span>can be any of <span 
+class="cmtt-10">G g</span>
+                           <span 
+class="cmtt-10">n m ma </span>and the meaning is defined as for the normal command, for example
+                           <span 
+class="cmtt-10">-en </span><span 
+class="cmmi-10">t i x </span>sets the population size of deme <span 
+class="cmmi-10">i </span>to <span 
+class="cmmi-10">xN</span><sub><span 
+class="cmmi-7">e</span></sub> pastward from time <span 
+class="cmmi-10">t</span>.
+                           <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-l </span><span 
+class="cmmi-10">n a</span><sub><span 
+class="cmr-7">1</span></sub> <span 
+class="cmmi-10">a</span><sub><span 
+class="cmr-7">1</span></sub><sup><span 
+class="cmsy-7">&#x2032;</span></sup> &#x2026;<span 
+class="cmmi-10">a</span><sub><span 
+class="cmmi-7">n</span></sub> <span 
+class="cmmi-10">a</span><sub><span 
+class="cmmi-7">n</span></sub><sup><span 
+class="cmsy-7">&#x2032;</span></sup>           </dt><dd 
+class="list">
+                           <!--l. 65--><p class="indent" >  Set the neutral loci starting and stopping positions for <span 
+class="cmmi-10">n </span>loci. Note that
+                           must be <span 
+class="cmmi-10">a</span><sub><span 
+class="cmmi-7">i</span></sub><sup><span 
+class="cmsy-7">&#x2032;</span></sup> <span 
+class="cmmi-10">&#x003C; a</span><sub><span 
+class="cmmi-7">i</span><span 
+class="cmr-7">+1</span></sub> for all <span 
+class="cmmi-10">i </span>and that there must be 2<span 
+class="cmmi-10">n </span>values. All parameters
+                           assume a sequence length of 1. This other parameter needs to be scaled
+                           accordingly. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-SAA </span>4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">s</span><sub><span 
+class="cmmi-7">AA</span></sub>                </dt><dd 
+class="list">
+                           <!--l. 70--><p class="indent" >     Set the selection strength of the homozygote. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-SAa </span>4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">s</span><sub><span 
+class="cmmi-7">Aa</span></sub>                </dt><dd 
+class="list">
+                           <!--l. 72--><p class="indent" >     Set the selection strength of the heterozygote. <br 
+class="newline" />&#x00A0;
+                                                                                         
+                                                                                         
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-Smu </span><span 
+class="cmmi-10">&#x03B8;</span><sup><span 
+class="cmsy-7">&#x2032;</span></sup>                     </dt><dd 
+class="list">
+                           <!--l. 74--><p class="indent" >  Set the forward mutation rate for the selected allele in units of 4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">&#x03BC;</span><sup><span 
+class="cmsy-7">&#x2032;</span></sup>.
+                           That is the mutation from the wild type <span 
+class="cmmi-10">a </span>to derived type <span 
+class="cmmi-10">A</span>. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-Snu </span><span 
+class="cmmi-10">&#x03B8;</span><sup><span 
+class="cmsy-7">&#x2032;</span></sup>                     </dt><dd 
+class="list">
+                           <!--l. 78--><p class="indent" >  Set the backward mutation rate for the selected allele in units of 4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">&#x03BD;</span><sup><span 
+class="cmsy-7">&#x2032;</span></sup>.
+                           That is the mutation from the selected type <span 
+class="cmmi-10">A </span>to the wild type <span 
+class="cmmi-10">a</span>. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-Sp </span><span 
+class="cmmi-10">x</span>                       </dt><dd 
+class="list">
+                           <!--l. 82--><p class="indent" >    Set the position <span 
+class="cmmi-10">x </span>in the sequence of the selected allele. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-Sc </span><span 
+class="cmmi-10">t i </span>4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">s</span><sub><span 
+class="cmmi-7">AA</span></sub> 4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">s</span><sub><span 
+class="cmmi-7">Aa</span></sub> 4<span 
+class="cmmi-10">N</span><sub><span 
+class="cmmi-7">e</span></sub><span 
+class="cmmi-10">s</span><sub><span 
+class="cmmi-7">aa</span></sub> </dt><dd 
+class="list">
+                           <!--l. 84--><p class="indent" >     Set the selection strength in deme <span 
+class="cmmi-10">i </span>to the specified values pastward
+                           from time <span 
+class="cmmi-10">t</span>. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-SF </span><span 
+class="cmmi-10">t</span>                       </dt><dd 
+class="list">
+                           <!--l. 87--><p class="indent" >    Set the selection simulation stopping condition to fixation at time <span 
+class="cmmi-10">t</span>
+                           pastward from sampling time. Note the demographic model must be time
+                           invariant for this option not to raise an error. It is up to the user to ensure
+                           that the parameters permit the model to always go to fixation, otherwise it
+                           will keep simulating till it runs out of memory. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-SI </span><span 
+class="cmmi-10">t </span>npop <span 
+class="cmmi-10">x</span><sub><span 
+class="cmr-7">1</span></sub> <span 
+class="cmmi-10">x</span><sub><span 
+class="cmr-7">2</span></sub> &#x2026;           </dt><dd 
+class="list">
+                           <!--l. 93--><p class="indent" >    Set the start of selection to time <span 
+class="cmmi-10">t </span><span 
+class="cmti-10">forward </span>in time from this point. The
+                           initial frequencies of the beneficial allele are <span 
+class="cmmi-10">x</span><sub><span 
+class="cmr-7">1</span></sub><span 
+class="cmmi-10">,x</span><sub><span 
+class="cmr-7">2</span></sub><span 
+class="cmmi-10">,</span><span 
+class="cmmi-10">&#x2026;</span>. Note that this option
+                           is not compatible with <span 
+class="cmtt-10">-SF</span>. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-oTPi </span><span 
+class="cmmi-10">w s </span><span 
+class="cmtt-10">[onlySummary]</span>     </dt><dd 
+class="list">
+                           <!--l. 98--><p class="indent" >   Output windowed <span 
+class="cmmi-10">&#x03B8; </span>estimates (both Wattersons and <span 
+class="cmmi-10">&#x03C0; </span>based estimators)
+                           and Tajima&#8217;s D with window size <span 
+class="cmmi-10">w </span>and step size <span 
+class="cmmi-10">s</span>. If <span 
+class="cmtt-10">onlySummary</span>, then
+                           only the averages of all replicates are output. The output format is a table
+                           formatted  as  follows:  The  first  column  is  the  bin  position.  The  second
+                           column is the Watterson&#8217;s <span 
+class="cmmi-10">&#x03B8; </span>estimator. The third column is the <span 
+class="cmmi-10">&#x03C0;</span><span class="footnote-mark"><a 
+href="CheatSheet2.html#fn1x0"><sup class="textsuperscript">1</sup></a></span><a 
+ id="x1-2f1"></a> 
+                           estimator and the last column is Tajima&#8217;s D. The summary also contains
+                           the standard deviations for the previous data column. Thus, column 3 is
+                           the standard deviation of the Wattersons <span 
+class="cmmi-10">&#x03B8; </span>estimators. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-oOC</span>                       </dt><dd 
+class="list">
+                           <!--l. 108--><p class="indent" >   Output the number of origins of the beneficial allele in the sample. A
+                           count of 0 or 1 means a hard sweep if conditioned on fixation. <br 
+class="newline" />&#x00A0;
+                              </dd><dt class="list">
+<span 
+class="cmtt-10">-oAFS [jAFS] [onlySummary]</span>  </dt><dd 
+class="list">
+                                                                                         
+                                                                                         
+                           <!--l. 111--><p class="indent" >   Output  allele  frequency  spectra.  If  the  <span 
+class="cmtt-10">jAFS </span>option  is  specified,  all
+                           pairwise deme joint frequency spectra are output.</dd></dl>
+    
+</body></html> 
+
+                                                                                         
+
+

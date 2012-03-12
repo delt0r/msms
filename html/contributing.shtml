@@ -1,0 +1,24 @@
+<!--#include virtual="header.html" -->
+
+<div id="content">
+<h2>Contributing</h2>
+<p>One of the design goals of msms was to have a code base that can
+be easily extensible. Contributions means getting familiar
+with the code, and a good place to start is with the developers
+documentation. This gives more details about how the code works and how
+it fits together.</p>
+<p>The primary source management tool we use is git, a distributed
+version control system. This has a number of features that permits easy
+forking and merging of a project like this. For example, if you want to
+develop some extensions, you probably want to work on it, get some
+results and then publish some kind of application note. With git you can
+keep up to date easily, and once you have the publication ready, you only
+need to let me know. I can review the changes, and merge the patch
+incorporating the extension into the core program.</p>
+<p>Alternatively, you can use Java's late linking behavior to create an
+extension that does not even need to be included into the core, but by
+simply specifying some special command line options.</p>
+</div>
+
+
+<!--#include virtual="footer.html" -->
