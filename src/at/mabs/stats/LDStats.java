@@ -52,6 +52,17 @@ public class LDStats implements StringStatsCollector {
 		this.type = type;
 		this.windowSize=.02;
 	}
+	
+	@Override
+	public void pairShuffle(SegmentEventRecoder recorder, StringBuilder builder, int lengthBeforePol)
+	{
+	}
+	
+	@Override
+	public int getLengthBeforePol()
+	{
+		return 0;
+	}
 
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {
@@ -136,6 +147,12 @@ public class LDStats implements StringStatsCollector {
 			rowbins.put(bin, bin);
 		}
 		bin.addStat(ld);
+	}
+	
+	@Override
+	public void noAncestralState(SegmentEventRecoder recorder, StringBuilder builder, int lengthBeforePol)
+	{
+		
 	}
 
 	@Override

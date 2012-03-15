@@ -351,6 +351,22 @@ public class MSLike {
 
 				for (StringStatsCollector stats : stringCollectors) {
 					stats.collectStats(segmentEventRecoder, stringBuilder);
+					//printFlush(stringBuilder);
+					//System.out.println(stringBuilder);
+					if(!parser.getIsPhased())
+					{
+						stats.pairShuffle(segmentEventRecoder, stringBuilder, stats.getLengthBeforePol());
+						//System.out.println(stringBuilder);
+					}
+					
+					//System.out.println(stringBuilder);
+					if(!parser.getHasOutgroup())
+					{
+						//System.out.println(parser.getHasOutgroup());
+						stats.noAncestralState(segmentEventRecoder, stringBuilder, stats.getLengthBeforePol());
+						//System.out.println(stringBuilder);
+					}
+					
 					printFlush(stringBuilder);
 				}
 

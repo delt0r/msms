@@ -90,7 +90,10 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	/*
 	 * no need to repeat what was working so well in the last case..
 	 */
-
+	
+	private boolean hasOutgroup = true;
+	
+	private boolean isPhased = true;
 	private double N0 =Integer.MAX_VALUE;// the base scale for everything.
 	
 
@@ -503,6 +506,18 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	public long getRecombinationCutSites() {
 		return recombinationCutSites;
 	}
+	
+	public boolean getHasOutgroup()
+	{
+		return hasOutgroup;
+	}
+	
+	public boolean getIsPhased()
+	{
+		return isPhased;
+	}
+	
+	
 
 	public double getRecombinationRate() {
 		return recombinationRate / (4 * N0);
@@ -607,7 +622,21 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		flagI=false;
 
 	}
-
+	
+	@CLNames(names ={ "-oNoOutgroup", "-oNooutgroup"})
+	@CLDescription("if flag is specified then it is assumed that there is no outgroup. The most frequent mutation is 0")
+	public void setOutgroup()
+	{
+		this.hasOutgroup = false;
+	}
+	
+	@CLNames(names ={ "-oUnPhased", "-oUnphased"})
+	@CLDescription("if flag is specified then it is assumed that sequences are unphased in pairs")
+	public void setIsPhased()
+	{
+		this.isPhased = false;
+	}
+	
 	@CLNames(names ={ "-Snu" })
 	@CLDescription("The mutation rate from derived type to wild type in units of 4*N*nu")
 	@CLUsage("4Nnu")

@@ -21,6 +21,9 @@ import at.mabs.segment.SegmentEventRecoder;
  *
  */
 public interface StatsCollector {
+	
+	
+	
 	public double[] collectStats(SegmentEventRecoder recorder);
 	/**
 	 * a list of means then varainces of all that this stat collector collects. Note that if the same size is one, just return the first collected stats.

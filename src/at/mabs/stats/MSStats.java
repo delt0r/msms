@@ -40,6 +40,14 @@ public class MSStats implements StringStatsCollector {
 	private boolean printSegSites=true;
 	private boolean loption=false;
 	
+	private int lengthBeforePol = -1;
+	
+	@Override
+	public int getLengthBeforePol()
+	{
+		return this.lengthBeforePol;
+	}
+	
 	public boolean isPrintSegSites() {
 		return printSegSites;
 	}
@@ -79,6 +87,9 @@ public class MSStats implements StringStatsCollector {
 
 		}
 		builder.append('\n');
+		
+		this.lengthBeforePol = builder.length();
+		
 		int noLeaves = mutations.get(0).leafSet.size();
 		for (int i = 0; i < noLeaves; i++) {
 			for (int m = 0; m < mutations.size(); m++) {
@@ -89,6 +100,102 @@ public class MSStats implements StringStatsCollector {
 
 		}
 		builder.append('\n');
+		
+	}
+	
+	@Override
+	public void pairShuffle(SegmentEventRecoder recorder, StringBuilder builder, int lengthBeforePol)
+	{
+		List<InfinteMutation> mutations=recorder.getMutations();
+		int noLeaves = mutations.get(0).leafSet.size();
+		if(noLeaves % 2 != 0)
+		{
+			System.err.println("No Sequences is not a multiple of 2... Do nothing");
+			return;
+		}
+		
+		int k = lengthBeforePol-1;
+		//System.out.println("*** Current Position: "+k+"\t"+builder.charAt(k));
+		
+		int offset = mutations.size() + 1;
+		while( k < builder.length() - offset)
+		{
+			for(int m = 0; m < mutations.size(); ++m)
+			{
+				k++;
+				//System.out.println("Current Position: "+k+"\t"+builder.charAt(k));
+				double r = Math.random();
+				if(r < 0.5)
+				{
+					String replace1 = builder.substring(k, k + 1);
+					String replace2 = builder.substring(k + offset, 
+							k + 1 + offset);
+
+					builder.replace(k, k + 1, replace2);
+					builder.replace(k + offset, k + offset + 1, replace1);
+				
+				}
+				
+			}	
+		k = k + offset+1;
+		}
+		
+	}
+	
+	
+	@Override
+	public void noAncestralState(SegmentEventRecoder recorder, StringBuilder builder, int lengthBeforePol)
+	{
+		List<InfinteMutation> mutations=recorder.getMutations();
+		int noLeaves = mutations.get(0).leafSet.size();
+		/*if(noLeaves % 2 != 0)
+		{
+			System.err.println("No Sequences is not a multiple of 2... Do nothing");
+			return;
+		}*/
+		
+		int k = lengthBeforePol-1;
+		//System.out.println("*** Current Position: "+k+"\t"+builder.charAt(k));
+		
+		int offset = mutations.size() + 1;
+		
+		for(int m = 0; m < mutations.size(); ++m)
+		{
+			k = lengthBeforePol  + m;	
+			int ones = 0;
+			for(int i = 0; i < noLeaves; ++i)
+			{
+				//System.out.println("Character at position "+k+" is "+builder.charAt(k));
+				
+				if(builder.charAt(k) == '1')
+				{
+					ones++;
+				}
+				k += offset;
+			}
+			
+			//System.out.println("Ones are: " + ones);
+			
+			if(ones > noLeaves / 2.)
+			{
+				//System.out.println("CHANGE");
+				k = lengthBeforePol + m;	
+				
+				for(int i = 0; i < noLeaves; ++i)
+				{
+					if(builder.charAt(k) == '1')
+					{
+						builder.replace(k, k+1, "0");
+					}
+					else if(builder.charAt(k) == '0')
+					{
+						builder.replace(k, k+1, "1");
+					}
+					k += offset;
+				}
+			}
+			
+		}
 		
 	}
 	
