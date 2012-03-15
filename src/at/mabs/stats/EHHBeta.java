@@ -128,6 +128,7 @@ public class EHHBeta implements StringStatsCollector {
 		
 	}
 	
+	
 	@Override
 	public void summary(StringBuilder builder) {
 		

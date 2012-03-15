@@ -40,6 +40,10 @@ public class MSStats implements StringStatsCollector {
 	private boolean printSegSites=true;
 	private boolean loption=false;
 	
+	
+	
+	
+	
 	public boolean isPrintSegSites() {
 		return printSegSites;
 	}
@@ -79,6 +83,7 @@ public class MSStats implements StringStatsCollector {
 
 		}
 		builder.append('\n');
+		
 		int noLeaves = mutations.get(0).leafSet.size();
 		for (int i = 0; i < noLeaves; i++) {
 			for (int m = 0; m < mutations.size(); m++) {
@@ -91,6 +96,9 @@ public class MSStats implements StringStatsCollector {
 		builder.append('\n');
 		
 	}
+	
+	
+	
 	
 	@Override
 	public void summary(StringBuilder builder) {

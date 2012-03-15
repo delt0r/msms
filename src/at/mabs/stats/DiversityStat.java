@@ -17,6 +17,7 @@ public class DiversityStat implements StringStatsCollector {
 		this.size=Integer.parseInt(size);
 	}
 	
+	
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {
 		//builder.append("Diversity:\n");

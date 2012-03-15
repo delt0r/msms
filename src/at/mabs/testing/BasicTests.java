@@ -228,6 +228,8 @@ public class BasicTests {
 			singlton2 +=s * s;
 
 		}
+		
+		
 
 		@Override
 		public void summary(StringBuilder builder) {

@@ -52,7 +52,7 @@ public class LDStats implements StringStatsCollector {
 		this.type = type;
 		this.windowSize=.02;
 	}
-
+	
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {
 		List<InfinteMutation> mutations=recorder.getMutations();
@@ -137,7 +137,7 @@ public class LDStats implements StringStatsCollector {
 		}
 		bin.addStat(ld);
 	}
-
+	
 	@Override
 	public void summary(StringBuilder builder) {
 		builder.append("LD mat:\n");

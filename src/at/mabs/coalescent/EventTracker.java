@@ -27,6 +27,7 @@ public class EventTracker implements StringStatsCollector {
 		data.add(p);
 	}
 	
+	
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {
 		double gs=recorder.getGenerationScale();

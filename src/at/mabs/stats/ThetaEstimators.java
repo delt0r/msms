@@ -85,6 +85,7 @@ public class ThetaEstimators implements StringStatsCollector {
 		
 		leafCount=sampleConfig.getMaxSamples();
 	}
+	
 
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {

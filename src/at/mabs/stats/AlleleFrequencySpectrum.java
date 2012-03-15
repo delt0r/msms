@@ -90,6 +90,7 @@ public class AlleleFrequencySpectrum implements StringStatsCollector {
 			}
 		}
 	}
+	
 
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {
@@ -169,6 +170,7 @@ public class AlleleFrequencySpectrum implements StringStatsCollector {
 			return new int[0];// nice than null;
 
 		int[] freq = new int[mutations.get(0).leafSet.size() - 1];
+		
 		for (int i = 0; i < mutations.size(); i++) {
 			int f = mutations.get(i).leafSet.countSetBits();
 			freq[f - 1]++;
