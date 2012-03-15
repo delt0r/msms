@@ -128,22 +128,6 @@ public class EHHBeta implements StringStatsCollector {
 		
 	}
 	
-	@Override
-	public void pairShuffle(SegmentEventRecoder recorder, StringBuilder builder, int lengthBeforePol)
-	{
-	}
-	
-	@Override
-	public int getLengthBeforePol()
-	{
-		return 0;
-	}
-	
-	@Override
-	public void noAncestralState(SegmentEventRecoder recorder, StringBuilder builder, int lengthBeforePol)
-	{
-		
-	}
 	
 	@Override
 	public void summary(StringBuilder builder) {

@@ -623,12 +623,12 @@ public class CommandLineMarshal implements InitFinishParserObject{
 
 	}
 	
-	@CLNames(names ={ "-oNoOutgroup", "-oNooutgroup"})
-	@CLDescription("if flag is specified then it is assumed that there is no outgroup. The most frequent mutation is 0")
-	public void setOutgroup()
-	{
-		this.hasOutgroup = false;
-	}
+//	@CLNames(names ={})
+//	@CLDescription("if flag is specified then it is assumed that there is no outgroup. The most frequent mutation is 0")
+//	public void setOutgroup()
+//	{
+//		this.hasOutgroup = false;
+//	}
 	
 	@CLNames(names ={ "-oUnPhased", "-oUnphased"})
 	@CLDescription("if flag is specified then it is assumed that sequences are unphased in pairs")
@@ -1033,8 +1033,8 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		return sampleConfig;
 	}
 	
-	@CLNames(names={"-oFold"})
-	@CLDescription("Folds the mutations before any summarys are carried on the data, ie removes polarization. Does not affect selected alleles.")
+	@CLNames(names={"-oFold", "-oNoOutgroup", "-oNooutgroup"})
+	@CLDescription("Folds the mutations before any summarys are carried on the data, ie removes polarization. Does not affect selected alleles. Same as no outgroup")
 	public void setFoldMutationsTrue(){
 		foldMutations=true;
 	}

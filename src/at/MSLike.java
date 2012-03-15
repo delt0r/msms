@@ -353,19 +353,19 @@ public class MSLike {
 					stats.collectStats(segmentEventRecoder, stringBuilder);
 					//printFlush(stringBuilder);
 					//System.out.println(stringBuilder);
-					if(!parser.getIsPhased())
-					{
-						stats.pairShuffle(segmentEventRecoder, stringBuilder, stats.getLengthBeforePol());
-						//System.out.println(stringBuilder);
-					}
-					
-					//System.out.println(stringBuilder);
-					if(!parser.getHasOutgroup())
-					{
-						//System.out.println(parser.getHasOutgroup());
-						stats.noAncestralState(segmentEventRecoder, stringBuilder, stats.getLengthBeforePol());
-						//System.out.println(stringBuilder);
-					}
+//					if(!parser.getIsPhased())
+//					{
+//						stats.pairShuffle(segmentEventRecoder, stringBuilder, stats.getLengthBeforePol());
+//						//System.out.println(stringBuilder);
+//					}
+//					
+//					//System.out.println(stringBuilder);
+//					if(!parser.getHasOutgroup())
+//					{
+//						//System.out.println(parser.getHasOutgroup());
+//						stats.noAncestralState(segmentEventRecoder, stringBuilder, stats.getLengthBeforePol());
+//						//System.out.println(stringBuilder);
+//					}
 					
 					printFlush(stringBuilder);
 				}
@@ -531,6 +531,7 @@ public class MSLike {
 		modelHistory.setSelectionSimulator(parser.getSelectionSimulator());
 		modelHistory.setRestartCondtion(parser.getRestartCondition());
 		modelHistory.setFoldMutations(parser.getFoldMutations());
+		modelHistory.setUnphase(!parser.getIsPhased());
 		if (parser.isFrequencyTrace()) {
 			modelHistory.setForwardTraceOutput(new ForwardStatsCollector(modelHistory));
 		}

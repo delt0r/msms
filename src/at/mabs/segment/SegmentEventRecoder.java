@@ -74,6 +74,7 @@ public class SegmentEventRecoder {
 	private ModelHistroy modelHistory;// used for mutation data.
 
 	private boolean foldMutations = false;
+	private boolean unPhase=false;
 
 	private boolean isConditionalMutation;
 	private PartialSumsTree<TreePiece> pieces = new PartialSumsTree<TreePiece>();
@@ -98,7 +99,8 @@ public class SegmentEventRecoder {
 		recombinationCuts = modelHistory.getRecombinationCutSites();
 		// zeroRecombination=modelHistory.getRecombinationRate()==0;
 		totalLeafCount = modelHistory.getSampleConfiguration().getMaxSamples();
-		foldMutations=modelHistory.isFoldMutations();
+		foldMutations = modelHistory.isFoldMutations();
+		unPhase=modelHistory.isUnphase();
 	}
 
 	// should push this stuff into a mutation model.
@@ -186,12 +188,11 @@ public class SegmentEventRecoder {
 		}
 		// fold the spectrum!
 		if (foldMutations) {
-			//System.out.println("FOLDING!!");
-			for (InfinteMutation m : mutations) {
-				if(m.leafSet.countSetBits()>m.leafSet.getTotalLeafCount()/2){
-					m.leafSet.invert();
-				}
-			}
+			// System.out.println("FOLDING!!");
+			foldFilter();
+		}
+		if(unPhase){
+			unPhaseFilter();
 		}
 
 		// System.out.println(modelHistory.getAlleleLocation()+"\t"+selectedLeafSet);
@@ -217,6 +218,30 @@ public class SegmentEventRecoder {
 																												// selectedLeafSet));
 		}
 		Collections.sort(mutations);
+	}
+
+	private void foldFilter() {
+		for (InfinteMutation m : mutations) {
+			if (m.leafSet.countSetBits() > m.leafSet.getTotalLeafCount() / 2) {
+				m.leafSet.invert();
+			}
+		}
+	}
+	
+	private void unPhaseFilter(){
+		for (InfinteMutation m : mutations) {
+			FixedBitSet leafSet=m.leafSet;
+			for(int i=0;i<leafSet.getTotalLeafCount();i+=2){
+				if(leafSet.contains(i)==leafSet.contains(i+1)){
+					continue;
+				}
+				//else we swap.. with p=.5
+				if(.5<random.nextFloat()){
+					boolean a=leafSet.contains(i);
+					leafSet.set(i,!a);
+				}
+			}
+		}
 	}
 
 	public void clear() {

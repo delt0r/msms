@@ -53,10 +53,4 @@ public interface StringStatsCollector {
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder);
 
 	public void summary(StringBuilder builder);
-	
-	public void pairShuffle(SegmentEventRecoder recorder, StringBuilder builder, int lengthBeforePol);
-	
-	public int getLengthBeforePol();
-	
-	public void noAncestralState(SegmentEventRecoder recorder, StringBuilder builder, int lengthBeforePol);
 }

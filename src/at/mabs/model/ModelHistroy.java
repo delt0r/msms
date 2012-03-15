@@ -87,6 +87,7 @@ public class ModelHistroy {
 
 	private ForwardStatsCollector forwardTraceOutput;
 	private boolean foldMutations;
+	private boolean unphase;
 
 	/**
 	 * creates the models. builds up the finalised models from the events. This will not mutate the
@@ -741,5 +742,13 @@ public class ModelHistroy {
 	public boolean isFoldMutations() {
 		return foldMutations;
 	}
+
+	public boolean isUnphase() {
+		
+		return unphase;
+	}
 	
+	public void setUnphase(boolean unphase) {
+		this.unphase = unphase;
+	}
 }
