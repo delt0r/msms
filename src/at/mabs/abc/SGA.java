@@ -43,7 +43,7 @@ import com.esotericsoftware.yamlbeans.YamlWriter;
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SGA {
-	private static final double MINLOG=Math.log(Double.MIN_VALUE);
+	private static final double MINLOG = Math.log(Double.MIN_VALUE);
 	// private double gammac =20;
 
 	private double[] gammacs = { 50, 50, 50 };
@@ -51,7 +51,7 @@ public class SGA {
 	// private double gammaa =100e5;
 	private double[] gammaas;
 
-	//private int n = 400;
+	// private int n = 400;
 	// private int bootstrap =100;
 
 	private String[] anotatedCmdLine;
@@ -64,6 +64,8 @@ public class SGA {
 	private List<StatsCollector> collectionStats = new ArrayList<StatsCollector>();
 	private List<StatsCollector> dataStats = new ArrayList<StatsCollector>();
 	private double[] data;
+
+	private double[] bw;
 
 	private Random random = new Random64();
 
@@ -101,78 +103,116 @@ public class SGA {
 
 		initDataFile();
 
-		//densityGrid(args, priors, 25, 20);
-		double[] start=randomPoint(priors);
-		genericKWAlgo(args, priors, start, 10, 10000, new GradFunction());
+		// densityGrid(args, priors, 20, 100,new FullGradFunction());
+		// nablaGrid(args, priors, 50, 100, 100, new FullGradFunction());
+		double[] start = randomPoint(priors);
+		genericKWAlgo(args, priors, start, 50, 5000, new FullGradFunction());
+
 	}
-	
+
 	private double[] randomPoint(List<PriorDensity> priors) {
-		double[] p=new double[priors.size()];
-		for(int i=0;i<p.length;i++){
-			p[i]=priors.get(i).next();
+		double[] p = new double[priors.size()];
+		for (int i = 0; i < p.length; i++) {
+			p[i] = priors.get(i).next();
 		}
 		return p;
 	}
 
 	/**
-	 * basic kw algo from a single point till stopping conditions are meet. 
+	 * basic kw algo from a single point till stopping conditions are meet.
+	 * 
 	 * @param args
 	 * @param priors
 	 * @param n
 	 * @param maxK
 	 */
-	private void genericKWAlgo(String[] args,List<PriorDensity> priors,double[] start,int n,int maxK, GradFunction grad){
-		double alpha=.602;
-		double gamma=.101;
-		int n2=100;
-		//first we need to get a c starting value;
-		double sum=0;
-		double sum2=0;
-		//paste(args,priors,start);
-		for(int i=0;i<n2;i++){
-			double d=(density(args, priors, start, n));
-			if(Double.isInfinite(d) || Double.isNaN(d)){
-				d=Double.MIN_VALUE;//MINLOG;
+	private void genericKWAlgo(String[] args, List<PriorDensity> priors, double[] start, int n, int maxK, GradFunction grad) {
+		double alpha = .602;
+		double gamma = .101;
+		int n2 = 100;
+		// first we need to get a c starting value;
+		double sum = 0;
+		double sum2 = 0;
+		// paste(args,priors,start);
+		for (int i = 0; i < n2; i++) {
+			double d = (grad.density(args, priors, start, n));
+			// System.out.println(d);
+			if (Double.isInfinite(d) || Double.isNaN(d)) {
+				d = MINLOG;
 			}
-			sum+=d;
-			sum2+=d*d;
+			sum += d;
+			sum2 += d * d;
 		}
-		double mean=sum/n2;
-		
-		double c=Math.sqrt((sum2/n2)-mean*mean);
-		
-		int A=maxK/10;
-		
-		//now for a
-		double[] nabla=grad.grad(args, priors, start, c, n);
-		System.out.println("Nab:"+Arrays.toString(nabla));
-		//assume a b_i==1;
-		double a=Double.MAX_VALUE;
-		for(int i=0;i<nabla.length;i++){
-			a=Math.min(a, 10*Math.pow(A+1,alpha)/Math.abs(nabla[i]));
+		double mean = sum / n2;
+
+		double c = Math.sqrt((sum2 / n2) - mean * mean);
+
+		int A = maxK / 10;
+
+		// now for a
+		double[] nabla = grad.grad(args, priors, start, c, n);
+		System.out.println("Nab:" + Arrays.toString(nabla));
+		// assume a b_i==1;
+		double a = Double.MAX_VALUE;
+		for (int i = 0; i < nabla.length; i++) {
+			a = Math.min(a, 10 * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
 		}
-		if(a<=0){
-			a=1; //just a basic sanity check, should barf
+		if (a <= 0) {
+			a = 1; // just a basic sanity check, should barf
 		}
-		//now we have a.
-		System.out.println("a:"+a+"\tc:"+c);
-		System.out.println("init:"+Arrays.toString(start));
-		double[] x=start.clone();
-		for(int k=0;k<maxK;k++){
-			double a_k=a/Math.pow(k+A+1,alpha);
-			double c_k=c/Math.pow(k+1,gamma);
-			System.out.println("k, a_k & c_k\t"+k+"\t"+a_k+"\t"+c_k);
-			
-			nabla=grad.grad(args, priors, x, c_k, n);
+
+		// now we have a.
+		System.out.println("a:" + a + "\tc:" + c);
+		System.out.println("init:" + Arrays.toString(start));
+		double[] x = start.clone();
+		for (int k = 0; k < maxK; k++) {
+			double a_k = a / Math.pow(k + A + 1, alpha);
+			double c_k = c / Math.pow(k + 1, gamma);
+			System.out.println("k, a_k & c_k\t" + k + "\t" + a_k + "\t" + c_k);
+
+			nabla = grad.grad(args, priors, x, c_k, n);
 			mul(nabla, a_k, nabla);
-			add(x,nabla,x);
-			clamp(x,priors);
+			add(x, nabla, x);
+			clamp(x, priors);
 			System.out.println(Arrays.toString(x));
 		}
-		
+
 	}
 
-	private void densityGrid(String[] args, List<PriorDensity> priors, int n, int gridPoints) {
+	private void nablaGrid(String[] args, List<PriorDensity> priors, int n, int gridPoints, double fdDelta, GradFunction grad) {
+		double[] x = new double[priors.size()];
+		double[] delta = new double[priors.size()];
+		for (int i = 0; i < x.length; i++) {
+			PriorDensity pd = priors.get(i);
+			x[i] = pd.getMin();
+			delta[i] = (pd.getMax() - pd.getMin()) / gridPoints;
+		}
+		double stopV = priors.get(priors.size() - 1).getMax();
+		while (x[x.length - 1] < stopV) {
+
+			double[] nabla = grad.grad(args, priors, x, fdDelta, n);
+
+			for (int i = 0; i < x.length; i++) {
+				System.out.print(x[i] + "\t");
+			}
+			for (int j = 0; j < nabla.length; j++) {
+				System.out.print((nabla[j]) + "\t");
+			}
+			System.out.println();
+			x[0] += delta[0];
+			// ripple counter
+			for (int i = 0; i < x.length - 1; i++) {
+				if (x[i] < priors.get(i).getMax())
+					break;
+				x[i] = priors.get(i).getMin();
+				x[i + 1] += delta[i + 1];
+			}
+		}
+
+	}
+
+	private void densityGrid(String[] args, List<PriorDensity> priors, int n, int gridPoints, GradFunction grad) {
+
 		double[] x = new double[priors.size()];
 		double[] delta = new double[priors.size()];
 		for (int i = 0; i < x.length; i++) {
@@ -185,7 +225,7 @@ public class SGA {
 		double best = Double.NEGATIVE_INFINITY;
 		while (x[x.length - 1] < stopV) {
 
-			double density = density(args, priors, x, n);
+			double density = grad.density(args, priors, x, n);
 			if (density > best) {
 				best = density;
 				System.arraycopy(x, 0, bestEst, 0, x.length);
@@ -193,7 +233,7 @@ public class SGA {
 			for (int i = 0; i < x.length; i++) {
 				System.out.print(x[i] + "\t");
 			}
-			System.out.println(Math.log(density));
+			System.out.println((density));
 
 			x[0] += delta[0];
 			// ripple counter
@@ -204,7 +244,7 @@ public class SGA {
 				x[i + 1] += delta[i + 1];
 			}
 		}
-		System.out.println("\nBestEstimate:" + Arrays.toString(bestEst) + " @" + Math.log(best));
+		System.out.println("\nBestEstimate:" + Arrays.toString(bestEst) + " @" + (best));
 	}
 
 	private double[] gradApprox(String[] args, List<PriorDensity> priors, double[] x, double delta, int n) {
@@ -212,33 +252,40 @@ public class SGA {
 		double[] nabla = new double[x.length];
 		for (int i = 0; i < x.length; i++) {
 			xp[i] = x[i] + delta;
-			
+
 			paste(args, priors, xp);// need to set n....
-			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
-			double[] sp = collectStatitics(collectionStats);
-			
+			double sump = 0;
+			for (int j = 0; j < n; j++) {
+				MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
+				double[] sp = collectStatitics(collectionStats);
+				sump += norm2(sp, data);
+			}
 			xp[i] = x[i] - delta;
 
 			paste(args, priors, xp);// need to set n....
-			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
-			double[] sn = collectStatitics(collectionStats);
-
-			nabla[i]=(norm2(sp,data)-norm2(sn,data))/(2*delta);
+			double sumn = 0;
+			for (int j = 0; j < n; j++) {
+				MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
+				double[] sp = collectStatitics(collectionStats);
+				sumn += norm2(sp, data);
+			}
+			nabla[i] = -(sump - sumn) / (2 * delta * n);
 			xp[i] = x[i];
 		}
 		return nabla;
 	}
-	
-	private double norm2(double[] a,double[] b){
-		double acc=0;
-		for(int i=0;i<a.length;i++){
-			double d=a[i]-b[i];
-			acc+=d*d;
+
+	private double norm2(double[] a, double[] b) {
+		double acc = 0;
+		for (int i = 0; i < a.length; i++) {
+			double d = a[i] - b[i];
+			acc += d * d;
 		}
 		return acc;
 	}
 
 	private double[] gradFull(String[] args, List<PriorDensity> priors, double[] x, double delta, int n) {
+		bwEstimation(args, priors, x, n);
 		double[] xp = x.clone();
 		double[] nabla = new double[x.length];
 		for (int i = 0; i < xp.length; i++) {
@@ -290,12 +337,50 @@ public class SGA {
 	private double density(String[] args, List<PriorDensity> priors, double[] x, int n) {
 		// esitmate the denstiy at x
 		assert n > 1;
+		if (bw == null) {
+			bwEstimation(args, priors, x, n);
+		}
 		double[][] stats = new double[n][0];
-		
-		
+
 		paste(args, priors, x);// need to set n....
 		for (int i = 0; i < n; i++) {
-			//System.out.println("ARGS:"+Arrays.toString(args));
+			// System.out.println("ARGS:"+Arrays.toString(args));
+			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
+			stats[i] = collectStatitics(collectionStats);
+			// System.out.println("CollectedStats:"+Arrays.toString(stats[i]));
+
+		}
+		// now stds has bw^2 for everything.
+		double ksum = 0;
+		double sigmaNorm = 1;
+		for (int i = 0; i < n; i++) {
+			double[] stat = stats[i];
+			double sum = 0;
+			for (int j = 0; j < data.length; j++) {
+				if (bw[j] < 1e-16)
+					continue;
+				double d = data[j] - stat[j];
+				sum += d * d / bw[j] * bw[j];
+			}
+			// System.out.println("SUM:"+sum);
+			ksum += Math.exp(-.5 * sum);
+		}
+		// System.out.println("KSUM:"+ksum);
+		double dens = ksum / (sigmaNorm * Math.pow(2 * Math.PI, data.length / 2));
+		if (dens == 0 || Double.isNaN(dens))
+			return Double.MIN_VALUE;
+		return dens;
+	}
+
+	private void bwEstimation(String[] args, List<PriorDensity> priors, double[] x, int n) {
+		// esitmate the denstiy at x
+		assert n > 1;
+
+		double[][] stats = new double[n][0];
+
+		paste(args, priors, x);// need to set n....
+		for (int i = 0; i < n; i++) {
+			// System.out.println("ARGS:"+Arrays.toString(args));
 			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			stats[i] = collectStatitics(collectionStats);
 			// System.out.println("CollectedStats:"+Arrays.toString(stats[i]));
@@ -313,39 +398,24 @@ public class SGA {
 		}
 		double nfactor2 = Math.pow(n, -2 / (4 + data.length));// note it is
 																// squared
-		double sigmaNorm = 1;
+
 		for (int i = 0; i < stds.length; i++) {
-			stds[i] = stds[i] / n - means[i] * means[i] * nfactor2;
-			sigmaNorm *= Math.sqrt(stds[i]);
-			// System.out.println("BW:"+Math.sqrt(stds[i]));
+
+			stds[i] = Math.sqrt((stds[i] / n - means[i] * means[i]) * nfactor2);
 		}
-		// now stds has bw^2 for everything.
-		double ksum = 0;
-		for (int i = 0; i < n; i++) {
-			double[] stat = stats[i];
-			double sum = 0;
-			for (int j = 0; j < data.length; j++) {
-				double d = data[j] - stat[j];
-				sum += d * d / stds[j];
-			}
-			ksum += Math.exp(-.5 * sum);
-		}
-		double dens= ksum / (sigmaNorm * Math.pow(2 * Math.PI, data.length / 2));
-		if(dens==0 || Double.isNaN(dens))
-			return Double.MIN_VALUE;
-		return dens;
+		this.bw = stds;
 	}
 
-	private void clamp(double[] x,List<PriorDensity> priors){
-		for(int i=0;i<x.length;i++){
-			PriorDensity pd=priors.get(i);
+	private void clamp(double[] x, List<PriorDensity> priors) {
+		for (int i = 0; i < x.length; i++) {
+			PriorDensity pd = priors.get(i);
 			pd.setLastValue(x[i]);
-			x[i]=pd.getLastValue();
+			x[i] = pd.getLastValue();
 		}
 	}
-	
+
 	private void paste(String[] args, List<PriorDensity> priors, double[] values) {
-		clamp(values,priors);
+		clamp(values, priors);
 		for (int i = 0; i < priors.size(); i++) {
 			PriorDensity pd = priors.get(i);
 			double value = values[i];//
@@ -594,10 +664,43 @@ public class SGA {
 			return name1.compareTo(name2);
 		}
 	}
-	
-	public  class GradFunction {
-		public double[] grad(String[] args, List<PriorDensity> priors, double[] x, double delta, int n){
-			return gradFull(args, priors, x, delta, n); 
+
+	public class GradFunction {
+		public double[] grad(String[] args, List<PriorDensity> priors, double[] x, double delta, int n) {
+			return gradApprox(args, priors, x, delta, n);
+		}
+
+		public double density(String[] args, List<PriorDensity> priors, double[] x, int n) {
+			paste(args, priors, x);
+			double sum = 0;
+			for (int i = 0; i < n; i++) {
+				MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
+				double[] sp = collectStatitics(collectionStats);
+				sum += norm2(sp, data);
+			}
+			return -sum / n;
 		}
 	}
+
+	public class FullGradFunction extends GradFunction {
+		public double[] grad(String[] args, List<PriorDensity> priors, double[] x, double delta, int n) {
+			return gradFull(args, priors, x, delta, n);
+		}
+
+		public double density(String[] args, List<PriorDensity> priors, double[] x, int n) {
+			return Math.log(SGA.this.density(args, priors, x, n));
+		}
+	}
+
+	// public class ApproxGradFunction extends GradFunction{
+	// public double[] grad(String[] args, List<PriorDensity> priors, double[]
+	// x, double delta, int n) {
+	// return gradSlice(args, priors, x, delta, 1, n);
+	// }
+	//
+	// public double density(String[] args, List<PriorDensity> priors, double[]
+	// x, int n) {
+	// return SGA.this.density(args, priors, x, n);
+	// }
+	// }
 }
