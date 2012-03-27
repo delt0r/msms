@@ -499,8 +499,8 @@ public class Play extends JPanel {
 		
 		CommandLineMarshal msmsparser = new CommandLineMarshal();
 		try {
-			CmdLineParser<CommandLineMarshal> marshel = new CmdLineParser<CommandLineMarshal>(msmsparser);
-			marshel.processArguments(args);
+			CmdLineParser<CommandLineMarshal> marshel =CommandLineMarshal.getCacheParser();// new CmdLineParser<CommandLineMarshal>(msmsparser);
+			marshel.processArguments(args,msmsparser);
 			sampleConfig = msmsparser.getSampleConfig();
 			
 		} catch (Exception e) {

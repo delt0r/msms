@@ -100,9 +100,18 @@ public class PriorDensity {
 		return lastValue;
 	}
 	
+	public double getLastValueUI(){
+		return (lastValue-min)/(max-min);
+	}
+	
 	public void setLastValue(double lastValue) {
 		lastValue=Math.min(lastValue, max);
 		lastValue=Math.max(lastValue, min);
 		this.lastValue =lastValue;
+	}
+	
+	public void setLastValueUI(double uiValue){
+		double lv=min+(max-min)*uiValue;
+		setLastValue(lv);
 	}
 }

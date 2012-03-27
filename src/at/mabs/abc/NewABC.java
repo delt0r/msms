@@ -380,8 +380,8 @@ public class NewABC {
 	private void initStatCollectors(String[] msmsArgs) {
 		CommandLineMarshal msmsparser = new CommandLineMarshal();
 		try {
-			CmdLineParser<CommandLineMarshal> marshel = new CmdLineParser<CommandLineMarshal>(msmsparser);
-			marshel.processArguments(msmsArgs);
+			CmdLineParser<CommandLineMarshal> marshel = CommandLineMarshal.getCacheParser();
+			marshel.processArguments(msmsArgs,msmsparser);
 			SampleConfiguration sampleConfig = msmsparser.getSampleConfig();
 			// for (StatsCollector stat : collectionStats)
 			// stat.init(sampleConfig);FIXME?
@@ -570,7 +570,7 @@ public class NewABC {
 		}
 
 		try {
-			CmdLineParser<StatsCollector> parser = new CmdLineParser<StatsCollector>(stat);
+			CmdLineParser<StatsCollector> parser = new CmdLineParser<StatsCollector>((Class<StatsCollector>)stat.getClass());
 			if (statAndConfig.length == 2 && statAndConfig[1].contains("help")) {
 				System.err.println("Help for statCollector:" + statName + "\n" + parser.longUsage());
 				return;
@@ -578,7 +578,7 @@ public class NewABC {
 			String[] args = new String[statAndConfig.length - 1];
 			System.arraycopy(statAndConfig, 1, args, 0, args.length);
 			// System.out.println("StatsARGS:"+Arrays.toString(args));
-			parser.processArguments(args);
+			parser.processArguments(args,stat);
 			// System.out.println("Object:"+stat+"\t"+parser.longUsage());
 		} catch (CmdLineBuildException e) {
 			throw new RuntimeException(statName + " does not take options or we have an error", e);
@@ -622,7 +622,7 @@ public class NewABC {
 		NewABC abc = new NewABC();
 		CmdLineParser<NewABC> parser = null;
 		try {
-			parser = new CmdLineParser<NewABC>(abc);
+			parser = new CmdLineParser<NewABC>(NewABC.class);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			System.out.println("ARGS:\n" + Arrays.toString(args));
@@ -630,7 +630,7 @@ public class NewABC {
 		}
 
 		try {
-			parser.processArguments(args);
+			parser.processArguments(args,abc);
 			abc.run();
 		} catch (Exception e) {
 			System.err.println(parser.longUsage());

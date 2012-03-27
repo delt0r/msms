@@ -97,7 +97,7 @@ public class MSLike {
 
 	public MSLike(String[] args, List<? extends StringStatsCollector> xtraCollectors, List<? extends StatsCollector> xstatsCollector, PrintStream ps,
 			ProgressControl progress) {
-		this.isError=true;
+		this.isError = true;
 		this.args = args;
 		this.pasteArgs = args;
 		if (xtraCollectors != null)
@@ -115,20 +115,13 @@ public class MSLike {
 			pasteArgs = args.clone();
 		}
 
-		CommandLineMarshal parser = null;
-		CmdLineParser<CommandLineMarshal> processor = null;
+		CommandLineMarshal parser = new CommandLineMarshal();
+		CmdLineParser<CommandLineMarshal> processor =  CommandLineMarshal.getCacheParser();
 		try {
-			parser = new CommandLineMarshal();
-			processor = new CmdLineParser<CommandLineMarshal>(parser);
-			firstTbsArgs = updateParser(processor);
+			firstTbsArgs = updateParser(processor,parser);
 			firstArgs = pasteArgs.clone();
-		} catch (CmdLineBuildException e1) {
-			e1.printStackTrace();
-			// very serious error... we cant carry on
-			
-			return;
 		} catch (CmdLineParseException cmpe) {
-			printErrorMessage(cmpe, processor);
+			printErrorMessage(cmpe, processor,parser);
 			return;
 		}
 
@@ -166,17 +159,17 @@ public class MSLike {
 		for (StatsCollector sc : statsCollectors) {
 			sc.init();
 		}
-		isError=false;
+		isError = false;
 	}
 
 	public int getTotalReps() {
 		return totalReps;
 	}
-	
+
 	public void setTotalReps(int totalReps) {
 		this.totalReps = totalReps;
 	}
-	
+
 	private void printStatsTable() {
 		if (statsCollectors.isEmpty())
 			return;
@@ -194,7 +187,7 @@ public class MSLike {
 	}
 
 	private void runMe() {
-		if(!isError)
+		if (!isError)
 			runThreads();
 	}
 
@@ -208,18 +201,18 @@ public class MSLike {
 		return Util.toArrayPrimitiveInteger(slots);
 	}
 
-	private String[] updateParser(CmdLineParser<CommandLineMarshal> processor) throws CmdLineParseException {
+	private String[] updateParser(CmdLineParser<CommandLineMarshal> processor,CommandLineMarshal clm) throws CmdLineParseException {
 		// update tbs
 
 		if (tbsSlots.length > 0) {
 			String[] args = getTBSPasteArgs();
-			processor.getObjectInstance().reset();
-			processor.processArguments(args);
+			clm.reset();
+			processor.processArguments(args,clm);
 			return args;
 
 		} else {
-			processor.getObjectInstance().reset();
-			processor.processArguments(args);
+			clm.reset();
+			processor.processArguments(args,clm);
 		}
 		return args;
 
@@ -254,29 +247,25 @@ public class MSLike {
 	private void run(int startRep, int count) {
 		CommandLineMarshal parser = new CommandLineMarshal();
 		CmdLineParser<CommandLineMarshal> processor = null;
-		try {
-			processor = new CmdLineParser<CommandLineMarshal>(parser);
-		} catch (CmdLineBuildException e1) {
-			e1.printStackTrace();
-			return;
-		}
+		processor = CommandLineMarshal.getCacheParser();
+
 		// complicated block of logic to get the correct starting state.
 		String[] tbsArgs = null;
 		if (startRep == 0 && isTBS) {
 			// special case of the first one.
 			try {
 				// System.out.println("First:"+Arrays.toString(firstTbsArgs));
-				processor.processArguments(firstTbsArgs);
+				processor.processArguments(firstTbsArgs, parser);
 				tbsArgs = firstTbsArgs;
 			} catch (CmdLineParseException e) {
-				printErrorMessage(e, processor);
+				printErrorMessage(e, processor,parser);
 				return;
 			}
 		} else {
 			try {
-				tbsArgs = updateParser(processor);
+				tbsArgs = updateParser(processor,parser);
 			} catch (CmdLineParseException cmpe) {
-				printErrorMessage(cmpe, processor);
+				printErrorMessage(cmpe, processor,parser);
 				return;
 			}
 		}
@@ -351,22 +340,24 @@ public class MSLike {
 
 				for (StringStatsCollector stats : stringCollectors) {
 					stats.collectStats(segmentEventRecoder, stringBuilder);
-					//printFlush(stringBuilder);
-					//System.out.println(stringBuilder);
-//					if(!parser.getIsPhased())
-//					{
-//						stats.pairShuffle(segmentEventRecoder, stringBuilder, stats.getLengthBeforePol());
-//						//System.out.println(stringBuilder);
-//					}
-//					
-//					//System.out.println(stringBuilder);
-//					if(!parser.getHasOutgroup())
-//					{
-//						//System.out.println(parser.getHasOutgroup());
-//						stats.noAncestralState(segmentEventRecoder, stringBuilder, stats.getLengthBeforePol());
-//						//System.out.println(stringBuilder);
-//					}
-					
+					// printFlush(stringBuilder);
+					// System.out.println(stringBuilder);
+					// if(!parser.getIsPhased())
+					// {
+					// stats.pairShuffle(segmentEventRecoder, stringBuilder,
+					// stats.getLengthBeforePol());
+					// //System.out.println(stringBuilder);
+					// }
+					//
+					// //System.out.println(stringBuilder);
+					// if(!parser.getHasOutgroup())
+					// {
+					// //System.out.println(parser.getHasOutgroup());
+					// stats.noAncestralState(segmentEventRecoder,
+					// stringBuilder, stats.getLengthBeforePol());
+					// //System.out.println(stringBuilder);
+					// }
+
 					printFlush(stringBuilder);
 				}
 
@@ -393,9 +384,9 @@ public class MSLike {
 			// new params.
 			if (isTBS && reps + 1 < startRep + count) {
 				try {
-					tbsArgs = updateParser(processor);
+					tbsArgs = updateParser(processor,parser);
 				} catch (CmdLineParseException cmpe) {
-					printErrorMessage(cmpe, processor);
+					printErrorMessage(cmpe, processor,parser);
 					return;
 				}
 				modelHistory = createModelHistory(parser);
@@ -485,8 +476,8 @@ public class MSLike {
 		}
 	}
 
-	private void printErrorMessage(CmdLineParseException cmpe, CmdLineParser<CommandLineMarshal> processor) {
-		CommandLineMarshal clm = processor.getObjectInstance();
+	private void printErrorMessage(CmdLineParseException cmpe, CmdLineParser<CommandLineMarshal> processor,CommandLineMarshal clm) {
+		
 		// first we ignore errors if help is set to true..
 		if (clm.isHelp()) {
 			System.out.println("msms " + processor.longUsage());
@@ -539,7 +530,7 @@ public class MSLike {
 		return modelHistory;
 
 	}
-	
+
 	public boolean isError() {
 		return isError;
 	}
@@ -549,9 +540,9 @@ public class MSLike {
 		mslike.runMe();
 
 	}
-	
+
 	public static void main(String[] args, List<? extends StringStatsCollector> collectors, List<? extends StatsCollector> scollectors, PrintStream ps,
-			ProgressControl progress,int repCountOverride) {
+			ProgressControl progress, int repCountOverride) {
 		MSLike mslike = new MSLike(args, collectors, null, ps, progress);
 		mslike.setTotalReps(repCountOverride);
 		mslike.runMe();
@@ -561,7 +552,7 @@ public class MSLike {
 	public static void main(String[] args, List<? extends StringStatsCollector> collectors, List<? extends StatsCollector> scollectors, PrintStream ps,
 			ProgressControl progress) {
 		MSLike mslike = new MSLike(args, collectors, scollectors, ps, progress);
-		 mslike.runMe();
+		mslike.runMe();
 	}
 
 	private static void msHeader(String[] args, PrintStream ps) {

@@ -39,6 +39,7 @@ import at.MSLike;
 import at.mabs.cmdline.CLDescription;
 import at.mabs.cmdline.CLNames;
 import at.mabs.cmdline.CLUsage;
+import at.mabs.cmdline.CmdLineBuildException;
 import at.mabs.cmdline.CmdLineParseException;
 import at.mabs.cmdline.CmdLineParser;
 import at.mabs.cmdline.InitFinishParserObject;
@@ -81,6 +82,21 @@ import at.mabs.util.Util;
  * 
  */
 public class CommandLineMarshal implements InitFinishParserObject{
+	private static final ThreadLocal<CmdLineParser<CommandLineMarshal>> parserCache=new ThreadLocal<CmdLineParser<CommandLineMarshal>>(){
+		@Override
+		protected CmdLineParser<CommandLineMarshal> initialValue() {
+		
+			CmdLineParser<CommandLineMarshal> clm=null;
+			try {
+				clm = new CmdLineParser<CommandLineMarshal>(CommandLineMarshal.class);
+			} catch (CmdLineBuildException e) {
+				e.printStackTrace();
+			}
+			
+			return clm;
+		}
+	};
+	
 	public static String[] HACK_PARAMS;//For hacked tests and options. Typically unused.
 	private List<ModelEvent> events =new LinkedList<ModelEvent>();
 
@@ -927,10 +943,14 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		trackTrees =true;
 	}
 
+	public static CmdLineParser<CommandLineMarshal> getCacheParser(){
+		return parserCache.get();
+	}
+	
 	public static void main(String[] args) {
 		CommandLineMarshal clm =new CommandLineMarshal();
 		try {
-			CmdLineParser<CommandLineMarshal> parser =new CmdLineParser<CommandLineMarshal>(clm);
+			CmdLineParser<CommandLineMarshal> parser =getCacheParser();
 			System.out.println("msms " + parser.longUsage());
 		} catch (Exception e) {
 
@@ -942,9 +962,6 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	@CLDescription("add a generic stat to the list of stats... experimental--No help yet")
 	@CLUsage("-stat name [deme ...] -StatType[help for list] [extra options]")
 	public void setStat(String[] args) {
-		String name =args[0];
-		
-		
 		FixedBitSet mask =new FixedBitSet(sampleConfig.getMaxSamples());
 		FixedBitSet[] demeMasks=sampleConfig.getDemeMasks();
 		//System.out.println("DemeMasks:"+Arrays.toString(demeMasks));

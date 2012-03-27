@@ -116,9 +116,9 @@ public class Example {
 	public static void main(String[] args) {
 		try {
 			Example example =new Example();
-			CmdLineParser cmp =new CmdLineParser(example);
+			CmdLineParser cmp =new CmdLineParser(Example.class);
 			System.out.println(cmp.longUsage());
-			cmp.processArguments(args);
+			cmp.processArguments(args,example);
 			System.out.println("Output:"+example.list);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

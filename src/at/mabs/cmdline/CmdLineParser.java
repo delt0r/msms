@@ -49,23 +49,21 @@ import at.mabs.config.CommandLineMarshal;
  * 
  */
 public class CmdLineParser<T> {
-	public T instance;
 	public HashMap<String, List<CmdLineMethod>> switches = new HashMap<String, List<CmdLineMethod>>();
 
 	public HashSet<String> required = new HashSet<String>();
 	public int wrapWidth = 80;
 
-	public CmdLineParser(T instance) throws CmdLineBuildException {
-		init(instance);
+	public CmdLineParser(Class<T> type) throws CmdLineBuildException {
+		init(type);
 	}
 
-	private void init(T instance) throws CmdLineBuildException {
-		this.instance = instance;
+	private void init(Class<T> type) throws CmdLineBuildException {
 
 		required.clear();
 		switches.clear();
 
-		Class objectType = instance.getClass();
+		Class objectType = type;//instance.getClass();
 		Method[] methods = objectType.getMethods();
 		for (Method m : methods) {
 			CLNames cmdData = (CLNames) m.getAnnotation(CLNames.class);
@@ -114,7 +112,7 @@ public class CmdLineParser<T> {
 		}
 	}
 
-	public T processArguments(String[] args) throws CmdLineParseException {
+	public T processArguments(String[] args,T instance) throws CmdLineParseException {
 		if(instance instanceof InitFinishParserObject){
 			((InitFinishParserObject)instance).init();
 		}
@@ -144,7 +142,7 @@ public class CmdLineParser<T> {
 		for (DelimitedArgs da : delimited) {
 			// System.out.println("Invoke:"+da.method);
 			requiredTest.remove(da.method.cmdData.names()[0]);
-			da.invoke();
+			da.invoke(instance);
 		}
 		if (!requiredTest.isEmpty()) {
 			throw new CmdLineParseException("Required Options missing:" + requiredTest);
@@ -397,7 +395,7 @@ public class CmdLineParser<T> {
 			method = clm;
 		}
 
-		public void invoke() throws CmdLineParseException {
+		public void invoke(T instance) throws CmdLineParseException {
 			// we need to see if there is an array in there somewhere...
 			int arrayRank = method.arrayIndex;
 			int otherArgCount = method.args.length;
@@ -500,8 +498,5 @@ public class CmdLineParser<T> {
 		}
 	}
 
-	public T getObjectInstance() {
-
-		return this.instance;
-	}
+	
 }
