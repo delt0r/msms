@@ -59,7 +59,7 @@ public class Fst extends StatsCollectorAdapter {
 		double out=outDiff;
 		out/=outSize*(outSize-1)/2;
 		double w=inSize/(inSize+outSize);
-		double[] result= {((between-(in*w+(1-w)*out))/between)};
+		double[] result= {1.0/((between-(in*w+(1-w)*out))/between)};
 		return result;
 	}
 	

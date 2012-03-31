@@ -36,7 +36,7 @@ public class HackStat extends StatsCollectorAdapter {
 			int j=1;
 			if(i!=0)
 				j=1;
-			result[i]=((result[i]*result[(i+j)%result.length])+10000);
+			result[i]=((result[i]*result[i]*result[i]+result[(i+j)%result.length]+result[(i+j+1)%result.length]));
 		}
 		
 		return result;

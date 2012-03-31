@@ -9,7 +9,7 @@ public class AFS extends StatsCollectorAdapter {
 	private int bins = 1;
 
 	public AFS() {
-		name = "jafs";
+		name = "afs";
 	}
 
 	public AFS(String name) {
