@@ -62,8 +62,8 @@ public class SGA {
 	private double[] data;
 
 	private double[] bw;
-	private int enn=10;
-	private int iterations=10000;
+	private int enn = 10;
+	private int iterations = 10000;
 
 	private Random random = new Random64();
 
@@ -107,7 +107,7 @@ public class SGA {
 		GradFunction simple = new GradFunction();
 		GradFunction better = new FullGradFunction();
 
-		PointDensity[] startingPoints = new PointDensity[10000];
+		PointDensity[] startingPoints = new PointDensity[10];
 		// first generate a condition set. We do the 1000, 100 thing.
 		for (int i = 0; i < startingPoints.length; i++) {
 			double[] p = randomPoint(priors);
@@ -116,7 +116,7 @@ public class SGA {
 		}
 		Arrays.sort(startingPoints);
 		// now cut it down to the top 100.
-		PointDensity[] betterStarts = new PointDensity[100];
+		PointDensity[] betterStarts = new PointDensity[10];
 		System.arraycopy(startingPoints, 0, betterStarts, 0, betterStarts.length);
 		System.out.println("Best:" + betterStarts[0]);
 
@@ -124,8 +124,7 @@ public class SGA {
 		// now run the preconditioner on all of them.
 		for (int i = 0; i < betterStarts.length; i++) {
 			preconditioned.add(betterStarts[i]);
-			double[] np = null;// genericKWAlgo(args, priors,
-								// betterStarts[i].point, 1, 100, simple);
+			double[] np =null;// genericKWAlgo(args, priors, betterStarts[i].point, 1, 2000, simple);
 			if (np == null)
 				continue;
 			double ns = simple.density(args, priors, np, 1);
@@ -138,7 +137,7 @@ public class SGA {
 		for (PointDensity pd : preconditioned) {
 			System.out.println(pd.score + " @ " + Arrays.toString(transform(pd.point, priors)));
 		}
-
+		//System.exit(0);
 		try {
 			Writer writer = new FileWriter(outputFile);
 
@@ -147,11 +146,11 @@ public class SGA {
 				double[] np = genericKWAlgo(args, priors, pd.point, enn, iterations, better);
 				if (np == null)
 					continue;
-				np=transform(np, priors);
+				np = transform(np, priors);
 				System.out.println("## " + Arrays.toString(np));
 				found.add(np);
-				for(int i=0;i<np.length;i++){
-					writer.write(np[i]+"\t");
+				for (int i = 0; i < np.length; i++) {
+					writer.write(np[i] + "\t");
 				}
 				writer.write("\n");
 				writer.flush();
@@ -168,7 +167,7 @@ public class SGA {
 		for (int i = 0; i < p.length; i++) {
 			p[i] = random.nextDouble();
 		}
-		return p;
+		return new double[] {300/1000.0,.5/10,1.5/2};//p;
 	}
 
 	/**
@@ -188,13 +187,22 @@ public class SGA {
 		double sum = 0;
 		double sum2 = 0;
 		// paste(args,priors,start);
+		int breakCount=0;
 		for (int i = 0; i < n2; i++) {
 			double d = (grad.density(args, priors, start, n));
 			// System.out.println(d);
-			if (Double.isInfinite(d) || Double.isNaN(d)) {
-				System.out.println("stdUn*");
-				return null;// d = MINLOG;
+			if(breakCount>100){
+				System.out.println("stdUn*:"+d);
+				return null;
 			}
+			if (Double.isInfinite(d) || Double.isNaN(d)) {
+				System.out.println("stdUn*:"+d);
+				//return null;// d = MINLOG;
+				i--;
+				breakCount++;
+				continue;
+			}
+			
 			sum += d;
 			sum2 += d * d;
 		}
@@ -204,8 +212,8 @@ public class SGA {
 		// sensable min/max
 		c = Math.max(.01, c);
 		c = Math.min(.1, c);
-
-		int A = maxK / 10;
+		c=.1;
+		int A =0;// maxK / 10;
 
 		// now for a
 		double[] nabla = grad.grad(args, priors, start, c, n);
@@ -216,16 +224,16 @@ public class SGA {
 		}
 		// System.out.println("Nab:" + Arrays.toString(nabla));
 		if (c > 1 || containsNaNNill(nabla)) {
-			System.out.println(" * ");
+			System.out.println(" * NaN at calb");
 			return null;
 		}
 		// assume a b_i==1;
 		double a = Double.MAX_VALUE;
 		for (int i = 0; i < nabla.length; i++) {
-			a = Math.min(a, .1 / Math.abs(nabla[i]));
+			a = Math.min(a, c/ Math.abs(nabla[i]));
 		}
 		// now put A in its place.
-		a = Math.max(c * 1e-3, a);
+		//a = Math.max(c , a);
 		// now we have a.
 		// System.out.println("a:" + a + "\tc:" + c);
 		List<double[]> trace = new ArrayList<double[]>();
@@ -243,37 +251,40 @@ public class SGA {
 		boolean newTrace = true;
 
 		for (int k = 0; k < maxK; k++) {
-			last = x.clone();
+			
 			double a_k = a / Math.pow(k + A + 1, alpha);
 			double c_k = c / Math.pow(k + 1, gamma);
-			if (k % 10 == 0)
-				System.out.println("k, a_k & c_k\t" + k + "\t" + a_k + "\t" + c_k);
-
+			//
 			nabla = grad.grad(args, priors, x, c_k, n);
+			if (k % 10 == 0)
+				System.out.println("k, a_k & c_k\t" + k + "\t" + a_k + "\t" + c_k+"\n\t"+Arrays.toString(transform(x, priors))+"\n\t"+Arrays.toString(nabla));
+
+			
+			
+
+			if (containsNaNNill(nabla)) {
+				x = last.clone();
+				continue;
+//				if (degen == true) {
+//					System.out.println(" * in loop @ " + k);
+//					//return null;
+//					continue;
+//				}
+				// do the simplex thing.
+//				
+				//degen = true;
+			} else {
+				degen = false;
+			}
+			last = x.clone();
 			mul(nabla, a_k, nabla);
 			add(x, nabla, x);
 			clamp(x, priors, c_k);
 			trace.add(transform(x, priors));
-
-			if (containsNaNNill(nabla)) {
-				if (degen == true) {
-					System.out.println(" * ");
-					return null;
-				}
-				// do the simplex thing.
-				x = last.clone();
-				int dim = largestIndex(nabla);
-				if (dim > -1) {
-					double sgn = Math.signum(nabla[dim]);
-					x[dim] += sgn * c_k;
-				}
-				degen = true;
-			} else {
-				degen = false;
-			}
+			
 			if (k % 10 == 0)
 				System.out.println(Arrays.toString(transform(x, priors)));
-			if (k % 2000 == 0 && k != 0) {
+			if (k % 1000 == 0 && k != 0) {
 				// boolean better = ttestIsBetter(args, priors, x, lastChecked,
 				// n, grad);
 				// //
@@ -311,9 +322,9 @@ public class SGA {
 		}
 		System.out.println("Finished:" + Arrays.toString(transform(x, priors)));
 		saveTrace(trace, newTrace);
-		//if (ttestIsBetter(args, priors, paramSums, start, n, grad))
+		// if (ttestIsBetter(args, priors, paramSums, start, n, grad))
 		return paramSums;
-		//return null;
+		// return null;
 
 	}
 
@@ -332,7 +343,7 @@ public class SGA {
 
 	private boolean containsNaNNill(double[] nabla) {
 		for (double d : nabla) {
-			if (d == 0 || Double.isNaN(d))
+			if (Double.isNaN(d) || Double.isInfinite(d))
 				return true;
 		}
 		return false;
@@ -342,7 +353,7 @@ public class SGA {
 		if (trace.isEmpty())
 			return;
 		try {
-			Writer write = new FileWriter(outputFile+".traces", true);
+			Writer write = new FileWriter(outputFile + ".traces", true);
 			if (newTrace) {
 				// first a simple delimiter.
 				double[] s = trace.get(0);
@@ -581,7 +592,7 @@ public class SGA {
 			// System.out.println("ARGS:"+Arrays.toString(args));
 			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			stats[i] = collectStatitics(collectionStats);
-			// System.out.println("CollectedStats:"+Arrays.toString(stats[i]));
+			//System.out.println("CollectedStats:"+Arrays.toString(stats[i]));
 
 		}
 		double[] stds = new double[stats[0].length];
@@ -594,14 +605,17 @@ public class SGA {
 				means[j] += d / n;
 			}
 		}
+		
 		double nfactor2 = Math.pow(n, -2 / (4.0 + data.length));// note it is
 																// squared
 
 		for (int i = 0; i < stds.length; i++) {
 
-			stds[i] = Math.sqrt((stds[i] / n - means[i] * means[i]) * nfactor2);
+			stds[i] = (stds[i] / n - (means[i] * means[i]));
 		}
-		this.bw = stds;
+		//System.out.println("Means:\t"+Arrays.toString(means)+"\nStds:\t"+Arrays.toString(stds));
+		
+		
 
 		// now stds has bw^2 for everything.
 		double ksum = 0;
@@ -610,18 +624,18 @@ public class SGA {
 			double[] stat = stats[i];
 			double sum = 0;
 			for (int j = 0; j < data.length; j++) {
-				if (bw[j] < 1e-16)
-					continue;
 				double d = data[j] - stat[j];
-				sum += d * d / (bw[j] * bw[j]);
+				if (stds[j]<1e-6)
+					continue;
+				sum += (d * d) / (stds[j] * nfactor2);
 			}
 			// System.out.println("SUM:"+sum);
 			ksum += Math.exp(-.5 * sum);
 		}
-		// System.out.println("KSUM:" + ksum);
+		//System.out.println("KSUM:" + ksum);
 		double dens = ksum / (sigmaNorm * Math.pow(2 * Math.PI, data.length / 2.0));
-		if (Double.isNaN(dens))
-			return 0;// Double.MIN_VALUE;
+		if (Double.isNaN(dens) || Double.isInfinite(dens) || dens<=0)
+			return 0;
 		return dens;
 	}
 
@@ -930,27 +944,27 @@ public class SGA {
 		this.writeData = true;
 		this.writeArgs = writeArgs;
 	}
-	
-	@CLNames(names={"-data"})
+
+	@CLNames(names = { "-data" })
 	public void setDataFileName(String dataFileName) {
 		this.dataFileName = dataFileName;
 	}
-	
-	@CLNames(names={"-out"})
+
+	@CLNames(names = { "-out" })
 	public void setOutputFile(String outputFile) {
 		this.outputFile = outputFile;
 	}
-	
-	@CLNames(names={"-enn"})
+
+	@CLNames(names = { "-enn" })
 	public void setEnn(int enn) {
 		this.enn = enn;
 	}
-	
-	@CLNames(names={"-iterations","-iter","-reps"})
+
+	@CLNames(names = { "-iterations", "-iter", "-reps" })
 	public void setIterations(int iterations) {
 		this.iterations = iterations;
 	}
-	
+
 	public static void main(String[] args) {
 		// Matrix matrix=new Matrix(new double[] {-.75,.25,.25,.25
 		// ,.25,-.75,.25,.25 ,.25,.25,-.75,.25 ,.25,.25,.25,-.75},4);
