@@ -27,12 +27,12 @@ import java.util.Arrays;
 public class SuperFrequencyTrace {
 
 	private double[] freq; // index=gen*(#alleles*#deme)+deme*(#alleles)+alleles;
-	private int alleles = 1;// count of *non* wild type alleles
-	private int demes;
-	private int startIndexTime;// time at index=0;
+	private final int alleles = 1;// count of *non* wild type alleles
+	private final int demes;
+	private final int startIndexTime;// time at index=0;
 	private int offsetTime;// when we "shift the start" a bit.
 
-	private int genDelta;
+	private final int genDelta;
 	private int index = 0;
 	private long endTime;
 
@@ -69,7 +69,7 @@ public class SuperFrequencyTrace {
 	public void setIndexTime(long time) {
 
 		index = ((int) time - startIndexTime + offsetTime) * genDelta;
-		// System.err.println("SetIndexTo:"+index+"\t"+freq.length+"\t"+startOffset);
+		//System.err.println("SetIndexTo:"+index+"\t"+freq.length+"\tfromtime:"+time+"\tOF:"+offsetTime+"\tSI:"+startIndexTime);
 	}
 
 	public void setEndTime() {
@@ -81,12 +81,12 @@ public class SuperFrequencyTrace {
 	}
 
 	public long getIndexTime() {
-		return ((index - offsetTime) / genDelta) + startIndexTime;
+		return ((index/genDelta - offsetTime) ) + startIndexTime;
 	}
 
 	public long getTimeMostPastward() {
 		int index = freq.length - genDelta;// shadow!
-		return ((index - offsetTime) / genDelta) + startIndexTime;
+		return ((index/genDelta - offsetTime)) + startIndexTime;
 	}
 
 	public void setIndexMostPastward() {
@@ -138,7 +138,7 @@ public class SuperFrequencyTrace {
 	public double[] getFrequencys(double[] data) {
 		if (data == null || data.length!=genDelta)
 			data = new double[genDelta];
-		//System.out.println("Freq: "+index);
+		//System.err.println("Freq: "+index);
 		System.arraycopy(freq, index, data, 0, data.length);
 		return data;
 	}
@@ -148,6 +148,7 @@ public class SuperFrequencyTrace {
 	}
 
 	public void setCurrentIndexAsStart() {
+		//System.err.println("SETTING OFFSETTIME:"+index);
 		offsetTime = (index / genDelta);
 	}
 

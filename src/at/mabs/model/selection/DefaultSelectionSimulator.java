@@ -297,7 +297,7 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 					events.add(new SelectionEndTimeEvent(frequencys.getTimeMostPastward()));
 					events.add(new SelectionStartEvent(stopping.getTime(), nextGen));//well we already new That!
 					frequencys.setEndTime();
-					//System.out.println(events+"\t"+frequencys.getEndTime());
+					//System.err.println(events+"\t"+frequencys.getEndTime()+"\tPastward:"+frequencys.getTimeMostPastward());
 					return events;//get me out here.
 				}
 				double[] tmp =thisGen;

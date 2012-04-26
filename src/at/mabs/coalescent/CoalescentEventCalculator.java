@@ -468,7 +468,7 @@ public class CoalescentEventCalculator {
 		state.setCurrentMaxTime(time);
 		double timeBound=1e5*modelHistroy.getN();
 		while (state.getLinagesActive() > 1 && state.getCurrentTime()<timeBound) {
-			//System.out.println("Lines:"+state.getCurrentTime());
+			//System.out.println("Lines:"+state.getCurrentTime()+"\t"+time);
 			CoalescentEvent cevent =null;
 			if (state.isSelection()) {
 				cevent =nextEventSelection(model);
@@ -479,7 +479,7 @@ public class CoalescentEventCalculator {
 			// System.out.println("CEvent:"+cevent+"\t"+state.getCurrentTime()+"\t"+model+"\ttimeBound:"+timeBound+"\t"+model.getSelectionData());
 			// System.out.println("State:"+state);
 			if (cevent == CoalescentEvent.NO_OP || (cevent.dt + state.getCurrentTime()) >= time) {
-			//	System.out.println("NextModel");
+				//System.out.println("NextModel");
 				// move to the next event.
 				iterator.nextModel(state);
 				model =iterator.getCurrentModel();

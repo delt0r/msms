@@ -408,7 +408,7 @@ public class ModelHistroy {
 			lastSweepTime=data.getSweepTime();
 			model=nextModel;
 		}
-		System.out.println("newand Old:"+newEvents+"\n\t"+events);
+		//System.out.println("newand Old:"+newEvents+"\n\t"+events);
 		events.addAll(newEvents);
 		Collections.sort(events);
 		//System.out.println(lastSweepTime);
