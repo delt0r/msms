@@ -55,10 +55,10 @@ public class SelectionEndTimeEvent extends ModelEvent {
 		volitle=true;
 	}
 	
-	public SelectionEndTimeEvent(long t, FrequencyState initalFrequencys) {
+	public SelectionEndTimeEvent(long t, FrequencyState initalFrequencys,boolean v) {
 		super(t);
 		this.initalFrequencys =initalFrequencys;
-		volitle=false;
+		volitle=v;
 	}
 	
 	

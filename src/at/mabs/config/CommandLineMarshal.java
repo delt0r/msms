@@ -349,7 +349,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 			state.setFrequency(i, 1, freq[i]);
 			state.setFrequency(i, 0, 1 - state.getFrequency(i, 1));
 		}
-		events.add(new SelectionEndTimeEvent(Math.round(time * 4 * N0), state));
+		events.add(new SelectionEndTimeEvent(Math.round(time * 4 * N0), state,false));
 		selection =true;
 		// System.out.println(events.get(events.size()-1));
 		restartCondition=null;//clear restart condiction unless specifically set.

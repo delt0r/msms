@@ -75,7 +75,7 @@ public class SelectionStartEvent extends ModelEvent {
 			int n =state.getLineageSize(d, 0);
 			
 			Random random=RandomGenerator.getRandom();
-			//System.out.print(this.getEventTime()+"\t"+f);
+			//System.out.println("LOOP "+this.getEventTime()+"\t"+state.getLinagesActive()+"\tn:"+n+"\tf:"+f);
 			//int c=0;
 			for (int i =0; i < n; i++) {
 				// not quite the fastest...
@@ -88,7 +88,7 @@ public class SelectionStartEvent extends ModelEvent {
 			//System.out.println("\t"+c);
 		}
 		state.setSelection(true);
-		//System.err.println("Coalescent Starting thing FINSIHED:"+state.getLineageSize(0, 1)+"\t"+state.getLinagesActive());
+	//System.err.println("Coalescent Starting thing FINSIHED:"+state.getLineageSize(0, 1)+"\t"+state.getLinagesActive());
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class SelectionStartEvent extends ModelEvent {
 	@Override
 	public String toString() {
 		
-		return "SelectionStartEvent:"+this.getEventTime();
+		return "SelectionStartEvent:"+this.getEventTime()+":"+Arrays.toString(frequencys);
 	}
 
 }
