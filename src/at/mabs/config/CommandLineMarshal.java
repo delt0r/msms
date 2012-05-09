@@ -178,6 +178,8 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	
 	private boolean foldMutations=false;
 	
+	private double maxRecombinationRate=Double.MAX_VALUE;
+	
 	public CommandLineMarshal() {
 	}
 
@@ -1083,6 +1085,17 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	@CLNames(names="-hack")
 	public void setHackParams(String[] p){
 		HACK_PARAMS=p;
+	}
+	
+	public double getMaxRecombinationRate() {
+		return maxRecombinationRate;
+	}
+	
+	
+	@CLNames(names={"-approxr"})
+	@CLUsage("Approximate Recombination rate")
+	public void setMaxRecombinationRate(double maxRecombinationRate) {
+		this.maxRecombinationRate = maxRecombinationRate/(2*getN());
 	}
 
 	

@@ -69,6 +69,8 @@ public class LineageState<T extends LineageData<T>> {
 
 	private double currentTime;
 	private double currentMaxTime;
+	
+	private double maxRecombinationRate=Double.MAX_VALUE;
 
 	// private boolean isRecombination;
 
@@ -102,6 +104,7 @@ public class LineageState<T extends LineageData<T>> {
 		this.modelHistroy =modelHistory;
 		this.linageDataFactory =factory;
 		partialSumsTree =new PartialSumsTree<T>();
+		maxRecombinationRate=modelHistory.getMaxRecombinationRate();
 	}
 
 	/**
@@ -201,6 +204,7 @@ public class LineageState<T extends LineageData<T>> {
 		if (currentTime + dt > currentMaxTime)
 			throw new RuntimeException("Error, tried to create event past maxTime for interval");
 		// System.out.println(allLineages.size());
+		
 		currentTime +=dt;
 		
 		List<T> list =lineages[deme][allele];
@@ -211,6 +215,25 @@ public class LineageState<T extends LineageData<T>> {
 		assert a.getDeme() == deme : a.getDeme();
 		assert b.getAllele() == allele;
 		assert b.getDeme() == deme : b.getDeme();
+		//check if they are valid coalescent events. 
+		double rcombRate=0;
+		if(a.getEnd()<b.getStart()){
+			rcombRate=b.getStart()-a.getEnd();
+		}else if(b.getEnd()<a.getStart()){
+			rcombRate=a.getStart()-b.getEnd();
+		}
+		//System.out.println(rcombRate+"\t"+a+"\t"+b);
+		if(rcombRate*modelHistroy.getRecombinationRate()>=maxRecombinationRate && rcombRate>0){
+			//no coalescent!
+			list.add(b);
+			randomSwapEnd(list);
+			list.add(a);
+			randomSwapEnd(list);
+			return;
+		}
+		
+		//now we do it... 
+		
 		// allLineages.remove(b);// we only remove a if its empty
 		partialSumsTree.remove(b);
 

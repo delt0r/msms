@@ -89,6 +89,8 @@ public class ModelHistroy {
 	private boolean foldMutations;
 	private boolean unphase;
 
+	private double maxRecombinationRate=Double.MAX_VALUE;
+	
 	/**
 	 * creates the models. builds up the finalised models from the events. This will not mutate the
 	 * events list...
@@ -250,6 +252,14 @@ public class ModelHistroy {
 
 	public BackwardIterator backwardIterator() {
 		return new BackwardIterator();
+	}
+
+	public double getMaxRecombinationRate() {
+		return maxRecombinationRate;
+	}
+
+	public void setMaxRecombinationRate(double maxRecombinationRate) {
+		this.maxRecombinationRate = maxRecombinationRate;
 	}
 
 	public boolean isSelection() {
