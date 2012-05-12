@@ -65,7 +65,7 @@ public class SegmentEventRecoder {
 	private Random random = RandomGenerator.getRandom();
 
 	// private final double neutralMutationRate;
-	private final double generationScale;
+	private double generationScale;
 
 	private boolean trackTrees;
 	private long recombinationCuts;
@@ -101,6 +101,24 @@ public class SegmentEventRecoder {
 		totalLeafCount = modelHistory.getSampleConfiguration().getMaxSamples();
 		foldMutations = modelHistory.isFoldMutations();
 		unPhase=modelHistory.isUnphase();
+	}
+	
+	/**
+	 * just to send into stats collectors. Should point out that this will create a broken segEvenRecorder.
+	 * @param mutations
+	 * @param fold
+	 * @param unPhase
+	 */
+	public SegmentEventRecoder(List<InfinteMutation> mutations,boolean fold,boolean unPhase){
+		this.mutations=mutations;
+		this.foldMutations=fold;
+		this.unPhase=unPhase;
+		if (foldMutations) {
+			foldFilter();
+		}
+		if(unPhase){
+			unPhaseFilter();
+		}
 	}
 
 	// should push this stuff into a mutation model.

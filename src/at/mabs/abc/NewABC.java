@@ -101,6 +101,8 @@ public class NewABC {
 	private List<StatsCollector> dataStats = new ArrayList<StatsCollector>();
 	private int priorUpdate = 5000;
 	private Random random = new Random64();
+	
+	private int truncatStats=Integer.MAX_VALUE;
 
 	// private double[] normalizingFactors;
 
@@ -157,7 +159,7 @@ public class NewABC {
 		dataStatPair.transform(transformData);
 		for (ParameterStatPair pair : bootstrapPoints) {
 			pair.transform(transformData);
-			pair.calculateDistance(dataStatPair);// euclid
+			pair.calculateDistance(dataStatPair,truncatStats);// euclid
 		}
 
 		sampledPoints.addAll(bootstrapPoints);
@@ -186,14 +188,14 @@ public class NewABC {
 				ArrayList<ParameterStatPair> list = new ArrayList<ParameterStatPair>(sampledPoints);
 				values = list.get(r % list.size()).getParameters();
 			}
-			// paste(msmsArgs, priors, mcmc, values);
-			pasteFancy(msmsArgs, priors);
+			paste(msmsArgs, priors, mcmc, values);
+			//pasteFancy(msmsArgs, priors);
 			// System.out.println("Args:"+Arrays.toString(msmsArgs));
 			MSLike.main(msmsArgs, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			double[] distances = collectStatitics(collectionStats);
 			ParameterStatPair psp = ParameterStatPair.packIntoParamStat(distances, priors);
 			psp.transform(transformData);
-			psp.calculateDistance(dataStatPair);
+			psp.calculateDistance(dataStatPair,truncatStats);
 			
 			if (psp.getDistance() < sampledPoints.last().getDistance()) {
 				sampledPoints.add(psp);
@@ -536,6 +538,11 @@ public class NewABC {
 	@CLNames(names = { "-chainFile" })
 	public void setChainFileName(String chainFileName) {
 		this.chainFileName = chainFileName;
+	}
+	
+	@CLNames(names = { "-truncate" })
+	public void setTruncatStats(int truncatStats) {
+		this.truncatStats = truncatStats;
 	}
 
 	@CLNames(names = { "-abcstat", "-STAT" })

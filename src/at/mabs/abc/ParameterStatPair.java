@@ -82,12 +82,13 @@ public class ParameterStatPair implements Comparable<ParameterStatPair> {
 		}
 	}
 	
-	public void calculateDistance( ParameterStatPair data) {
+	public void calculateDistance( ParameterStatPair data,int truncate) {
 		// if tdata null we set transfored==stat.
 		
 
 		double distance = 0;
-		for (int i = 0; i < transformedStats.length; i++) {
+		int mindex=Math.min(transformedStats.length, truncate);
+		for (int i = 0; i < mindex; i++) {
 			double delta = transformedStats[i] - data.transformedStats[i];
 			distance += delta * delta;
 		}
