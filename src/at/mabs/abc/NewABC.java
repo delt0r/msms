@@ -87,7 +87,8 @@ public class NewABC {
 
 	// best n of the bunch.
 	private TreeSet<ParameterStatPair> sampledPoints = new TreeSet<ParameterStatPair>();
-
+	
+	private double[] stds;
 	// first n parameters produced.
 	private List<ParameterStatPair> bootstrapPoints = new ArrayList<ParameterStatPair>();
 
@@ -163,6 +164,13 @@ public class NewABC {
 		}
 
 		sampledPoints.addAll(bootstrapPoints);
+		
+		stds=new double[priors.size()];
+		for(int i=0;i<stds.length;i++){
+			PriorDensity pd=priors.get(i);
+			stds[i]=pd.getMax()-pd.getMin();
+		}
+		
 		saveResultState();
 
 		// init thing for mcmc.
@@ -188,8 +196,8 @@ public class NewABC {
 				ArrayList<ParameterStatPair> list = new ArrayList<ParameterStatPair>(sampledPoints);
 				values = list.get(r % list.size()).getParameters();
 			}
-			paste(msmsArgs, priors, mcmc, values);
-			//pasteFancy(msmsArgs, priors);
+			//paste(msmsArgs, priors, mcmc, values);
+			pasteFancy(msmsArgs, priors);
 			// System.out.println("Args:"+Arrays.toString(msmsArgs));
 			MSLike.main(msmsArgs, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			double[] distances = collectStatitics(collectionStats);
@@ -231,9 +239,27 @@ public class NewABC {
 			}
 			if (r % sampleSize == 0) {
 				saveResultState();
+				updateStds(priors);
 			}
 		}
 		saveResultState();
+	}
+
+	private void updateStds(List<PriorDensity> priors) {
+		double[] sum=new double[priors.size()];
+		double[] sum2=new double[priors.size()];
+		for(ParameterStatPair psp:sampledPoints){
+			double[] params=psp.getParameters();
+			for(int i=0;i<sum.length;i++){
+				sum[i]+=params[i];
+				sum2[i]+=params[i]*params[i];
+			}
+		}
+		int n=sampledPoints.size();
+		for(int i=0;i<stds.length;i++){
+			double mu=sum[i]/n;
+			stds[i]=Math.sqrt((sum2[i]/n)-(mu*mu));
+		}
 	}
 
 	private ParameterStatPair getDataStatPair(List<StatsCollector> dataStats) {
@@ -423,7 +449,7 @@ public class NewABC {
 			} else {
 				ParameterStatPair psp = randomlist.get(random.nextInt(randomlist.size()));
 				while (value > pd.getMax() || value < pd.getMin())
-					value = psp.getParameters()[i] + 20 * (random.nextGaussian()) * (pd.getMax() - pd.getMin()) / randomlist.size();
+					value = psp.getParameters()[i] + 2 * random.nextGaussian() * stds[i] ;
 				pd.setLastValue(value);
 				value = pd.getLastValue();// clamp just in case
 			}
