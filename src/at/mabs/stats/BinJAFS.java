@@ -10,8 +10,8 @@ import at.mabs.segment.SegmentEventRecoder;
  *
  */
 public class BinJAFS extends StatsCollectorAdapter {
-	private FixedBitSet groupa;
-	private FixedBitSet groupb;
+//	private FixedBitSet mask;
+//	private FixedBitSet mask2;
 	private String name;
 	private String binConfig="1,x,1";
 	
@@ -58,8 +58,8 @@ public class BinJAFS extends StatsCollectorAdapter {
 		//now for bin count
 		binCount=(firstEdge.size()+secondEdge.size()+1);
 		binCount*=binCount;
-		int asize=groupa.countSetBits();
-		int bsize=groupb.countSetBits();
+		int asize=mask.countSetBits();
+		int bsize=mask2.countSetBits();
 		
 		int totalSum=0;
 		for(int i:firstEdge)
@@ -113,26 +113,26 @@ public class BinJAFS extends StatsCollectorAdapter {
 		double[] result=new double[binCount];
 		double delta=1.0;///recorder.getTotalMutationCount();
 		for(InfinteMutation m:recorder.getMutations()){
-			int a=m.leafSet.countSetBitsMask(groupa);
-			int b=m.leafSet.countSetBitsMask(groupb);
+			int a=m.leafSet.countSetBitsMask(mask);
+			int b=m.leafSet.countSetBitsMask(mask2);
 			result[binIndexs[a][b]]+=delta;
 		}
 		
 		return result;
 	}
 	
-	
-	@Override
-	public void setLeafMask(FixedBitSet mask) {
-		groupa=mask;
-		//System.out.println("Mask1:"+mask);
-	}
-
-	@Override
-	public void setSecondLeafMask(FixedBitSet mask) {
-		groupb=mask;
-		//System.out.println("Mask2:"+mask);
-	}
+//	
+//	@Override
+//	public void setLeafMask(FixedBitSet mask) {
+//		mask=mask;
+//		//System.out.println("Mask1:"+mask);
+//	}
+//
+//	@Override
+//	public void setSecondLeafMask(FixedBitSet mask) {
+//		mask2=mask;
+//		//System.out.println("Mask2:"+mask);
+//	}
 
 	@Override
 	public String[] getStatLabels() {

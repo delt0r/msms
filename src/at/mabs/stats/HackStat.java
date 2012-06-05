@@ -32,12 +32,12 @@ public class HackStat extends StatsCollectorAdapter {
 		}
 		//System.out.println("R:" + Arrays.toString(result));
 		int l=result.length;
-		for(int i=result.length-1;i>=0;i--){
-			int j=1;
-			if(i!=0)
-				j=1;
-			result[i]=((((result[i]+3)*result[(i)%l]+5)*result[(i)%l]+7)*result[(i+3)%l]+11);//((.1*result[i]*result[i]*result[i]-result[i]*result[i]+result[(i+j)%result.length]+result[(i+j+1)%result.length]));
-		}
+//		for(int i=result.length-1;i>=0;i--){
+//			int j=1;
+//			if(i!=0)
+//				j=1;
+//			result[i]=((((result[i]+3)*result[(i)%l]+5)*result[(i)%l]+7)*result[(i+3)%l]+11);//((.1*result[i]*result[i]*result[i]-result[i]*result[i]+result[(i+j)%result.length]+result[(i+j+1)%result.length]));
+//		}
 		
 		return result;
 	}

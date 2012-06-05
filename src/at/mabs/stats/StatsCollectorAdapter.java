@@ -62,13 +62,14 @@ public abstract class StatsCollectorAdapter implements StatsCollector {
 
 	@Override
 	public void setLeafMask(FixedBitSet mask) {
-		
+		//System.out.println("MASK:"+mask);
 		this.mask=mask;
 	}
 
 	@Override
 	public void setSecondLeafMask(FixedBitSet mask) {
 		this.mask2=mask;
+		//System.out.println("MAS2:"+mask);
 		//System.out.println(mask);
 	}
 

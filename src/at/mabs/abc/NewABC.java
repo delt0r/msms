@@ -149,7 +149,7 @@ public class NewABC {
 			double[] distances = collectStatitics(collectionStats);
 			ParameterStatPair psp = ParameterStatPair.packIntoParamStat(distances, priors);
 			bootstrapPoints.add(psp);
-			if (bootstrapPoints.size() % (sampleSize / 80) == 0) {
+			if (bootstrapPoints.size() % (1+sampleSize / 80) == 0) {
 				System.out.print("=");
 			}
 		}
@@ -295,7 +295,7 @@ public class NewABC {
 			if (pd instanceof CopyPriorDensity)
 				continue;
 			pd.updateMinMax(mins[i], maxs[i]);
-			System.out.println("UpdateMinMax:" + mins[i] + "\t" + maxs[i]);
+			System.out.println("UpdateMinMax:" + mins[i] + "\t" + maxs[i]+"\tspred:"+stds[i]);
 		}
 	}
 
@@ -436,6 +436,7 @@ public class NewABC {
 	}
 
 	private void pasteFancy(String[] args, List<PriorDensity> priors) {
+		final double scale=Math.sqrt(12)/2;
 		int randIndex = -1;// random.nextInt(priors.size());
 		ArrayList<ParameterStatPair> randomlist = new ArrayList<ParameterStatPair>(sampledPoints);
 		for (int i = 0; i < priors.size(); i++) {
@@ -449,7 +450,7 @@ public class NewABC {
 			} else {
 				ParameterStatPair psp = randomlist.get(random.nextInt(randomlist.size()));
 				while (value > pd.getMax() || value < pd.getMin())
-					value = psp.getParameters()[i] + 2 * random.nextGaussian() * stds[i] ;
+					value = psp.getParameters()[i] + scale * random.nextGaussian() * stds[i] ;
 				pd.setLastValue(value);
 				value = pd.getLastValue();// clamp just in case
 			}
