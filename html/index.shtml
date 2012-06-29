@@ -1,4 +1,20 @@
 <!--#include virtual="header.html" -->
+<div id="content">
+	<h3>Not Dead</h3>
+	June 29th 2012
+	<p>
+	It may look like a long time with little activity. I assure you that this 
+	not the case. I just have not been so good at keeping the web page up to date. 
+	It is a good idea to check the downloads page, as this is automagically updated 
+	for each new version. You can use the <tt>-version</tt> switch to check to see
+	what version you have. 
+	<p>
+	There have been quite a few smaller changes and bugfixes but also some bigger fixes. 
+	We finally have a git repo and will be moving everything over to git hub in time. 
+	The github page is <a href="https://github.com/delt0r/msms">https://github.com/delt0r/msms</a>.   
+</div>
+
+
 <div id="oddcontent">
 	<h3>More updates</h3>
 	Dec 19th 2011

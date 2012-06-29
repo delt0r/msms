@@ -106,6 +106,31 @@ public class CoalescentEventCalculator {
 		// System.out.println("eventS:"+cevent);
 		return cevent;
 	}
+	
+	/**
+	 * back to a more brute force model. May not be slower.... 
+	 * @param model
+	 * @return
+	 */
+	private CoalescentEvent nextEventSelectionStep(Model model){
+		//first we get this times frequency. then we just do the plain rate thing. Events that
+		//happen with rate>1 always happen!
+		
+		double currentTime =state.getCurrentTime();
+		int deme =-1;
+		PopulationSizeModel[] popSizes =model.getPopulationSizeModels();
+		SelectionData selectionData =model.getSelectionData();
+		//first consider constraints... 
+		
+		//ok now the typical just test each thing to see if it produces an event. 
+		// to create the correct extreme cases where the coalescent sort of breaks down, we use exp random varables 
+		// and reject when min(a,b,c...)>1. ie no event. This produces better behavour in the limiting cases.  
+		for(int d=0;d<popSizes.length;d++){
+			
+		}
+		
+		return null;
+	}
 
 	//
 	private CoalescentEvent nextCoalescent(Model model) {
@@ -311,17 +336,37 @@ public class CoalescentEventCalculator {
 		double time =state.getCurrentTime();
 		int deme =-1;
 		int allele =-1;
+		PopulationSizeModel[] pops=m.getPopulationSizeModels();
 		double dt =maxTime - time;
 		for (int d =0; d < m.getDemeCount(); d++) {
+			PopulationSizeModel popModel=pops[d];
 			for (int a =0; a < 2; a++) {
 				int n =state.getLineageSize(d, a);
 				if (n < 2)
 					continue;
-
 				double ncr2 =n * (n - 1) / 4.0;//diplod
 
+				double effectiveCount=popModel.populationSize(time)*selectionData.getFrequency(d, a, time);
+				double U=0;
+				//System.err.println("EFF SIZE:"+effectiveCount+"\t"+n);
+//				if(effectiveCount<=n){
+//					//force a event
+//					double maxDt=Math.ceil(time)-time;
+//					U=1-random.nextDouble()*(1-Math.exp(-4*maxDt*ncr2/effectiveCount));
+//				}else{
+//					U=random.nextDouble();
+//				}
+				
 				double residue =-Math.log(random.nextDouble()) / ncr2;
-				double ndt =selectionData.coalescentCumulantIntegration(d, a, time, time + dt, residue);// residue*m.getPopulationSizeModels()[d].populationSize(time);//
+				double ndt =selectionData.coalescentCumulantIntegration(d, a, time, time + dt, residue,n);// residue*m.getPopulationSizeModels()[d].populationSize(time);//
+//				if(effectiveCount<=n){
+//					ndt=0;
+//					deme =d;
+//					allele =a;
+//					dt =ndt;
+//					break;
+//				}
+				//System.err.println("DT:"+ndt);
 				if (ndt < dt) {
 					deme =d;
 					allele =a;
@@ -330,6 +375,7 @@ public class CoalescentEventCalculator {
 
 			}
 		}
+		
 		if (deme < 0) {
 			return CoalescentEvent.NO_OP;
 		}

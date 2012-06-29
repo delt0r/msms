@@ -319,7 +319,8 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			frequencys.moveForward();
 			frequencys.setFrequencys(nextGen);
 			time=frequencys.getIndexTime();
-			if (restartCondition!=null && !restartCondition.isMeet(nextGen, ndeme)) {
+			//System.out.println(restartCondition.isMeet(nextGen, ndeme));
+			if (restartCondition!=null && restartCondition.isMeet(nextGen, ndeme)) {
 				frequencys.setIndexMostPastward();// start at the very back.
 				frequencys.getFrequencys(thisGen);
 				continue;

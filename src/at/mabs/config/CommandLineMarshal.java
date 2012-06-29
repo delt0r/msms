@@ -357,6 +357,12 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		restartCondition=null;//clear restart condiction unless specifically set.
 	}
 	
+	@CLNames(names={"-SForceKeep","-SFC"},rank=1)
+	@CLDescription("Force a restart condition, for use with the -SI option. Will restart the simualtion when ever the frequency drops to zero, note inital conditions must not have zero frequency")
+	public void setRestartCondition(){
+		restartCondition=new RestartCondition.Default();
+	}
+	
 	@CLNames(names ={ "-SF" },rank=1)
 	@CLUsage("")
 	public void addSelectionFixation(double time) {

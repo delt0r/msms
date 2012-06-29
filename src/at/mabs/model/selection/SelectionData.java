@@ -254,7 +254,7 @@ public class SelectionData {
 
 	public double getFrequency(int deme, int allele, double time) {
 		assert (time >= parent.getStartTime()) : time + ">=" + parent.getStartTime();
-		assert (time < parent.getEndTime()) : time + "<" + parent.getEndTime();
+		assert (time <= parent.getEndTime()) : time + "<" + parent.getEndTime();
 		//System.err.println("Getting Freq for C sim:"+deme+"\t"+allele+"\t"+time);
 		//if(true)throw new RuntimeException("BORK");
 		frequencys.setIndexTime((int)time);
@@ -267,7 +267,8 @@ public class SelectionData {
 		return f[deme];
 	}
 
-	public double coalescentCumulantIntegration(int deme, int allele, double time, double maxTime, double residue) {
+	public double coalescentCumulantIntegration(int deme, int allele, double time, double maxTime, double residue,int n) {
+		//System.out.println("CALLED");
 		if (time >= maxTime) {
 			// System.out.println("Bork");
 			return 0;
@@ -277,8 +278,8 @@ public class SelectionData {
 		// System.out.println("IntSize:"+size.populationSize(time));
 		// deal with the first partial sum.
 		double f = getFrequency(deme, allele, time) * size.populationSize(time);
-		
-		if (f == 0) {
+		//System.out.println("F:"+f+"\t"+n);
+		if (f <= n ) {
 			// System.out.println("Zero!");
 			return 0;
 		}
@@ -286,9 +287,13 @@ public class SelectionData {
 		sum += delta / f;
 		double g = delta;// already dealt with the first increment.
 		// System.out.println("gTime "+(g+time));
-		while (sum < residue && (time + g) < maxTime) {
+		while (sum < residue && (time + g) <= maxTime) {
 			f = getFrequency(deme, allele, time + g) * size.populationSize(time + g);
-			// System.out.println("loop:"+size.populationSize(time + g)+"\t"+f);
+			//System.out.println("loop:"+size.populationSize(time + g)+"\t"+f);
+			if(f<=n){
+				//special case... more linages that population size. Force a C event here...
+				return g-delta;
+			}
 			if (f > 0) {
 				sum += 1.0 / f;
 			} else {

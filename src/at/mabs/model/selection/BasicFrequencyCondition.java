@@ -44,7 +44,7 @@ public class BasicFrequencyCondition implements FrequencyCondition {
 		if(deme<0){
 			double s=0;
 			for(int i=0;i<frequencys.length;i++){
-				s+=frequencys[i];
+				s+=frequencys[i]/frequencys.length;
 			}
 			if(s>=frequency)
 				return true;
