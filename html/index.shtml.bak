@@ -1,22 +1,93 @@
 <!--#include virtual="header.html" -->
+<div id="oddcontent">
+	<h1>Large Organizational Changes</h1>
+	Aug 3rd 2012
+	<p>
+	Due to many reasons, such as conferences and job interview and even more users. I am 
+	changing the way I organize this project significatly. This is mainly due to the fact that
+	organizing the bug fixes and feture requests does not work well with just email. Also we will 
+	be getting an extra devloper on board soon and we have already had a few patches submitted. So 
+	I am going the whole hog and moving bugs, fetures and collabration (source level) all over to 
+	<a href="https://github.com/delt0r/msms">github</a>. 
+	<p>
+	What this means is that if you find a bug, or you think you have found one, you will need to 
+	go to the <a href="https://github.com/delt0r/msms/issues?state=open">issues</a> page. You need 
+	a github login, a nessiscary evil due to the massive amounts of spam recived otherwise, and then 
+	check to see if the relevent bug has already been submited. If not create a new issue and tag it 
+	as a bug. You can also raise enhancements, documentation issues or even plain old questions. However 
+	when submitting a bug i ask that you always include the first few lines of the msms output and/or the
+	command line you used. 
+	<p>
+	I do realize that this is less convienant that just sending me an email. Unfortunalty that model 
+	is just not working anymore. I hope this will make things much quicker to fix and less time
+	to communicate the fixes and changes. In particlar it should make it much easier to see what affects
+	the most people. 
+	<h3>General bug fixes</h3>
+	Most of the bugs reported where all releated and should now be fixed. The most serious was the soft sweeps
+	when there should be hard sweeps. The largest part of that problem should now be fixed. However please note 
+	that when selection is very strong and the sweep very short, the basic assumptions of the coalescent will
+	break down. This can still result, althou very raerly, in a softsweep. 
+	<p>
+	If you think your bug is not fixed or something I was going to put in was not, then please raise the issue
+	in github. <a href="https://github.com/delt0r/msms/issues?state=open">Raise an Issue</a>  
+</div>
+
+
+<div id="content">
+	<h3>Not Dead</h3>
+	June 29th 2012
+	<p>
+	It may look like a long time with little activity. I assure you that this 
+	not the case. I just have not been so good at keeping the web page up to date. 
+	It is a good idea to check the downloads page, as this is automagically updated 
+	for each new version. You can use the <tt>-version</tt> switch to check to see
+	what version you have. 
+	<p>
+	There have been quite a few smaller changes and bugfixes but also some bigger fixes. 
+	We finally have a git repo and will be moving everything over to git hub in time. 
+	The github page is <a href="https://github.com/delt0r/msms">https://github.com/delt0r/msms</a>.   
+</div>
+
+
+<div id="oddcontent">
+	<h3>More updates</h3>
+	Dec 19th 2011
+	<p>
+	Another update that fixes some bugs. In some cases there was a problem
+	with complicated models using the -SI switch that is now fixed.
+	Generally this would not produce incorrect results, but would rather
+	throw an error (aka crash). However best to be on the safe side and
+	update.
+	<p>
+	We also have a serial or time samples support included but as a beta
+	feature. It will only work with -SI selection not -SF. It is the -IT
+	switch that you can get help with -h.
+	<p>
+	Note that generally bug fixes won't affect most people. That is if its
+	simulating something wrong, it generally only affects some special
+	cases, for example the -Smark switch found previously. All neutral
+	markers where still correct.
+</div>
 <div id="content">
 	<h2>Smark fixes</h2>
 	Dec 9th 2011
 	<p>
-	It may look like there has not been much going on. I assure this is not the case. Other than going 
-	to some bigger meeting this year to get the word out about msms. Progress out back has been steady. 
+	It may look like there has not been much going on. I assure you this is not the case. Other than going 
+	to some bigger meetings this year to get the word out about msms. Progress out back has been steady. 
 	<p>
-	Quite a lot more options have been added and preperations for future fetures have been made. Many 
-	minor bugfixes have been done and some fringe cases fixed. In particular the case were people are using 
+	Quite a lot more options have been added and preparations for future features have been made. Many 
+	minor bug fixes have been done and some fringe cases fixed. In particular the case were people are using 
 	the <tt>-Smark</tt> option to observe the selected allele has had some issues that should mostly be 
-	resolved. However there is still the case where the coalesent tree at the selected site has a MRCA
+	resolved. However there is still the case where the coalescent tree at the selected site has a MRCA
 	before any selection happens. In this case the <tt>-Smark</tt> option still gives incorrect results. 
 	<p>
-	Also added is a <tt>-version</tt> option to make tracking the version you are runing easier. I have a pretty
+	Also added is a <tt>-version</tt> option to make tracking the version you are ruining easier. I have a pretty
 	fine grain build number, so it will jump a few counts every release. 
 	<p>
 	Documentation at this point is lagging the code a bit. The <tt>-h</tt> option is the best way to get started 
-	with new switches for now. Hopefully we can get a expanded maunal out early next year. 
+	with new switches for now. Hopefully we can get a expanded manual out early next year. 
+	<p>
+	I have had some issues with the mailing list recently. Mostly my emails didn't seem to go out. This should now fixed.
 </div>
 <div id="oddcontent">
 	<h3>Minor fixes</h3>
