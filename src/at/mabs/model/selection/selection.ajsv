@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Aug-05 03:01" filterScript="" licenseGrade="evaluation" licenseeName="Greg_Ewing" licenseeOrganization="University_of_Vienna" version="1.7.10.v20120627-2001">
+        <class className="at.mabs.model.selection.SelectionTimeConditionEvent" project="SelectSim" xLocation="3894" yLocation="1047"/>
+        <class className="at.mabs.model.selection.BasicFrequencyCondition" project="SelectSim" xLocation="3252" yLocation="1198"/>
+        <class className="at.mabs.model.selection.NullSelectionSimulator" project="SelectSim" xLocation="2211" yLocation="1485"/>
+        <class className="at.mabs.model.selection.SelectionStrengthModel" project="SelectSim" xLocation="2917" yLocation="713"/>
+        <class className="at.mabs.model.selection.RestartCondition" project="SelectSim" xLocation="329" yLocation="1676"/>
+        <class className="at.mabs.model.selection.FrequencyCondition" project="SelectSim" xLocation="3362" yLocation="1044"/>
+        <class className="at.mabs.model.selection.SelectionData" project="SelectSim" xLocation="2699" yLocation="1729"/>
+        <class className="at.mabs.model.selection.SelectionStartEvent" project="SelectSim" xLocation="947" yLocation="1679"/>
+        <class className="at.mabs.model.selection.SelectionStrengthEvent" project="SelectSim" xLocation="3655" yLocation="770"/>
+        <class className="at.mabs.model.selection.DefaultSelectionSimulator" project="SelectSim" xLocation="354" yLocation="1008"/>
+        <class className="at.mabs.model.selection.SelectionSimulator" project="SelectSim" xLocation="1509" yLocation="503"/>
+        <class className="at.mabs.model.selection.SelectionEndTimeEvent" project="SelectSim" xLocation="546" yLocation="502"/>
+        <class className="at.mabs.model.selection.SuperFrequencyTrace" project="SelectSim" xLocation="1704" yLocation="1735"/>
+    </diagram>
+</ajsv>

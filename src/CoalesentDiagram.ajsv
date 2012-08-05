@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Aug-05 02:41" filterScript="" licenseGrade="evaluation" licenseeName="Greg_Ewing" licenseeOrganization="University_of_Vienna" version="1.7.10.v20120627-2001">
+        <class className="at.mabs.coalescent.EventTracker" project="SelectSim" xLocation="1116" yLocation="113"/>
+        <class className="at.mabs.coalescent.CoalescentEventCalculator" project="SelectSim" xLocation="100" yLocation="100"/>
+        <class className="at.mabs.coalescent.LineageDataFactory" project="SelectSim" xLocation="41" yLocation="1160"/>
+        <class className="at.mabs.coalescent.CoalescentEvent" project="SelectSim" xLocation="120" yLocation="640"/>
+        <class className="at.mabs.coalescent.LineageState" project="SelectSim" xLocation="575" yLocation="1079"/>
+        <class className="at.mabs.coalescent.LineageData" project="SelectSim" xLocation="1039" yLocation="345"/>
+    </diagram>
+</ajsv>

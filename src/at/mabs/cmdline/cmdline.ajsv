@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Aug-05 03:48" filterScript="" licenseGrade="evaluation" licenseeName="Greg_Ewing" licenseeOrganization="University_of_Vienna" version="1.7.10.v20120627-2001">
+        <class className="at.mabs.cmdline.InitFinishParserObject" project="SelectSim" xLocation="3141" yLocation="287"/>
+        <class className="at.mabs.cmdline.CmdLineBuildException" project="SelectSim" xLocation="110" yLocation="1422"/>
+        <class className="at.mabs.cmdline.Example" project="SelectSim" xLocation="137" yLocation="288"/>
+        <class className="at.mabs.cmdline.CLNames" project="SelectSim" xLocation="254" yLocation="628"/>
+        <class className="at.mabs.cmdline.CmdLineParseException" project="SelectSim" xLocation="2646" yLocation="1220"/>
+        <class className="at.mabs.cmdline.CLUsage" project="SelectSim" xLocation="3226" yLocation="720"/>
+        <class className="at.mabs.cmdline.CmdLineParser" project="SelectSim" xLocation="908" yLocation="185"/>
+        <class className="at.mabs.cmdline.CLDescription" project="SelectSim" xLocation="221" yLocation="1044"/>
+    </diagram>
+</ajsv>

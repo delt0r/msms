@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Aug-05 03:30" filterScript="" licenseGrade="evaluation" licenseeName="Greg_Ewing" licenseeOrganization="University_of_Vienna" version="1.7.10.v20120627-2001">
+        <class className="at.mabs.coalescent.LineageState" project="SelectSim" xLocation="1753" yLocation="98"/>
+        <class className="at.mabs.coalescent.CoalescentEventCalculator" project="SelectSim" xLocation="4942" yLocation="156"/>
+        <class className="at.mabs.model.Model" project="SelectSim" xLocation="3374" yLocation="671"/>
+        <class className="at.mabs.model.ModelEvent" project="SelectSim" xLocation="1679" yLocation="1876"/>
+        <class className="at.mabs.model.ModelHistroy" project="SelectSim" xLocation="100" yLocation="961"/>
+        <class className="at.mabs.model.SampleConfiguration" project="SelectSim" xLocation="249" yLocation="176"/>
+        <class className="at.mabs.model.selection.SelectionSimulator" project="SelectSim" xLocation="4885" yLocation="1753"/>
+        <class className="at.mabs.segment.SegmentEventRecoder" project="SelectSim" xLocation="4843" yLocation="2838"/>
+        <class className="at.mabs.segment.SegmentSet" project="SelectSim" xLocation="1848" yLocation="3402"/>
+        <class className="at.mabs.segment.SegmentTracker" project="SelectSim" xLocation="3256" yLocation="3647"/>
+        <class className="at.mabs.model.selection.SelectionData" project="SelectSim" xLocation="2788" yLocation="2182"/>
+        <class className="at.mabs.model.selection.SuperFrequencyTrace" project="SelectSim" xLocation="5487" yLocation="1987"/>
+    </diagram>
+</ajsv>
