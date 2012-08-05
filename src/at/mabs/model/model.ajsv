@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Aug-05 02:58" filterScript="" licenseGrade="evaluation" licenseeName="Greg_Ewing" licenseeOrganization="University_of_Vienna" version="1.7.10.v20120627-2001">
+        <class className="at.mabs.model.Model" project="SelectSim" xLocation="1720" yLocation="191"/>
+        <class className="at.mabs.model.NewSampleEvent" project="SelectSim" xLocation="2986" yLocation="1076"/>
+        <class className="at.mabs.model.PopulationSizeModel" project="SelectSim" xLocation="2737" yLocation="2569"/>
+        <class className="at.mabs.model.SampleConfiguration" project="SelectSim" xLocation="2300" yLocation="1840"/>
+        <class className="at.mabs.model.ModelHistroy" project="SelectSim" xLocation="100" yLocation="100"/>
+        <class className="at.mabs.model.FrequencyState" project="SelectSim" xLocation="904" yLocation="2621"/>
+        <class className="at.mabs.model.ModelEvent" project="SelectSim" xLocation="1690" yLocation="2530"/>
+    </diagram>
+</ajsv>
