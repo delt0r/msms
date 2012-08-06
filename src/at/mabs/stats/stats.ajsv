@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Aug-06 10:42" filterScript="" licenseGrade="evaluation" licenseeName="Greg_Ewing" licenseeOrganization="University_of_Vienna" version="1.7.10.v20120627-2001">
+        <class className="at.mabs.stats.StatsCollectorAdapter" project="SelectSim" xLocation="349" yLocation="1957"/>
+        <class className="at.mabs.stats.StatsCollector" project="SelectSim" xLocation="348" yLocation="1446"/>
+        <class className="at.mabs.stats.StringStatsCollector" project="SelectSim" xLocation="1639" yLocation="538"/>
+        <class className="at.mabs.stats.ThetaEstimators" project="SelectSim" xLocation="-84" yLocation="113"/>
+        <class className="at.mabs.stats.MSStats" project="SelectSim" xLocation="1975" yLocation="114"/>
+        <class className="at.mabs.segment.SegmentEventRecoder" project="SelectSim" xLocation="1815" yLocation="1035"/>
+        <class className="at.mabs.segment.InfinteMutation" project="SelectSim" xLocation="2870" yLocation="498"/>
+    </diagram>
+</ajsv>
