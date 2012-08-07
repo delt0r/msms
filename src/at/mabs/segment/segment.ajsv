@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Aug-05 03:11" filterScript="" licenseGrade="evaluation" licenseeName="Greg_Ewing" licenseeOrganization="University_of_Vienna" version="1.7.10.v20120627-2001">
+        <class className="at.mabs.segment.FixedBitSet" project="SelectSim" xLocation="3345" yLocation="100"/>
+        <class className="at.mabs.segment.InfinteMutation" project="SelectSim" xLocation="4266" yLocation="160"/>
+        <class className="at.mabs.segment.SegmentSetFactory" project="SelectSim" xLocation="1388" yLocation="215"/>
+        <class className="at.mabs.segment.SegmentTracker" project="SelectSim" xLocation="729" yLocation="1600"/>
+        <class className="at.mabs.segment.SegmentEventRecoder" project="SelectSim" xLocation="3634" yLocation="999"/>
+        <class className="at.mabs.segment.AssociatedSegmentData" project="SelectSim" xLocation="1957" yLocation="1585"/>
+        <class className="at.mabs.segment.MultiOriginMutation" project="SelectSim" xLocation="4585" yLocation="565"/>
+        <class className="at.mabs.segment.SegmentSet" project="SelectSim" xLocation="100" yLocation="162"/>
+        <class className="at.mabs.segment.Segment" project="SelectSim" xLocation="2439" yLocation="173"/>
+    </diagram>
+</ajsv>

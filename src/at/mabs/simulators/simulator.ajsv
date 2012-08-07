@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Aug-06 01:45" filterScript="" licenseGrade="evaluation" licenseeName="Greg_Ewing" licenseeOrganization="University_of_Vienna" version="1.7.10.v20120627-2001">
+        <class className="at.mabs.model.selection.SelectionSimulator" project="SelectSim" xLocation="1442" yLocation="868"/>
+        <class className="at.mabs.model.ModelHistroy" project="SelectSim" xLocation="-92" yLocation="125"/>
+        <class className="at.mabs.model.Model" project="SelectSim" xLocation="1619" yLocation="1463"/>
+        <class className="at.mabs.model.selection.SelectionStrengthModel" project="SelectSim" xLocation="1558" yLocation="186"/>
+        <class className="at.mabs.model.selection.SuperFrequencyTrace" project="SelectSim" xLocation="2189" yLocation="118"/>
+    </diagram>
+</ajsv>
