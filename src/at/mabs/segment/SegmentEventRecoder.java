@@ -235,7 +235,7 @@ public class SegmentEventRecoder {
 																												// InfinteMutation(modelHistory.getAlleleLocation(),
 																												// selectedLeafSet));
 		}
-		Collections.sort(mutations);
+		Collections.sort(mutations);//FIXME slower than we would like... its the array copy that is probably half the issue
 	}
 
 	private void foldFilter() {

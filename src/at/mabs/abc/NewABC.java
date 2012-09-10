@@ -196,8 +196,8 @@ public class NewABC {
 				ArrayList<ParameterStatPair> list = new ArrayList<ParameterStatPair>(sampledPoints);
 				values = list.get(r % list.size()).getParameters();
 			}
-			//paste(msmsArgs, priors, mcmc, values);
-			pasteFancy(msmsArgs, priors);
+			paste(msmsArgs, priors, mcmc, values);
+			//pasteFancy(msmsArgs, priors);
 			// System.out.println("Args:"+Arrays.toString(msmsArgs));
 			MSLike.main(msmsArgs, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			double[] distances = collectStatitics(collectionStats);
