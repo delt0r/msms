@@ -24,7 +24,7 @@ public class EHHStat extends StatsCollectorAdapter {
 
 	@Override
 	public double[] collectStatsImp(SegmentEventRecoder recorder) {
-		List<InfinteMutation> mutations = recorder.getMutations();
+		List<InfinteMutation> mutations = recorder.getMutationsSorted();
 		double[] bins = new double[binCount];// FIXME assuming 0-1 locus.
 		int[] binC = new int[binCount];
 

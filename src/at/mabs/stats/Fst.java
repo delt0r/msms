@@ -40,7 +40,7 @@ public class Fst extends StatsCollectorAdapter {
 	
 	@Override
 	public double[] collectStatsImp(SegmentEventRecoder recorder) {
-		List<InfinteMutation> mutations=recorder.getMutations();
+		List<InfinteMutation> mutations=recorder.getMutationsUnsorted();
 		double inDiff=0;
 		double outDiff=0;
 		double allDiff=0;

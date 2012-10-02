@@ -112,7 +112,7 @@ public class BinJAFS extends StatsCollectorAdapter {
 			parseBinConfig();
 		double[] result=new double[binCount];
 		double delta=1.0;///recorder.getTotalMutationCount();
-		for(InfinteMutation m:recorder.getMutations()){
+		for(InfinteMutation m:recorder.getMutationsUnsorted()){
 			int a=m.leafSet.countSetBitsMask(mask);
 			int b=m.leafSet.countSetBitsMask(mask2);
 			result[binIndexs[a][b]]+=delta;

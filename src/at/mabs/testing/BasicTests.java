@@ -218,7 +218,7 @@ public class BasicTests {
 			thSum2 +=treeLengths[0] * treeLengths[0];
 			count++;
 
-			List<InfinteMutation> mutations =recorder.getMutations();
+			List<InfinteMutation> mutations =recorder.getMutationsUnsorted();
 			int s =0;
 			for (InfinteMutation im : mutations) {
 				if (im.leafSet.countSetBits() == 1)

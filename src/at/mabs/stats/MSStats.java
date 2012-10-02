@@ -62,7 +62,7 @@ public class MSStats implements StringStatsCollector {
 	
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {
-		List<InfinteMutation> mutations=recorder.getMutations();
+		List<InfinteMutation> mutations=recorder.getMutationsSorted();
 		//builder.append("//\n");//this is a start sim output delimiter... so its not for here..
 		if (recorder.isTrackTrees())
 			recorder.treeStrings(builder);

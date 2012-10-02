@@ -35,7 +35,7 @@ public class ThetaW extends StatsCollectorAdapter {
 		double delta = 1.0 / bins;
 		int binIndex = 1;
 
-		List<InfinteMutation> mutations = recorder.getMutations();
+		List<InfinteMutation> mutations = recorder.getMutationsUnsorted();
 		for (InfinteMutation m : mutations) {
 			int setCount = m.leafSet.countSetBitsMask(mask);
 			if (!(setCount == 0 || setCount == maskCount))

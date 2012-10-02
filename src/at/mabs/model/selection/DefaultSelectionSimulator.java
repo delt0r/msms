@@ -277,13 +277,7 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			while (true) {
 				//System.err.println("Oh yea!"+Arrays.toString(thisGen));
 				selectionSimulationStep(thisGen, nextGen, ssm, time);
-				if (restartCondition.isMeet(nextGen, ndeme)) {
-					frequencys.setIndexMostPastward();// start at the very back.
-					initFrequencys(model, frequencys);
-					frequencys.getFrequencys(thisGen);
-					//System.err.println("START AGAIN:"+Arrays.toString(nextGen)+"\t"+stopping);
-					continue;
-				}
+				
 				// copy data back.
 				frequencys.moveForward();
 				frequencys.setFrequencys(nextGen);
@@ -299,6 +293,13 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 					frequencys.setEndTime();
 					//System.err.println(events+"\t"+frequencys.getEndTime()+"\tPastward:"+frequencys.getTimeMostPastward());
 					return events;//get me out here.
+				}
+				if (restartCondition.isMeet(nextGen, ndeme)) {
+					frequencys.setIndexMostPastward();// start at the very back.
+					initFrequencys(model, frequencys);
+					frequencys.getFrequencys(thisGen);
+					//System.err.println("START AGAIN:"+Arrays.toString(nextGen)+"\t"+stopping);
+					continue;
 				}
 				double[] tmp =thisGen;
 				thisGen =nextGen;// no need for a copy
@@ -320,17 +321,18 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			frequencys.setFrequencys(nextGen);
 			time=frequencys.getIndexTime();
 			//System.out.println(restartCondition.isMeet(nextGen, ndeme));
-			if (restartCondition!=null && restartCondition.isMeet(nextGen, ndeme)) {
-				frequencys.setIndexMostPastward();// start at the very back.
-				frequencys.getFrequencys(thisGen);
-				continue;
-			}
 			if(stopping!=null && stopping.isMeet(nextGen)){
 				events.add(new SelectionStartEvent(time, thisGen));
 				//System.out.println("Stop:"+events+"\t"+Arrays.toString(nextGen)+"\t"+time);
 				frequencys.setEndTime();
 				return events;
 			}
+			if (restartCondition!=null && restartCondition.isMeet(nextGen, ndeme)) {
+				frequencys.setIndexMostPastward();// start at the very back.
+				frequencys.getFrequencys(thisGen);
+				continue;
+			}
+			
 			
 			double[] tmp =thisGen;
 			thisGen =nextGen;// no need for a copy

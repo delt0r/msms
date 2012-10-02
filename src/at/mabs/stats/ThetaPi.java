@@ -41,7 +41,7 @@ public class ThetaPi extends StatsCollectorAdapter {
 		
 		
 		
-		List<InfinteMutation> mutations=recorder.getMutations();
+		List<InfinteMutation> mutations=recorder.getMutationsUnsorted();
 		for(InfinteMutation m:mutations){
 			results[0]+=m.leafSet.getPairwiseDifferenceMask(mask)*delta;
 			if(bins>0){

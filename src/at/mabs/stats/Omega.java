@@ -26,7 +26,7 @@ public class Omega extends StatsCollectorAdapter {
 	@Override
 	public double[] collectStatsImp(SegmentEventRecoder recorder) {
 
-		List<InfinteMutation> mutations = recorder.getMutations();
+		List<InfinteMutation> mutations = recorder.getMutationsSorted();
 		if (mutations.size() < minW)
 			return new double[bins];// same size always... right!
 		double[] data = new double[bins];

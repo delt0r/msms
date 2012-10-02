@@ -51,6 +51,13 @@ public class Bag<E> implements  List<E>,RandomAccess {
 		list=new Object[size];
 	}
 	
+	public Bag(Collection<E> elements){
+		this(elements.size());
+		for(E e:elements){
+			add(e);
+		}
+	}
+	
 	private void resize(){
 		Object[] nList=new Object[list.length*2];
 		System.arraycopy(list, 0, nList, 0, size);
@@ -362,6 +369,10 @@ public class Bag<E> implements  List<E>,RandomAccess {
 			Collections.shuffle(bag);
 			System.out.println(bag+"\t"+bag.size());
 		}
+	}
+
+	public void sort() {
+		Arrays.sort(list,0,size);
 	}
 	
 }

@@ -27,6 +27,7 @@ package at.mabs.segment;
 import java.util.*;
 
 import at.mabs.model.ModelHistroy;
+import at.mabs.util.Bag;
 import at.mabs.util.PartialSumTreeElement;
 import at.mabs.util.PartialSumsTree;
 import at.mabs.util.Util;
@@ -58,7 +59,7 @@ import cern.jet.random.Poisson;
  */
 public class SegmentEventRecoder {
 
-	private List<InfinteMutation> mutations = new ArrayList<InfinteMutation>();
+	private Bag<InfinteMutation> mutations = new Bag<InfinteMutation>();
 	private TreeMap<Segment, AssociatedSegmentData> segmentData = new TreeMap<Segment, AssociatedSegmentData>();
 
 	private Poisson poission = RandomGenerator.getPoisson();
@@ -85,6 +86,7 @@ public class SegmentEventRecoder {
 	// private int treePieceCount;
 
 	private boolean finished = false;
+	private boolean sorted = false;
 
 	private List<FixedBitSet> selectedLeafSets = new ArrayList<FixedBitSet>();
 	private List<Integer> selectedLeafAlleles = new ArrayList<Integer>();
@@ -109,7 +111,7 @@ public class SegmentEventRecoder {
 	 * @param fold
 	 * @param unPhase
 	 */
-	public SegmentEventRecoder(List<InfinteMutation> mutations,boolean fold,boolean unPhase){
+	public SegmentEventRecoder(Bag<InfinteMutation> mutations,boolean fold,boolean unPhase){
 		this.mutations=mutations;
 		this.foldMutations=fold;
 		this.unPhase=unPhase;
@@ -235,7 +237,8 @@ public class SegmentEventRecoder {
 																												// InfinteMutation(modelHistory.getAlleleLocation(),
 																												// selectedLeafSet));
 		}
-		Collections.sort(mutations);//FIXME slower than we would like... its the array copy that is probably half the issue
+		
+		//Collections.sort(mutations);//FIXME slower than we would like... its the array copy that is probably half the issue
 	}
 
 	private void foldFilter() {
@@ -269,6 +272,7 @@ public class SegmentEventRecoder {
 		selectedLeafSets.clear();
 		selectedLeafAlleles.clear();
 		finished = false;
+		sorted=false;
 	}
 
 	public boolean isAddSelectedAlleleMutations() {
@@ -299,8 +303,15 @@ public class SegmentEventRecoder {
 		return trackTrees;
 	}
 
-	public List<InfinteMutation> getMutations() {
+	public List<InfinteMutation> getMutationsUnsorted() {
 		assert finished;
+		return Collections.unmodifiableList(mutations);
+	}
+	
+	public List<InfinteMutation> getMutationsSorted(){
+		assert finished;
+		if(!sorted)
+			mutations.sort();
 		return Collections.unmodifiableList(mutations);
 	}
 
