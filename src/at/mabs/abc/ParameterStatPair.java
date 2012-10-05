@@ -99,7 +99,7 @@ public class ParameterStatPair implements Comparable<ParameterStatPair> {
 	public static ParameterStatPair packIntoParamStat(double[] stats, List<PriorDensity> priors) {
 		double[] params = new double[priors.size()];
 		for (int i = 0; i < priors.size(); i++) {
-			params[i] = priors.get(i).getLastValue();
+			params[i] = priors.get(i).getValue();
 		}
 		ParameterStatPair psp = new ParameterStatPair(params, stats);
 		return psp;

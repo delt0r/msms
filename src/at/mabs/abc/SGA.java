@@ -233,12 +233,13 @@ public class SGA {
 		double mean = sum / n2;
 
 		double c = Math.sqrt((sum2 / n2) - mean * mean);
+
 		// sensable min/max
 		System.out.println("c before clamp:" + c);
-		c = Math.max(.01, c);
-		c = Math.min(.1, c);
+		c = Math.max(.001, c);
+		c = Math.min(.01, c);
 		// c = .1;
-		int A = 1000;// maxK/10;//maxK / 100;// maxK / 10;
+		int A = maxK / 10;// maxK / 100;// maxK / 10;
 		System.out.println("Big A & c:" + A + "\t" + c);
 		// now for a
 
@@ -246,6 +247,7 @@ public class SGA {
 		// we use a 75% abs rank stat instead.
 		GradFunction lgrad = new FullGradFunction();
 		double[] nabla = lgrad.grad(args, priors, start, c, n, true);
+
 		List<Double>[] nabList = new ArrayList[nabla.length];
 		for (int i = 0; i < nabList.length; i++)
 			nabList[i] = new ArrayList<Double>();
@@ -255,6 +257,7 @@ public class SGA {
 			for (int j = 0; j < nnab.length; j++) {
 				nabList[j].add(Math.abs(nnab[j]));
 				// System.out.print(nnab[j] + "\t");
+
 			}
 			// System.out.println();
 
@@ -279,7 +282,7 @@ public class SGA {
 		double pa = Double.MAX_VALUE;
 		for (int i = 0; i < nabla.length; i++) {
 
-			a[i] = Math.min(Double.MAX_VALUE, .01 * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
+			a[i] = Math.min(Double.MAX_VALUE, .05 * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
 			System.out.println("a for parameter" + (i + 1) + ":" + a[i] + "\t" + nabla[i]);
 			pa = Math.min(pa, .03 * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
 		}
@@ -311,7 +314,7 @@ public class SGA {
 			}
 			double c_k = c / Math.pow(k + 1, gamma);
 			//
-			if(k%20==0){
+			if (k % 20 == 0) {
 				bwEstimation(args, priors, x, n);
 			}
 			nabla = grad.grad(args, priors, x, c_k, n, true);
@@ -648,7 +651,6 @@ public class SGA {
 	private double density(String[] args, List<PriorDensity> priors, double[] x, int n, boolean log) {
 		// esitmate the denstiy at x
 		assert n > 1;
-		
 
 		double[][] stats = new double[n][0];
 
@@ -662,22 +664,21 @@ public class SGA {
 
 		}
 
-		
 		double ksum = 0;
 		double sigmaNorm = 1;
 		double bestPoint = Double.MAX_VALUE;
 		for (int i = 0; i < n; i++) {
 			double[] stat = stats[i];
 			double sum = 0;
-			if (bw[i] >1e-10 && !Double.isNaN(bw[i])){
-				sigmaNorm*=bw[i];
+			if (bw[i] > 1e-10 && !Double.isNaN(bw[i])) {
+				sigmaNorm *= bw[i];
 			}
-			
+
 			for (int j = 0; j < data.length; j++) {
 				double d = (data[j] - stat[j]) / bw[j];
 				if (bw[j] < 1e-10 || Double.isNaN(bw[j]))
 					continue;
-				
+
 				if (Math.abs(d) < mCutoff || !mEstimate) {
 					sum += (d * d);
 				} else {
@@ -688,8 +689,8 @@ public class SGA {
 			// System.out.println("SUM:"+sum);
 			ksum += Math.exp(-.5 * sum);
 		}
-		//sigmaNorm = Math.sqrt(sigmaNorm);
-		//System.out.println("SigNorm:" + sigmaNorm);
+		// sigmaNorm = Math.sqrt(sigmaNorm);
+		// System.out.println("SigNorm:" + sigmaNorm);
 		double dens = ksum / sigmaNorm;// / (sigmaNorm * Math.pow(2 * Math.PI,
 										// data.length /
 		// 2.0));
@@ -781,7 +782,7 @@ public class SGA {
 
 			stds[i] = Math.sqrt((stds[i] / n - means[i] * means[i]) * nfactor2);
 		}
-		System.out.println("BW:"+Arrays.toString(stds));
+		System.out.println("BW:" + Arrays.toString(stds));
 		this.bw = stds;
 	}
 
@@ -790,7 +791,7 @@ public class SGA {
 		for (int i = 0; i < x.length; i++) {
 			PriorDensity pd = priors.get(i);
 			pd.setLastValueUI(x[i]);
-			t[i] = pd.getLastValue();
+			t[i] = pd.getTransformedValue();
 		}
 		return t;
 	}
@@ -817,7 +818,7 @@ public class SGA {
 			PriorDensity pd = priors.get(i);
 			double value = values[i];//
 			pd.setLastValueUI(value);
-			value = pd.getLastValue();
+			value = pd.getTransformedValue();
 			args[pd.getArgIndex()] = "" + value;
 		}
 	}
@@ -867,9 +868,10 @@ public class SGA {
 	private void paste(String[] args, List<PriorDensity> priors, boolean rand) {
 		for (int i = 0; i < priors.size(); i++) {
 			PriorDensity pd = priors.get(i);
-			double value = pd.getLastValue();
-			if (rand)
-				value = pd.next();
+			if (rand){
+				pd.generateRandom();
+			}
+			double value = pd.getTransformedValue(); 
 			args[pd.getArgIndex()] = "" + value;
 		}
 		pasteSeed(args);

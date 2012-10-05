@@ -12,9 +12,8 @@ public class CopyPriorDensity extends PriorDensity {
 		this.pd=pd;
 	}
 	@Override
-	public double next() {
-		//throw new RuntimeException("Copy does not create randomness!");
-		return pd.getLastValue();//should always copy something that was before this in the list FIXME
+	public void generateRandom() {
+		//noop
 	}
 	@Override
 	public double nextProp(double v) {
@@ -25,8 +24,8 @@ public class CopyPriorDensity extends PriorDensity {
 		return argIndex;
 	}
 	@Override
-	public double getLastValue() {
-		return pd.getLastValue();
+	public double getValue() {
+		return pd.getValue();
 	}
 	
 	
