@@ -49,6 +49,16 @@ public class SGA {
 	private boolean mEstimate;
 	private double mCutoff = 10;
 
+	private double alpha = 1;// .602;
+	private double gamma = .101;
+	private double c = .01;
+	private int initalStarting = 5000;
+	private int bestOfCount = 10;
+	private double initalJumpSize = .05;
+	private int bwEstimationInterval = 20;
+	private boolean isDirInSphere=false;
+	private double clampLength=.01;
+
 	private boolean verbose;
 
 	private boolean writeData;// good for simulations.
@@ -60,7 +70,8 @@ public class SGA {
 
 	private double[] bw;
 	private int enn = 10;
-	private int iterations = 50000;
+
+	private int iterations = 5000;
 
 	private long seed = System.nanoTime();
 
@@ -83,7 +94,7 @@ public class SGA {
 				realParamCount++;
 			} else if (arg.startsWith("%")) {
 				int code = Integer.parseInt(arg.substring(1));
-				priors.add(new CopyPriorDensity(priors.get(code), i));
+				priors.add(new CopyPriorDensity(priors.get(code-1), i));
 			}
 		}
 		// now we have our parameter ranges...
@@ -119,19 +130,19 @@ public class SGA {
 		GradFunction better = new FastGradFunction();// FullGradFunction();//
 														// FastGradFunction();
 
-		PointDensity[] startingPoints = new PointDensity[5000];
+		PointDensity[] startingPoints = new PointDensity[initalStarting];
 		// first generate a condition set. We do the 1000, 100 thing.
 		for (int i = 0; i < startingPoints.length; i++) {
 			double[] p = randomPoint(priors);
 			double score = simple.density(args, priors, p, 1, false);
 			startingPoints[i] = new PointDensity(p, score);
-			if (i % (startingPoints.length / 80) == 0)
+			if ( i % (1+startingPoints.length / 80) == 0)
 				System.out.print("*");
 		}
 		System.out.println();
 		Arrays.sort(startingPoints);
 		// now cut it down to the top 100.
-		PointDensity[] betterStarts = new PointDensity[10];
+		PointDensity[] betterStarts = new PointDensity[bestOfCount];
 		System.arraycopy(startingPoints, 0, betterStarts, 0, betterStarts.length);
 		System.out.println("Best:" + betterStarts[0]);
 
@@ -201,8 +212,7 @@ public class SGA {
 	 */
 	private double[] genericKWAlgo(String[] args, List<PriorDensity> priors, double[] start, int n, int maxK, GradFunction grad) {
 		System.out.println("\ninit starting parameters:" + Arrays.toString(transform(start, priors)));
-		double alpha = 1;// .602;
-		double gamma = .101;
+
 		System.out.println("KWMethod with alpha:" + alpha + "\tand gamma:" + gamma);
 
 		int n2 = 100;
@@ -212,33 +222,11 @@ public class SGA {
 		// paste(args,priors,start);
 		int breakCount = 0;
 		bwEstimation(args, priors, start, n);
-		for (int i = 0; i < n2; i++) {
-			double d = (grad.density(args, priors, start, n, true));
-			// System.out.println(d);
-			if (breakCount > 100) {
-				System.out.println("stdUn*:" + d);
-				return null;
-			}
-			if (Double.isInfinite(d) || Double.isNaN(d)) {
-				System.out.println("stdUn*:" + d);
-				// return null;// d = MINLOG;
-				i--;
-				breakCount++;
-				continue;
-			}
+		//
+		System.out.println("c:" + c);
+		// c = Math.max(.001, c);
+		// c = Math.min(.01, c);
 
-			sum += d;
-			sum2 += d * d;
-		}
-		double mean = sum / n2;
-
-		double c = Math.sqrt((sum2 / n2) - mean * mean);
-
-		// sensable min/max
-		System.out.println("c before clamp:" + c);
-		c = Math.max(.001, c);
-		c = Math.min(.01, c);
-		// c = .1;
 		int A = maxK / 10;// maxK / 100;// maxK / 10;
 		System.out.println("Big A & c:" + A + "\t" + c);
 		// now for a
@@ -282,7 +270,7 @@ public class SGA {
 		double pa = Double.MAX_VALUE;
 		for (int i = 0; i < nabla.length; i++) {
 
-			a[i] = Math.min(Double.MAX_VALUE, .05 * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
+			a[i] = Math.min(Double.MAX_VALUE, initalJumpSize * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
 			System.out.println("a for parameter" + (i + 1) + ":" + a[i] + "\t" + nabla[i]);
 			pa = Math.min(pa, .03 * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
 		}
@@ -314,7 +302,7 @@ public class SGA {
 			}
 			double c_k = c / Math.pow(k + 1, gamma);
 			//
-			if (k % 20 == 0) {
+			if (k % bwEstimationInterval == 0) {
 				bwEstimation(args, priors, x, n);
 			}
 			nabla = grad.grad(args, priors, x, c_k, n, true);
@@ -338,7 +326,7 @@ public class SGA {
 			}
 			last = x.clone();
 			mul(nabla, a_k, nabla);
-			clampLength(nabla, .01);
+			clampLength(nabla, clampLength);
 			add(x, nabla, x);
 			clamp(x, priors, c_k);
 			trace.add(transform(x, priors));
@@ -370,13 +358,13 @@ public class SGA {
 				sub(paramSums, fifoParams.getLast(), paramSums);
 				fifoParams.removeLast();
 			}
-			// if (k % 10 == 0) {
-			// System.out.println("Moving Average:");
-			// for (int i =0; i < paramSums.length; i++) {
-			// System.out.print(paramSums[i] / fifoParams.size() + "\t");
-			// }
-			// System.out.println();
-			// }
+			if (k % 10 == 0) {
+				System.out.println("Moving Average:");
+				for (int i = 0; i < paramSums.length; i++) {
+					System.out.print(paramSums[i] / fifoParams.size() + "\t");
+				}
+				System.out.println();
+			}
 		}
 		for (int i = 0; i < paramSums.length; i++) {
 			paramSums[i] /= fifoParams.size();
@@ -589,12 +577,13 @@ public class SGA {
 				}
 			}
 		}
-		// randomDir(rv1, rv2);
-		// mul(rv1, delta, rv1);
-		// mul(rv2, delta, rv2);
-		// add(rv1,x,rv1);
-		// add(rv2,x,rv2);
-
+		if (isDirInSphere) {
+			randomDir(rv1, rv2);
+			mul(rv1, delta, rv1);
+			mul(rv2, delta, rv2);
+			add(rv1, x, rv1);
+			add(rv2, x, rv2);
+		}
 		// System.out.println("1:"+Arrays.toString(rv1));
 		// System.out.println("2:"+Arrays.toString(rv2));
 		double da = density(args, priors, rv1, n, log);
@@ -665,14 +654,18 @@ public class SGA {
 		}
 
 		double ksum = 0;
+
 		double sigmaNorm = 1;
+		for (int j = 0; j < data.length; j++) {
+			if (bw[j] > 1e-10 && !Double.isNaN(bw[j])) {
+				sigmaNorm *= bw[j];
+			}
+		}
+
 		double bestPoint = Double.MAX_VALUE;
 		for (int i = 0; i < n; i++) {
 			double[] stat = stats[i];
 			double sum = 0;
-			if (bw[i] > 1e-10 && !Double.isNaN(bw[i])) {
-				sigmaNorm *= bw[i];
-			}
 
 			for (int j = 0; j < data.length; j++) {
 				double d = (data[j] - stat[j]) / bw[j];
@@ -868,10 +861,10 @@ public class SGA {
 	private void paste(String[] args, List<PriorDensity> priors, boolean rand) {
 		for (int i = 0; i < priors.size(); i++) {
 			PriorDensity pd = priors.get(i);
-			if (rand){
+			if (rand) {
 				pd.generateRandom();
 			}
-			double value = pd.getTransformedValue(); 
+			double value = pd.getTransformedValue();
 			args[pd.getArgIndex()] = "" + value;
 		}
 		pasteSeed(args);
@@ -1066,33 +1059,69 @@ public class SGA {
 	@CLUsage("SEED")
 	public void setSeed(String seedString) {
 		if (seedString.startsWith("0x")) {
-			seed = (new BigInteger(seedString.substring(2), 16)).longValue();// hack
-																				// because
-																				// some
-																				// things
-																				// in
-																				// java
-																				// are
-																				// stupid
+			seed = (new BigInteger(seedString.substring(2), 16)).longValue();
 		} else {
 			this.seed = Long.parseLong(seedString);
 		}
 	}
 
+	
+	@CLNames(names={"-mestCutoff","-mescutoff","-mcutoff"})
+	@CLDescription("Sets the \\delta/h cutoff value for the M Estinator kernel function")
+	public void setmCutoff(double mCutoff) {
+		this.mCutoff = mCutoff;
+	}
+	@CLNames(names={"-alpha"})
+	public void setAlpha(double alpha) {
+		this.alpha = alpha;
+	}
+	@CLNames(names={"-gamma"})
+	public void setGamma(double gamma) {
+		this.gamma = gamma;
+	}
+	@CLNames(names={"-c"})
+	public void setC(double c) {
+		this.c = c;
+	}
+
+	@CLNames(names={"-initalRandomStarts","-irs"})
+	@CLDescription("How many random points to rank for starting positions")
+	public void setInitalStarting(int initalStarting) {
+		this.initalStarting = initalStarting;
+	}
+
+	@CLNames(names={"-bestOfKeep"})
+	@CLDescription("From all the random starting positions, how many to use starting from the best match")
+	public void setBestOfCount(int bestOfCount) {
+		this.bestOfCount = bestOfCount;
+	}
+
+	@CLNames(names={"-initJumpSize","-ijs"})
+	@CLDescription("How far do we want the first a_k to go in the first interation?")
+	public void setInitalJumpSize(double initalJumpSize) {
+		this.initalJumpSize = initalJumpSize;
+	}
+
+	@CLNames(names={"-bwInterval","-bwi"})
+	@CLDescription("iteration count between BW estimation")
+	public void setBwEstimationInterval(int bwEstimationInterval) {
+		this.bwEstimationInterval = bwEstimationInterval;
+	}
+
+	@CLNames(names={"-sphere"})
+	@CLDescription("Generate the slice as a random direction in the sphere")
+	public void setDirInSphereTrue() {
+		this.isDirInSphere = true;
+	}
+
+	@CLNames(names={"-clampLength","-cl"})
+	@CLDescription("length (hypercube) to clamp movement too. Prevents rare but expensive excursions")
+	public void setClampLength(double clampLength) {
+		this.clampLength = clampLength;
+	}
+	
 	public static void main(String[] args) {
-		// Matrix matrix=new Matrix(new double[] {-.75,.25,.25,.25
-		// ,.25,-.75,.25,.25 ,.25,.25,-.75,.25 ,.25,.25,.25,-.75},4);
-		// long time=System.nanoTime();
-		// double[] d=null;
-		// Matrix m=null;
-		// EigenvalueDecomposition evd=matrix.eig();
-		// Matrix vt=evd.getV().transpose();
-		// for(int i=0;i<1000000;i++){
-		// //d=evd.getRealEigenvalues();
-		// m=evd.getV().times(evd.getD()).times(vt);
-		// }
-		// System.out.println("EIGEN:"+(System.nanoTime()-time)*1e-9);
-		// m.print(m.getRowDimension(), m.getColumnDimension());
+		
 		SGA sga = new SGA();
 		CmdLineParser<SGA> parser = null;
 		try {

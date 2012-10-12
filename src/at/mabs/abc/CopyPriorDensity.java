@@ -27,6 +27,10 @@ public class CopyPriorDensity extends PriorDensity {
 	public double getValue() {
 		return pd.getValue();
 	}
+	@Override
+	public double getTransformedValue() {
+		return pd.getTransformedValue();
+	}
 	
 	
 }

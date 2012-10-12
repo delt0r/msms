@@ -17,7 +17,7 @@ import java.util.*;
 import com.esotericsoftware.yamlbeans.YamlWriter;
 
 /**
- * reads in next gen sequences from std in, spits out a stats thing.
+ * reads in next gen sequences from std in, spits out a stats thing. Using the GMI type format... 
  * 
  * @author bob
  * 

@@ -19,27 +19,45 @@ public class HackStat extends StatsCollectorAdapter {
 	public double[] collectStatsImp(SegmentEventRecoder recorder) {
 
 		String[] params = CommandLineMarshal.HACK_PARAMS;
-		//System.out.println("HPARAMString:" + Arrays.toString(params));
+
 		parameters = new double[params.length];
 		for (int i = 0; i < params.length; i++) {
 			parameters[i] = Double.parseDouble(params[i]);
 		}
 
-		double[] result = new double[parameters.length / 2];
-		//System.out.println("HPARAM:" + Arrays.toString(parameters));
-		for (int i = 0; i < result.length; i++) {
-			result[i] = parameters[i * 2] + random.nextGaussian() * parameters[i * 2 + 1];
-		}
-		//System.out.println("R:" + Arrays.toString(result));
-		int l=result.length;
-//		for(int i=result.length-1;i>=0;i--){
-//			int j=1;
-//			if(i!=0)
-//				j=1;
-//			result[i]=((((result[i]+3)*result[(i)%l]+5)*result[(i)%l]+7)*result[(i+3)%l]+11);//((.1*result[i]*result[i]*result[i]-result[i]*result[i]+result[(i+j)%result.length]+result[(i+j+1)%result.length]));
-//		}
-		
-		return result;
-	}
+		double[] rnorms = new double[parameters.length / 2];
 
+		for (int i = 0; i < rnorms.length; i++) {
+			rnorms[i] = parameters[i * 2] + random.nextGaussian() * parameters[i * 2 + 1];
+		}
+
+		double[] results = new double[rnorms.length];
+
+		switch (results.length) {
+		case 10:
+			results[9]=rnorms[8]*rnorms[9];
+		case 9:
+			results[8]=rnorms[8]+rnorms[9];
+		case 8:
+			results[7]=rnorms[6]+rnorms[7];
+		case 7:
+			results[6]=rnorms[6];
+		case 6:
+			results[5]=rnorms[3]+rnorms[5];
+		case 5:
+			results[4]=rnorms[5]+rnorms[4];
+		case 4:
+			results[3]=rnorms[3]+rnorms[4];
+		case 3:
+			results[2]=rnorms[1]-rnorms[2];
+		case 2:
+			results[1]=rnorms[1]+rnorms[2];
+		case 1:
+			results[0]=rnorms[0];
+		}
+		for(int i=10;i<results.length;i++){
+			results[i]=rnorms[i]*rnorms[i-1];
+		}
+		return results;
+	}
 }
