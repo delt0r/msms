@@ -27,6 +27,7 @@ public class PriorDensity {
 	private double value;
 	private int transform = 0;
 	private double factor=1;
+	private boolean integer=false;
 	private static final int ONE_OVER = 1;
 
 	protected PriorDensity() {
@@ -53,7 +54,9 @@ public class PriorDensity {
 				if(tokens.hasMoreTokens()){
 					factor=Double.parseDouble(tokens.nextToken());
 				}
-			} else {
+			} else if(last.startsWith("i")){
+				integer=true;
+			}else {
 				proposialWindow = Double.parseDouble(last);
 			}
 		}
@@ -79,6 +82,9 @@ public class PriorDensity {
 			value = min - Math.log(u);
 
 		}
+		if(integer){
+			value=Math.rint(value);
+		}
 	}
 
 	// propose a value, does the clamping.
@@ -88,6 +94,9 @@ public class PriorDensity {
 		double nmax = Math.min(v + span * proposialWindow, max);
 		value = random.nextDouble() * (nmax - nmin) + nmin;
 		// System.out.println("Parameter:"+lastValue);
+		if(integer){
+			value=Math.rint(value);
+		}
 		return value;
 	}
 
@@ -120,6 +129,9 @@ public class PriorDensity {
 		lastValue = Math.min(lastValue, max);
 		lastValue = Math.max(lastValue, min);
 		this.value = lastValue;
+		if(integer){
+			value=Math.rint(value);
+		}
 	}
 
 	public double getLastValueUI() {
@@ -129,5 +141,9 @@ public class PriorDensity {
 	public void setLastValueUI(double uiValue) {
 		double lv = min + (max - min) * uiValue;
 		setValue(lv);
+	}
+	
+	public boolean isInteger() {
+		return integer;
 	}
 }

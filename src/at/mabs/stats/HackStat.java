@@ -25,13 +25,14 @@ public class HackStat extends StatsCollectorAdapter {
 			parameters[i] = Double.parseDouble(params[i]);
 		}
 
-		double[] rnorms = new double[parameters.length / 2];
+		double[] rnorms = new double[parameters.length / 2+1];//extra for the degen case
 
-		for (int i = 0; i < rnorms.length; i++) {
+		for (int i = 0; i < parameters.length/2; i++) {
 			rnorms[i] = parameters[i * 2] + random.nextGaussian() * parameters[i * 2 + 1];
 		}
+		rnorms[rnorms.length-1]=random.nextGaussian();
 
-		double[] results = new double[rnorms.length];
+		double[] results = new double[parameters.length/2];
 
 		switch (results.length) {
 		case 10:
@@ -50,7 +51,7 @@ public class HackStat extends StatsCollectorAdapter {
 			results[3]=rnorms[3]+rnorms[4];
 		case 3:
 			results[2]=rnorms[1]-rnorms[2];
-		case 2:
+		case 2://degen case! 
 			results[1]=rnorms[1]+rnorms[2];
 		case 1:
 			results[0]=rnorms[0];
