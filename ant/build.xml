@@ -18,7 +18,7 @@
 
 	<target name="compile" depends="init" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac destdir="${build}" debug="true" target="1.6">
+		<javac destdir="${build}" debug="true" target="1.7" source="1.7">
 			<src path="${src}" />
 			<exclude name="**/Test*.java" />
 			<classpath>
