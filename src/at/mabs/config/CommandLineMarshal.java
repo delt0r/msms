@@ -947,7 +947,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 
 	@CLNames(names ={ "-ws" })
-	@CLDescription("Condtions on the number of segregating sites. This option will over ride any -t option")
+	@CLDescription("Weighted mutations. All edges get a weighted mutations. This reduces shot noise. Most statistics are not weight aware. Not a general user option")
 	@CLUsage("segsites")
 	public void setWeightedSegregatingSites(double n) {
 		this.segSiteCount =n;
