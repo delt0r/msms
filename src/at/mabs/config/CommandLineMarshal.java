@@ -156,7 +156,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	private boolean isSeedSet;
 	private boolean isCondtionalMutation;
 
-	private int segSiteCount;
+	private double segSiteCount;
 
 	private FrequencyCondition stoppingCondition=new BasicFrequencyCondition(-1, -1, 1);//fixation is good
 
@@ -177,6 +177,8 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	private RestartCondition restartCondition=new RestartCondition.Default();
 	
 	private boolean foldMutations=false;
+	
+	private boolean weightedMutations=false;
 	
 	private double maxRecombinationRate=Double.MAX_VALUE;
 	
@@ -571,7 +573,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		return seed;
 	}
 
-	public int getSegSiteCount() {
+	public double getSegSiteCount() {
 		return segSiteCount;
 	}
 
@@ -944,6 +946,15 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		isCondtionalMutation =true;
 	}
 
+	@CLNames(names ={ "-ws" })
+	@CLDescription("Condtions on the number of segregating sites. This option will over ride any -t option")
+	@CLUsage("segsites")
+	public void setWeightedSegregatingSites(double n) {
+		this.segSiteCount =n;
+		isCondtionalMutation =true;
+		weightedMutations=true;
+	}
+	
 	@CLNames(names ={ "-T" })
 	@CLUsage("")
 	@CLDescription("Output gene trees")
@@ -1104,6 +1115,10 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		this.maxRecombinationRate = maxRecombinationRate/(2*getN());
 	}
 
+	
+	public boolean isWeightedMutations() {
+		return weightedMutations;
+	}
 	
 	
 }

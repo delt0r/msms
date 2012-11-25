@@ -75,12 +75,13 @@ public class SegmentEventRecoder {
 	private ModelHistroy modelHistory;// used for mutation data.
 
 	private boolean foldMutations = false;
-	private boolean unPhase=false;
+	private boolean unPhase = false;
+	private boolean weightedMutations = false;
 
 	private boolean isConditionalMutation;
 	private PartialSumsTree<TreePiece> pieces = new PartialSumsTree<TreePiece>();
 
-	private ArrayList<TreePiece> orderedPieces = new ArrayList<TreePiece>();// for
+	//private ArrayList<TreePiece> orderedPieces = new ArrayList<TreePiece>();// for
 																			// finite
 																			// sites
 	// private int treePieceCount;
@@ -102,23 +103,26 @@ public class SegmentEventRecoder {
 		// zeroRecombination=modelHistory.getRecombinationRate()==0;
 		totalLeafCount = modelHistory.getSampleConfiguration().getMaxSamples();
 		foldMutations = modelHistory.isFoldMutations();
-		unPhase=modelHistory.isUnphase();
+		unPhase = modelHistory.isUnphase();
+		weightedMutations=modelHistory.isWeightedMutations();
 	}
-	
+
 	/**
-	 * just to send into stats collectors. Should point out that this will create a broken segEvenRecorder.
+	 * just to send into stats collectors. Should point out that this will
+	 * create a broken segEvenRecorder.
+	 * 
 	 * @param mutations
 	 * @param fold
 	 * @param unPhase
 	 */
-	public SegmentEventRecoder(Bag<InfinteMutation> mutations,boolean fold,boolean unPhase){
-		this.mutations=mutations;
-		this.foldMutations=fold;
-		this.unPhase=unPhase;
+	public SegmentEventRecoder(Bag<InfinteMutation> mutations, boolean fold, boolean unPhase) {
+		this.mutations = mutations;
+		this.foldMutations = fold;
+		this.unPhase = unPhase;
 		if (foldMutations) {
 			foldFilter();
 		}
-		if(unPhase){
+		if (unPhase) {
 			unPhaseFilter();
 		}
 	}
@@ -200,10 +204,19 @@ public class SegmentEventRecoder {
 	public void finishRecording() {
 		finished = true;
 		if (isConditionalMutation) {
-			for (int i = 0; i < modelHistory.getSegSiteCount(); i++) {
-				TreePiece tp = pieces.select(random.nextDouble() * pieces.getTotalWeight());
-				double p = random.nextDouble() * (tp.stop - tp.start) + tp.start;
-				mutations.add(new InfinteMutation(p, tp.leafSet));
+			if (!weightedMutations) {
+				for (int i = 0; i < modelHistory.getSegSiteCount(); i++) {
+					TreePiece tp = pieces.select(random.nextDouble() * pieces.getTotalWeight());
+					double p = random.nextDouble() * (tp.stop - tp.start) + tp.start;
+					mutations.add(new InfinteMutation(p, tp.leafSet));
+				}
+			} else {
+				//single weighted mutation per edge. 
+				double scale=modelHistory.getSegSiteCount()/pieces.getTotalWeight();
+				for(TreePiece tp:pieces){
+					double p = random.nextDouble() * (tp.stop - tp.start) + tp.start;
+					mutations.add(new InfinteMutation(p, tp.leafSet,tp.weight*scale));
+				}
 			}
 		}
 		// fold the spectrum!
@@ -211,7 +224,7 @@ public class SegmentEventRecoder {
 			// System.out.println("FOLDING!!");
 			foldFilter();
 		}
-		if(unPhase){
+		if (unPhase) {
 			unPhaseFilter();
 		}
 
@@ -237,8 +250,9 @@ public class SegmentEventRecoder {
 																												// InfinteMutation(modelHistory.getAlleleLocation(),
 																												// selectedLeafSet));
 		}
-		
-		//Collections.sort(mutations);//FIXME slower than we would like... its the array copy that is probably half the issue
+
+		// Collections.sort(mutations);//FIXME slower than we would like... its
+		// the array copy that is probably half the issue
 	}
 
 	private void foldFilter() {
@@ -248,18 +262,18 @@ public class SegmentEventRecoder {
 			}
 		}
 	}
-	
-	private void unPhaseFilter(){
+
+	private void unPhaseFilter() {
 		for (InfinteMutation m : mutations) {
-			FixedBitSet leafSet=m.leafSet;
-			for(int i=0;i<leafSet.getTotalLeafCount();i+=2){
-				if(leafSet.contains(i)==leafSet.contains(i+1)){
+			FixedBitSet leafSet = m.leafSet;
+			for (int i = 0; i < leafSet.getTotalLeafCount(); i += 2) {
+				if (leafSet.contains(i) == leafSet.contains(i + 1)) {
 					continue;
 				}
-				//else we swap.. with p=.5
-				if(.5<random.nextFloat()){
-					boolean a=leafSet.contains(i);
-					leafSet.set(i,!a);
+				// else we swap.. with p=.5
+				if (.5 < random.nextFloat()) {
+					boolean a = leafSet.contains(i);
+					leafSet.set(i, !a);
 				}
 			}
 		}
@@ -272,7 +286,7 @@ public class SegmentEventRecoder {
 		selectedLeafSets.clear();
 		selectedLeafAlleles.clear();
 		finished = false;
-		sorted=false;
+		sorted = false;
 	}
 
 	public boolean isAddSelectedAlleleMutations() {
@@ -307,10 +321,10 @@ public class SegmentEventRecoder {
 		assert finished;
 		return Collections.unmodifiableList(mutations);
 	}
-	
-	public List<InfinteMutation> getMutationsSorted(){
+
+	public List<InfinteMutation> getMutationsSorted() {
 		assert finished;
-		if(!sorted)
+		if (!sorted)
 			mutations.sort();
 		return Collections.unmodifiableList(mutations);
 	}

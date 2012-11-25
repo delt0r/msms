@@ -29,12 +29,14 @@ package at.mabs.segment;
 /**
  * Mutation. The samples that have this mutation are stored in leafSet. 
  * 
+ * 
  * @author greg
  *
  */
 public class InfinteMutation implements Comparable<InfinteMutation>{
 	public final double position;
 	public final FixedBitSet leafSet;
+	public final double weight; 
 
 	/**
 	 * @param p
@@ -43,6 +45,12 @@ public class InfinteMutation implements Comparable<InfinteMutation>{
 	public InfinteMutation(double p, FixedBitSet s) {
 		this.position =p;
 		leafSet =s;
+		weight=1;
+	}
+	public InfinteMutation(double p, FixedBitSet s,double w) {
+		this.position=p;
+		this.leafSet=s;
+		this.weight=w;
 	}
 	
 	@Override

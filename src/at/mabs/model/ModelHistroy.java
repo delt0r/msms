@@ -63,7 +63,7 @@ public class ModelHistroy {
 	private double backAlleleMutationRate;
 
 	private double neutralMutationRate;
-	private int segSiteCount;
+	private double segSiteCount;
 	private double alleleLocation;
 	private double sAA, saA, saa;
 	private double N;
@@ -88,7 +88,7 @@ public class ModelHistroy {
 	private ForwardStatsCollector forwardTraceOutput;
 	private boolean foldMutations;
 	private boolean unphase;
-
+	private boolean weightedMutations;
 	private double maxRecombinationRate=Double.MAX_VALUE;
 	
 	/**
@@ -702,11 +702,11 @@ public class ModelHistroy {
 		this.lociConfiguration =lociConfiguration;
 	}
 
-	public int getSegSiteCount() {
+	public double getSegSiteCount() {
 		return segSiteCount;
 	}
 
-	public void setSegSiteCount(int segSiteCount) {
+	public void setSegSiteCount(double segSiteCount) {
 		this.segSiteCount =segSiteCount;
 	}
 
@@ -761,5 +761,13 @@ public class ModelHistroy {
 	
 	public void setUnphase(boolean unphase) {
 		this.unphase = unphase;
+	}
+
+	public boolean isWeightedMutations() {
+		return weightedMutations;
+	}
+	
+	public void setWeightedMutations(boolean weightedMutations) {
+		this.weightedMutations = weightedMutations;
 	}
 }

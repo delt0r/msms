@@ -108,7 +108,7 @@ public class StatsExport {
 				for(StatsCollector sc:collectors){
 					sc.init();
 				}
-				int snps = clm.getSegSiteCount();
+				int snps = (int)clm.getSegSiteCount();
 				Random rand = new Random64();
 				for (int i = 0; i < clm.getRepeats(); i++) {
 					int start = rand.nextInt(mutations.size());
