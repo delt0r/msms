@@ -339,7 +339,29 @@ public class ModelHistroy {
 		
 		//we find the start and keep calling till we are either at the last model, or 
 		// we hit a start selection event. then all all the new selection events...
-		Iterator<ModelEvent> eventIterator=events.descendingIterator();
+		Iterator<ModelEvent> eventIterator=new Iterator<ModelEvent>() {
+			Iterator<ModelEvent> wraped=events.descendingIterator();
+			@Override
+			public void remove() {
+				throw new RuntimeException("Bugger off ");
+				
+			}
+			
+			@Override
+			public ModelEvent next() {
+				ModelEvent me=wraped.next();
+				//System.out.println("WrappedNext:"+me);
+				//StackTraceElement[] st=Thread.getAllStackTraces().get(Thread.currentThread());
+				//System.out.println(Arrays.toString(st));
+				return me;
+			}
+			
+			@Override
+			public boolean hasNext() {
+				// TODO Auto-generated method stub
+				return wraped.hasNext();
+			}
+		};
 		Iterator<Model> modelIterator=models.descendingIterator();
 		
 		ModelEvent startEvent=eventIterator.next();
@@ -389,15 +411,16 @@ public class ModelHistroy {
 			//events that are intermediate in a model. This is because these events are for the 
 			// coalsescent part... you can't "copy" state within a model pass... so events that
 			//need to do this must already be processed. 
-			
-			while(startEvent.getEventTime()!=nextModel.getStartTime() && eventIterator.hasNext()){
+			//System.out.println("SKIP EVENTS:"+startEvent+"\tMSTART TIME"+nextModel.getStartTime());
+			while(startEvent.getEventTime()!=nextModel.getEndTime() && eventIterator.hasNext()){
 				startEvent=eventIterator.next();
 				if(startEvent instanceof SelectionStartEvent)
 					break;//don't need to break to a label, since the remaining whiles will fall through to the instanceof test again
 			}
 			//now apply events. but should make sure they are not "stop" events
 			model.getSelectionData().getFrequencysFromStart(fstate);
-			while(startEvent.getEventTime()==nextModel.getStartTime() && !(startEvent instanceof SelectionStartEvent)){
+			//System.out.println("START EVENTS:"+startEvent+"\t"+nextModel.getStartTime());
+			while(startEvent.getEventTime()==nextModel.getEndTime() && !(startEvent instanceof SelectionStartEvent)){
 				startEvent.processEventSelection(model.getSelectionData(), nextModel.getSelectionData(), fstate);
 				if(eventIterator.hasNext()){
 					startEvent=eventIterator.next();
@@ -649,29 +672,29 @@ public class ModelHistroy {
 		/*
 		 * Guts of the class. move to the next model --by applying the events between
 		 */
-		public void moveToNextModel() {
-			currentModel.getSelectionData().getFrequencysFromStart(state);
-			// so first we must note that the next model may need no events between.
-			// we know there is a next model
-			Model next =modelIterator.next();
-			//next.initSelectionData();// just cheaking
-			if (currentEvent == null || currentEvent.getEventTime() < currentModel.getStartTime()) {
-				next.getSelectionData().setFrequencyToEnd(state);
-				currentModel =next;
-				return;
-			}
-			while (currentEvent != null && currentEvent.getEventTime() == currentModel.getStartTime()) {
-				currentEvent.processEventSelection(currentModel.getSelectionData(), next.getSelectionData(), state);
-				if (eventIterator.hasNext()) {
-					currentEvent =eventIterator.next();
-				} else {
-					currentEvent =null;
-				}
-			}
-			// now apply the state.
-			next.getSelectionData().setFrequencyToEnd(state);
-			currentModel =next;
-		}
+//		public void moveToNextModel() {
+//			currentModel.getSelectionData().getFrequencysFromStart(state);
+//			// so first we must note that the next model may need no events between.
+//			// we know there is a next model
+//			Model next =modelIterator.next();
+//			//next.initSelectionData();// just cheaking
+//			if (currentEvent == null || currentEvent.getEventTime() < currentModel.getStartTime()) {
+//				next.getSelectionData().setFrequencyToEnd(state);
+//				currentModel =next;
+//				return;
+//			}
+//			while (currentEvent != null && currentEvent.getEventTime() == currentModel.getStartTime()) {
+//				currentEvent.processEventSelection(currentModel.getSelectionData(), next.getSelectionData(), state);
+//				if (eventIterator.hasNext()) {
+//					currentEvent =eventIterator.next();
+//				} else {
+//					currentEvent =null;
+//				}
+//			}
+//			// now apply the state.
+//			next.getSelectionData().setFrequencyToEnd(state);
+//			currentModel =next;
+//		}
 
 		public boolean hasNextModel() {
 			return modelIterator.hasNext();
