@@ -77,6 +77,9 @@ public class StatsExportVetMed {
 				line = br.readLine();
 			}
 			List<StatsCollector> collectors = clm.getStatsCollectors();
+			for (StatsCollector sc : collectors) {
+				sc.init();
+			}
 			System.out.println("Reps:"+mutations.size()/clm.getRepeats());
 			for (int i = 0; i < clm.getRepeats(); i++) {
 				int start = i*mutations.size()/clm.getRepeats();
@@ -87,7 +90,7 @@ public class StatsExportVetMed {
 					sc.collectStats(ser);
 				}
 			}
-
+			
 			Writer writer = new FileWriter(clm.HACK_PARAMS[1]);
 			saveStats(writer, collectors);
 

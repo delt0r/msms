@@ -299,7 +299,7 @@ public class SGA {
 		// c = Math.max(.001, c);
 		// c = Math.min(.01, c);
 
-		int A = 100;// maxK / 100;// maxK / 10;
+		int A = 500;// maxK / 100;// maxK / 10;
 		System.out.println("Big A & c:" + A + "\t" + c);
 		// now for a
 
@@ -431,7 +431,7 @@ public class SGA {
 					} else {
 						biasCount[p] = 0;
 					}
-					if ((worseCount > 1 && biasCount[p] > 0) || biasCount[p] > 1) {
+					if ((worseCount > 1 && biasCount[p] > 0) || biasCount[p] > 0) {
 						a[p] *= 2;
 						System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ Incressing A in param:" + p);
 						ajump = true;
@@ -443,7 +443,7 @@ public class SGA {
 				// check max deflections.
 				double[] range = maxRange(fifoParams);
 				for (int p = 0; p < range.length; p++) {
-					if (range[p] > .5 && biasCount[p] == 0) {
+					if (range[p] > .8 && biasCount[p] == 0) {
 						a[p] /= 2;
 						System.out.println("!!!!!!!!!!!!!!!!!!!!!!!! Decressing A in param:" + p + "\t" + range[p]);
 						ajump = true;
@@ -654,7 +654,7 @@ public class SGA {
 
 	private double[] gradFast(String[] args, List<PriorDensity> priors, double[] x, double delta, int n, boolean log) {
 		// random direction one.
-		// bwUpdate();
+		bwUpdate();
 		//System.out.println("POINT:"+Arrays.toString(x));
 		double[] rv1 = new double[x.length];
 		double[] rv2 = new double[x.length];
