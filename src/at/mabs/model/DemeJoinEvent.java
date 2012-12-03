@@ -81,7 +81,8 @@ public class DemeJoinEvent extends ModelEvent {
 	protected void processEventSelection(SelectionData oldData, SelectionData currentData, FrequencyState state) {
 		double f = state.getFrequency(j, 1);// assume biallelic
 		double changeTime = currentData.getParent().getEndTime();
-		//System.out.println(currentData.getParent().getPopulationSizeModels().length);
+		//System.out.println("PROCESSING EJ "+currentData.getParent().getPopulationSizeModels().length);
+		///System.exit(-1);
 		int Ni = (int) currentData.getParent().getPopulationSizeModels()[i].populationSize(changeTime);
 		int Nj = (int) currentData.getParent().getPopulationSizeModels()[j].populationSize(changeTime);
 
