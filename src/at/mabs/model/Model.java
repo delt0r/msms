@@ -93,6 +93,9 @@ public final  class Model {
 		}
 		sizeModels =model.sizeModels.clone();
 		forwardOnly=model.isForwardOnly();
+		if(model.selectionData!=null){
+			selectionData=new SelectionData(model);
+		}
 	}
 
 	/**
