@@ -1,32 +1,45 @@
 <!--#include virtual="header.html" -->
+<div id="content">
+	<h1>Important bugfix release</h1>
+	3rd Dec 2012
+	<p>
+	Two serious bugs have been discovered and corrected. The selection strength was not getting
+	set correctly in some cases. I hope this does not affect to many users. However if you are
+	using a lot of <tt>-ej</tt> and <tt>-es</tt> options you should assume that it does and verifiy
+	results don't change. Note that if you did use these options you have good odds that this bug 
+	won't affect you. But I can't be sure and hence checking to be safe is needed. 
+	<p>
+	I am of course very sorry for the inconvince this may have caused.
+</div>
+
 <div id="oddcontent">
 	<h1>Large Organizational Changes</h1>
 	Aug 3rd 2012
 	<p>
 	Due to many reasons, such as conferences and job interview and even more users. I am 
-	changing the way I organize this project significatly. This is mainly due to the fact that
-	organizing the bug fixes and feture requests does not work well with just email. Also we will 
-	be getting an extra devloper on board soon and we have already had a few patches submitted. So 
-	I am going the whole hog and moving bugs, fetures and collabration (source level) all over to 
+	changing the way I organize this project significantly. This is mainly due to the fact that
+	organizing the bug fixes and feature requests does not work well with just email. Also we will 
+	be getting an extra developer on board soon and we have already had a few patches submitted. So 
+	I am going the whole hog and moving bugs, features and collaborations (source level) all over to 
 	<a href="https://github.com/delt0r/msms">github</a>. 
 	<p>
 	What this means is that if you find a bug, or you think you have found one, you will need to 
 	go to the <a href="https://github.com/delt0r/msms/issues?state=open">issues</a> page. You need 
-	a github login, a nessiscary evil due to the massive amounts of spam recived otherwise, and then 
-	check to see if the relevent bug has already been submited. If not create a new issue and tag it 
+	a github login, a necessary evil due to the massive amounts of spam received otherwise, and then 
+	check to see if the relevant bug has already been submitted. If not create a new issue and tag it 
 	as a bug. You can also raise enhancements, documentation issues or even plain old questions. However 
 	when submitting a bug i ask that you always include the first few lines of the msms output and/or the
 	command line you used. 
 	<p>
-	I do realize that this is less convienant that just sending me an email. Unfortunalty that model 
+	I do realize that this is less convenient that just sending me an email. Unfortunately that model 
 	is just not working anymore. I hope this will make things much quicker to fix and less time
-	to communicate the fixes and changes. In particlar it should make it much easier to see what affects
+	to communicate the fixes and changes. In particular it should make it much easier to see what affects
 	the most people. 
 	<h3>General bug fixes</h3>
-	Most of the bugs reported where all releated and should now be fixed. The most serious was the soft sweeps
+	Most of the bugs reported where all related and should now be fixed. The most serious was the soft sweeps
 	when there should be hard sweeps. The largest part of that problem should now be fixed. However please note 
 	that when selection is very strong and the sweep very short, the basic assumptions of the coalescent will
-	break down. This can still result, althou very raerly, in a softsweep. 
+	break down. This can still result, although very rarely, in a softsweep. 
 	<p>
 	If you think your bug is not fixed or something I was going to put in was not, then please raise the issue
 	in github. <a href="https://github.com/delt0r/msms/issues?state=open">Raise an Issue</a>  

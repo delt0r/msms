@@ -1,4 +1,17 @@
 <!--#include virtual="header.html" -->
+<div id="content">
+	<h1>Important bug-fix release</h1>
+	3rd Dec 2012
+	<p>
+	Two serious bugs have been discovered and corrected. The selection strength was not getting
+	set correctly in some cases. I hope this does not affect to many users. However if you are
+	using a lot of <tt>-ej</tt> and <tt>-es</tt> options you should assume that it does and verify
+	results don't change. Note that if you did use these options you have good odds that this bug 
+	won't affect you. But I can't be sure and hence checking to be safe is needed. 
+	<p>
+	I am of course very sorry for the inconvenience this may have caused.
+</div>
+
 <div id="oddcontent">
 	<h1>Large Organizational Changes</h1>
 	Aug 3rd 2012
