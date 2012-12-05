@@ -370,6 +370,7 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			double sAA =ssm[d].getStrength(1, 1, time);
 			double sAa =ssm[d].getStrength(1, 0, time);
 			double saa =ssm[d].getStrength(0, 0, time);
+			//System.out.println("SAA @ time:"+time+"\t"+sAA+"\t"+sAa+"\t"+saa);
 			afterSelectionA[d] =x * (1 + ax * sAa + x * sAA);
 			afterSelectiona[d] =ax * (1 + x * sAa + ax * saa);
 		}

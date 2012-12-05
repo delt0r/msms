@@ -50,12 +50,14 @@ public interface SelectionStrengthModel {
 			this.aa =aa;
 			this.aA =aA;
 			this.AA =AA;
+			//System.out.println("CREATED:"+this+"\t"+AA);
 		}
 
 
 
 		@Override
 		public double getStrength(int alleleA, int alleleB, double t) {
+			//System.out.println("QUERRY:"+this+"\t"+AA);
 			if(alleleA==1 && alleleB==1){
 				return AA;
 			}
