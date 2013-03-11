@@ -135,6 +135,8 @@ public class PriorDensity {
 	}
 
 	public double getLastValueUI() {
+		if(max-min<1e-15)
+			return min;
 		return (value - min) / (max - min);
 	}
 

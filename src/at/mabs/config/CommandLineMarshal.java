@@ -246,7 +246,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 			timeInvarient =false;
 	}
 
-	@CLNames(names ={ "-G" })
+	@CLNames(names ={ "-G" }) 
 	@CLUsage("alpha")
 	@CLDescription("Set the expontail growth rate in forward time to alpha")
 	public void addExpEvent(double alpha) {
@@ -262,6 +262,22 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		
 	}
 
+
+	@CLNames(names ={ "-eng2s" })
+	@CLDescription("set a deme to have exponetial growth, parameterized start size and by final size. This acts as a -en and -eg option")
+	@CLUsage("t deme finalT finalSize")
+	public void addExpEventSize(double time, int deme, double startSize,double finalT,double finalSize) {
+		if(finalT<=time){
+			throw new RuntimeException("Can't have a final time less pastward than time!");
+		}
+		double alpha=-Math.log(finalSize/startSize)/(finalT-time);
+		//now we just apply the 2 real options.
+		//System.err.println("OUR ALPHA##:"+alpha);
+		addSizeChangeEvent(time, deme,startSize);
+		addExpEvent(time,deme,alpha);
+	}
+	
+	
 	@CLNames(names ={ "-eg" })
 	@CLDescription("set a deme to have exponetial growth in forward time starting from time t.")
 	@CLUsage("t deme alpha")
