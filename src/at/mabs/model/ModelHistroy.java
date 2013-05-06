@@ -158,8 +158,8 @@ public class ModelHistroy {
 		for (ModelEvent me : shortList) {
 			me.modifiyModel(model);
 		}
-//		model.commitObject();
-//		models.add(model);
+		model.commitObject();
+		models.add(model);
 //		System.err.println("Models:" + models);
 //		for (Model mm : models) {
 //			System.err.println("WTH:" + mm.hashCode());
@@ -171,6 +171,7 @@ public class ModelHistroy {
 	}
 
 	public int getFirstModelDemeCount() {
+		//System.err.println("FirstModel:"+models.size());
 		return models.getFirst().getDemeCount();
 	}
 
