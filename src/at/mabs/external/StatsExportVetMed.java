@@ -93,6 +93,15 @@ public class StatsExportVetMed {
 			
 			Writer writer = new FileWriter(clm.HACK_PARAMS[1]);
 			saveStats(writer, collectors);
+			//just a little more stnd out
+			System.out.println("Stats Output");
+			for(StatsCollector sc:collectors){
+				double[] r=sc.summaryStats();
+				for(double d:r){
+					System.out.print(d+"\t");
+				}
+			}
+			System.out.println();
 
 		} catch (Exception e) {
 			e.printStackTrace();

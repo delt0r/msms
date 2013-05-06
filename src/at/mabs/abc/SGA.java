@@ -82,10 +82,12 @@ public class SGA {
 	private double[] bwSum;
 	private LinkedList<double[]> bwFifo = new LinkedList<>();
 	private int enn = 10;
+	
+	private double[] likelihoodPoint;
 
 	private int iterations = 5000;
 
-	private long seed = System.nanoTime();
+	private long seed = System.nanoTime()*(1+(new Object()).hashCode());
 
 	private Random random;
 
@@ -95,11 +97,8 @@ public class SGA {
 	// private Kernal kernal = new Kernal.Gaussian();
 
 	public void run() {
-		System.out.println("Version:"
-				+ this.getClass().getPackage().getImplementationVersion()
-				+ " MSMSARGS:" + Arrays.toString(anotatedCmdLine));
-		System.out.println("n=" + enn + "\titerMax:" + iterations
-				+ "\tM-Estimator? " + mEstimate);
+		System.out.println("Version:" + this.getClass().getPackage().getImplementationVersion() + " MSMSARGS:" + Arrays.toString(anotatedCmdLine));
+		System.out.println("n=" + enn + "\titerMax:" + iterations + "\tM-Estimator? " + mEstimate);
 		System.out.println("Seed:" + Long.toHexString(seed));
 		random = new Random64(seed);
 
@@ -127,24 +126,24 @@ public class SGA {
 		paste(args, priors, true);
 		initStatCollectors(args);
 
+		
+		
 		if (writeData) {
 			int argIndex = 0;
 			for (PriorDensity pd : priors) {
 				if (pd instanceof CopyPriorDensity) {
-					args[pd.getArgIndex()]=""+pd.getValue();
+					args[pd.getArgIndex()] = "" + pd.getValue();
 				} else {
 					pd.setValue(Double.parseDouble(writeArgs[argIndex++]));
-					args[pd.getArgIndex()] =""+pd.getValue();;
+					args[pd.getArgIndex()] = "" + pd.getValue();
+					;
 				}
 			}
 			pasteSeed(args);
-			MSLike.main(args, null,
-					(List<? extends StatsCollector>) collectionStats,
-					new NullPrintStream(), null);
+			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			writeDataStats(collectionStats);
 			initDataFile();
-			System.out.println("DataGen With msms cmd Line:"
-					+ Arrays.toString(args));
+			System.out.println("DataGen With msms cmd Line:" + Arrays.toString(args));
 			// now lets calculate the Likelihood here.
 			double[] p = currentPoint(priors);
 			System.out.println("Estimating BW");
@@ -153,15 +152,23 @@ public class SGA {
 			for (int i = 0; i < 100; i++)
 				bwEstimation(args, priors, p, enn);
 
-			double[] likes = likelihoodEstimator(args, priors, p, enn * 2, 20,
-					true);
-			System.out.println("Likelihood @ truth:" + likes[0] + "\t"
-					+ likes[1]);
+			double[] likes = likelihoodEstimator(args, priors, p, enn * 2, 20, true);
+			System.out.println("Likelihood @ truth:" + likes[0] + "\t" + likes[1]);
 			bwFifo.clear();
 			// return;
 		}
 
 		initDataFile();
+		
+		if(likelihoodPoint!=null){
+			System.out.println("Likelihood at point:"+Arrays.toString(likelihoodPoint));
+			System.out.println("Calulating BW");
+			for (int i = 0; i < 100; i++)
+				bwEstimation(args, priors, likelihoodPoint, enn);
+			double[] lh=likelihoodEstimator(args, priors, likelihoodPoint, enn*2, 20, true);
+			System.out.println("loglikelihood(std):"+lh[0]+"\t"+lh[1]);
+			return;
+		}
 
 		// densityGrid(args, priors, 50, 300,new FullGradFunction());
 		// nablaGrid(args, priors, 500, 300, 30, new FullGradFunction());
@@ -185,9 +192,9 @@ public class SGA {
 		// now cut it down to the top 100.
 		bestOfCount = Math.min(bestOfCount, initalStarting);
 		PointDensity[] betterStarts = new PointDensity[bestOfCount];
-		System.arraycopy(startingPoints, 0, betterStarts, 0,
-				betterStarts.length);
-		System.out.println("Best:" + betterStarts[0]);
+		System.arraycopy(startingPoints, 0, betterStarts, 0, betterStarts.length);
+		if(betterStarts.length>0)
+			System.out.println("Best:" + betterStarts[0]);
 
 		List<PointDensity> preconditioned = new ArrayList<PointDensity>();
 		// now run the preconditioner on all of them.
@@ -200,39 +207,33 @@ public class SGA {
 				continue;
 
 			double ns = simple.density(args, priors, np, 10, false);
-			System.out.println("Old" + betterStarts[i].score + "\tnew:" + ns
-					+ "\t@"
-					+ Arrays.toString(transform(betterStarts[i].point, priors))
-					+ "\t" + Arrays.toString(transform(np, priors)));
+			System.out.println("Old" + betterStarts[i].score + "\tnew:" + ns + "\t@" + Arrays.toString(transform(betterStarts[i].point, priors)) + "\t" + Arrays.toString(transform(np, priors)));
 			preconditioned.add(new PointDensity(np, ns));
 
 		}
 		Collections.sort(preconditioned);
 		System.out.println("Best starting points and paramters:");
 		for (PointDensity pd : preconditioned) {
-			System.out.println(pd.score + " @ "
-					+ Arrays.toString(transform(pd.point, priors)));
+			System.out.println(pd.score + " @ " + Arrays.toString(transform(pd.point, priors)));
 		}
 		System.out.println();
 		// System.exit(0);
-		clearTrace();
+		if(!preconditioned.isEmpty())
+			clearTrace();
 		try {
 
 			TreeSet<ResultEntry> found = new TreeSet<ResultEntry>();
 			for (PointDensity pd : preconditioned) {
-				double[] np = genericKWAlgo(args, priors, pd.point, enn,
-						iterations, better);
+				double[] np = genericKWAlgo(args, priors, pd.point, enn, iterations, better);
 
 				if (np == null)
 					continue;
 
-				double[] likes = likelihoodEstimator(args, priors, np, enn * 2,
-						20, true);
+				double[] likes = likelihoodEstimator(args, priors, np, enn * 2, 20, true);
 				np = transform(np, priors);
 				double mll = likes[0];
 				double stdll = likes[1];
-				System.out.println("## " + mll + " (" + stdll + ")"
-						+ Arrays.toString(np));
+				System.out.println("## " + mll + " (" + stdll + ")" + Arrays.toString(np));
 				ResultEntry result = new ResultEntry(likes.clone(), np.clone());
 				found.add(result);
 
@@ -240,8 +241,7 @@ public class SGA {
 				ResultEntry bestSoFar = found.first();
 				int bestCount = 0;
 				for (ResultEntry re : found) {
-					if (Statistics.welchTestBigger(bestSoFar.getLikelihood(),
-							re.getLikelihood(), 20, .05)) {
+					if (Statistics.welchTestBigger(bestSoFar.getLikelihood(), re.getLikelihood(), 20, .05)) {
 						break;
 					}
 					bestCount++;
@@ -252,13 +252,25 @@ public class SGA {
 				for (ResultEntry re : found) {
 					writer.write(re.toString() + "\n");
 				}
-				writer.write("" + bestCount + "\n");
+				//writer.write("" + bestCount + "\n");
 				writer.flush();
 				writer.close();
 
 			}
 			// now for parametric bootstraps. The data is simulated, we start
 			// from the best point each time.
+			//first let see if we have a best point to start from. If not. try to read the found file!
+			if(found.isEmpty()){
+				BufferedReader reader=new BufferedReader(new FileReader(outputFile));
+				String line=reader.readLine();
+				while(line!=null){
+					System.out.println("Restarting bootstraps: Reading data line:"+line);
+					found.add(new ResultEntry(line));
+					line=reader.readLine();
+				}
+				reader.close();
+			}
+			
 			TreeSet<ResultEntry> boots = new TreeSet<>();
 			for (int i = 0; i < bootstrap; i++) {
 				ResultEntry re = found.first();
@@ -266,16 +278,12 @@ public class SGA {
 				System.out.println("BSPoint:" + Arrays.toString(point));
 				paste(args, priors, point);
 				// this should give us new stats for the data!
-				MSLike.main(args, null,
-						(List<? extends StatsCollector>) dataStats,
-						new NullPrintStream(), null);
+				MSLike.main(args, null, (List<? extends StatsCollector>) dataStats, new NullPrintStream(), null);
 				initDataStatsCollectionStats(); // puts the data stats into
 												// data[]
 
-				double[] np = genericKWAlgo(args, priors, point, enn,
-						iterations, better);
-				double[] likes = likelihoodEstimator(args, priors, np, enn * 2,
-						20, true);
+				double[] np = genericKWAlgo(args, priors, point, enn, iterations, better);
+				double[] likes = likelihoodEstimator(args, priors, np, enn * 2, 20, true);
 				double[] bpoint = transform(np, priors);
 				ResultEntry bentry = new ResultEntry(likes, bpoint);
 				boots.add(bentry);
@@ -294,9 +302,9 @@ public class SGA {
 			e.printStackTrace();
 		}
 	}
+	
 
-	private double[] likelihoodEstimator(String[] args,
-			List<PriorDensity> priors, double[] p, int n, int reps, boolean log) {
+	private double[] likelihoodEstimator(String[] args, List<PriorDensity> priors, double[] p, int n, int reps, boolean log) {
 		double loglike = 0;
 		double loglike2 = 0;
 		for (int i = 0; i < reps; i++) {
@@ -305,8 +313,7 @@ public class SGA {
 			loglike2 += ll * ll;
 		}
 		double mll = loglike / reps;
-		double stdll = Math.sqrt(loglike2 / (reps - 1)
-				- ((double) reps / (reps - 1)) * mll * mll);
+		double stdll = Math.sqrt(loglike2 / (reps - 1) - ((double) reps / (reps - 1)) * mll * mll);
 		return new double[] { mll, stdll };
 	}
 
@@ -334,13 +341,10 @@ public class SGA {
 	 * @param n
 	 * @param maxK
 	 */
-	private double[] genericKWAlgo(String[] args, List<PriorDensity> priors,
-			double[] start, int n, int maxK, GradFunction grad) {
-		System.out.println("\ninit starting parameters:"
-				+ Arrays.toString(transform(start, priors)));
+	private double[] genericKWAlgo(String[] args, List<PriorDensity> priors, double[] start, int n, int maxK, GradFunction grad) {
+		System.out.println("\ninit starting parameters:" + Arrays.toString(transform(start, priors)));
 
-		System.out.println("KWMethod with alpha:" + alpha + "\tand gamma:"
-				+ gamma);
+		System.out.println("KWMethod with alpha:" + alpha + "\tand gamma:" + gamma);
 
 		bwFifo.clear();
 		bw = null;
@@ -394,14 +398,9 @@ public class SGA {
 		double pa = Double.MAX_VALUE;
 		for (int i = 0; i < nabla.length; i++) {
 
-			a[i] = Math.min(
-					Double.MAX_VALUE,
-					initalJumpSize * Math.pow(A + 1, alpha)
-							/ Math.abs(nabla[i]));
-			System.out.println("a for parameter" + (i + 1) + ":" + a[i] + "\t"
-					+ nabla[i]);
-			pa = Math
-					.min(pa, .03 * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
+			a[i] = Math.min(Double.MAX_VALUE, initalJumpSize * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
+			System.out.println("a for parameter" + (i + 1) + ":" + a[i] + "\t" + nabla[i]);
+			pa = Math.min(pa, .03 * Math.pow(A + 1, alpha) / Math.abs(nabla[i]));
 		}
 		// Arrays.fill(a,pa);
 		// a[2]=a[2]*100;
@@ -411,6 +410,7 @@ public class SGA {
 		// now we have a.
 		// System.out.println("a:" + a + "\tc:" + c);
 		List<double[]> trace = new ArrayList<double[]>();
+		List<double[]> trace2 = new ArrayList<double[]>();
 		double[] x = start.clone();
 		double[] lastChecked = x.clone();
 		double[] last = x.clone();
@@ -418,6 +418,8 @@ public class SGA {
 		int worseCount = 0;
 		int[] biasCount = new int[x.length];
 		trace.add(transform(x, priors));
+		trace2.add(transform(x, priors));
+
 		boolean degen = false;
 
 		LinkedList<double[]> fifoParams = new LinkedList<double[]>();
@@ -442,12 +444,8 @@ public class SGA {
 				// for(double[] e:bwFifo){
 				// System.out.println(Arrays.toString(e));
 				// }
-				System.out.println("k, a_k & c_k\t" + k + "\t"
-						+ Arrays.toString(a_k) + "\t" + c_k + "\nCurrentP:\t"
-						+ Arrays.toString(transform(x, priors))
-						+ "\nCurrentNab\t" + Arrays.toString(nabla)
-						+ "\nEsimatedDensity:"
-						+ grad.density(args, priors, x, enn, true) + "\n");
+				System.out.println("k, a_k & c_k\t" + k + "\t" + Arrays.toString(a_k) + "\t" + c_k + "\nCurrentP:\t" + Arrays.toString(transform(x, priors)) + "\nCurrentNab\t"
+						+ Arrays.toString(nabla) + "\nEsimatedDensity:" + grad.density(args, priors, x, enn, true) + "\n");
 			}
 			if (containsNaNInf(x)) {
 				return null;
@@ -472,14 +470,17 @@ public class SGA {
 			add(x, nabla, x);
 			clamp(x, priors, c_k);
 			trace.add(transform(x, priors));
+			
+			double[] movingAverageEstimate = new double[x.length];
+			mul(paramSums, 1.0 / fifoParams.size(), movingAverageEstimate);
+			trace2.add(transform(movingAverageEstimate,priors));
 
 			// if (k % 10 == 0)
 			// System.out.println(Arrays.toString(transform(x, priors)));
 			if (k % 1000 == 0 && k != 0) {
-				double[] movingAverageEstimate = new double[x.length];
-				mul(paramSums, 1.0 / fifoParams.size(), movingAverageEstimate);
-				boolean better = ttestIsBetter(args, priors,
-						movingAverageEstimate, lastChecked, n, grad, talpha);
+				
+				//mul(paramSums, 1.0 / fifoParams.size(), movingAverageEstimate);
+				boolean better = ttestIsBetter(args, priors, movingAverageEstimate, lastChecked, n, grad, talpha);
 				lastChecked = movingAverageEstimate;
 				System.out.println("Better:" + better);
 				if (!better) {
@@ -496,12 +497,9 @@ public class SGA {
 					} else {
 						biasCount[p] = 0;
 					}
-					if ((worseCount > 1 && biasCount[p] > 0)
-							|| biasCount[p] > 0) {
+					if ((worseCount > 1 && biasCount[p] > 0) || biasCount[p] > 0) {
 						a[p] *= 2;
-						System.out
-								.println("@@@@@@@@@@@@@@@@@@@@@@@@ Incressing A in param:"
-										+ p);
+						System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ Incressing A in param:" + p);
 						ajump = true;
 						biasCount[p] = 0;
 					}
@@ -513,9 +511,7 @@ public class SGA {
 				for (int p = 0; p < range.length; p++) {
 					if (range[p] > .8 && biasCount[p] == 0) {
 						a[p] /= 2;
-						System.out
-								.println("!!!!!!!!!!!!!!!!!!!!!!!! Decressing A in param:"
-										+ p + "\t" + range[p]);
+						System.out.println("!!!!!!!!!!!!!!!!!!!!!!!! Decressing A in param:" + p + "\t" + range[p]);
 						ajump = true;
 					}
 				}
@@ -524,9 +520,11 @@ public class SGA {
 					worseCount = 0;
 				}
 
-				saveTrace(trace, newTrace);
+				saveTrace(trace,".traces", newTrace);
+				saveTrace(trace2,".mave", newTrace);
 				newTrace = false;
 				trace.clear();
+				trace2.clear();
 			}
 			fifoParams.addFirst(x.clone());
 			add(paramSums, fifoParams.getFirst(), paramSums);
@@ -546,7 +544,8 @@ public class SGA {
 			paramSums[i] /= fifoParams.size();
 		}
 		System.out.println("Finished:" + Arrays.toString(transform(x, priors)));
-		saveTrace(trace, newTrace);
+		saveTrace(trace,".traces", newTrace);
+		saveTrace(trace2,".mave", newTrace);
 		// if (ttestIsBetter(args, priors, paramSums, start, n, grad))
 		return paramSums;
 		// return null;
@@ -594,17 +593,19 @@ public class SGA {
 		try {
 			Writer write = new FileWriter(outputFile + ".traces", false);
 			write.close();
+			write = new FileWriter(outputFile + ".mave", false);
+			write.close();
 		} catch (IOException e) {
 
 			e.printStackTrace();
 		}
 	}
 
-	private void saveTrace(List<double[]> trace, boolean newTrace) {
+	private void saveTrace(List<double[]> trace,String suffix, boolean newTrace) {
 		if (trace.isEmpty())
 			return;
 		try {
-			Writer write = new FileWriter(outputFile + ".traces", true);
+			Writer write = new FileWriter(outputFile + suffix, true);
 			if (newTrace) {
 				// first a simple delimiter.
 				double[] s = trace.get(0);
@@ -642,16 +643,14 @@ public class SGA {
 	}
 
 	// Welch's t test
-	private boolean ttestIsBetter(String[] args, List<PriorDensity> priors,
-			double[] x, double[] y, int n, GradFunction grad, double alpha) {
+	private boolean ttestIsBetter(String[] args, List<PriorDensity> priors, double[] x, double[] y, int n, GradFunction grad, double alpha) {
 		int k = 25;
 		double[] meanStdx = likelihoodEstimator(args, priors, x, n, k, true);
 		double[] meanStdy = likelihoodEstimator(args, priors, y, n, k, true);
 		return Statistics.welchTestBigger(meanStdx, meanStdy, k, alpha);
 	}
 
-	private double[] gradApprox(String[] args, List<PriorDensity> priors,
-			double[] x, double delta, int n, boolean log) {
+	private double[] gradApprox(String[] args, List<PriorDensity> priors, double[] x, double delta, int n, boolean log) {
 		double[] xp = x.clone();
 		double[] nabla = new double[x.length];
 		for (int i = 0; i < x.length; i++) {
@@ -662,9 +661,7 @@ public class SGA {
 			double sump = 0;
 			for (int j = 0; j < n; j++) {
 				pasteSeed(args);
-				MSLike.main(args, null,
-						(List<? extends StatsCollector>) collectionStats,
-						new NullPrintStream(), null);
+				MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 				double[] sp = collectStatitics(collectionStats);
 				sump += norm2(sp, data);
 			}
@@ -677,9 +674,7 @@ public class SGA {
 			double sumn = 0;
 			for (int j = 0; j < n; j++) {
 				pasteSeed(args);
-				MSLike.main(args, null,
-						(List<? extends StatsCollector>) collectionStats,
-						new NullPrintStream(), null);
+				MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 				double[] sp = collectStatitics(collectionStats);
 				sumn += norm2(sp, data);
 			}
@@ -699,8 +694,7 @@ public class SGA {
 		return acc;
 	}
 
-	private double[] gradFull(String[] args, List<PriorDensity> priors,
-			double[] x, double delta, int n, boolean log) {
+	private double[] gradFull(String[] args, List<PriorDensity> priors, double[] x, double delta, int n, boolean log) {
 		// bwEstimation(args, priors, x, n);
 		double[] xp = x.clone();
 		double[] nabla = new double[x.length];
@@ -729,8 +723,7 @@ public class SGA {
 
 	}
 
-	private double[] gradFast(String[] args, List<PriorDensity> priors,
-			double[] x, double delta, int n, boolean log) {
+	private double[] gradFast(String[] args, List<PriorDensity> priors, double[] x, double delta, int n, boolean log) {
 		// random direction one.
 		bwUpdate();
 		// System.out.println("POINT:"+Arrays.toString(x));
@@ -761,8 +754,7 @@ public class SGA {
 		// System.out.println("2:"+Arrays.toString(rv2));
 		double da = density(args, priors, rv1, n, log, true);
 		double db = density(args, priors, rv2, n, log, true);
-		if (da == 0 || Double.isInfinite(da) || Double.isNaN(da) || db == 0
-				|| Double.isInfinite(db) || Double.isNaN(db)) {
+		if (da == 0 || Double.isInfinite(da) || Double.isNaN(da) || db == 0 || Double.isInfinite(db) || Double.isNaN(db)) {
 			System.out.println("+:" + da + "\t" + db);
 			return new double[x.length];
 		}
@@ -811,8 +803,7 @@ public class SGA {
 		}
 	}
 
-	private double density(String[] args, List<PriorDensity> priors,
-			double[] x, int n, boolean log, boolean bwStat) {
+	private double density(String[] args, List<PriorDensity> priors, double[] x, int n, boolean log, boolean bwStat) {
 		// esitmate the denstiy at x
 		assert n > 1;
 
@@ -822,9 +813,7 @@ public class SGA {
 		for (int i = 0; i < n; i++) {
 			// System.out.println("ARGS:"+Arrays.toString(args));
 			pasteSeed(args);
-			MSLike.main(args, null,
-					(List<? extends StatsCollector>) collectionStats,
-					new NullPrintStream(), null);
+			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			stats[i] = collectStatitics(collectionStats);
 			// System.out.println("CollectedStats:"+Arrays.toString(stats[i]));
 
@@ -881,8 +870,7 @@ public class SGA {
 		return dens;
 	}
 
-	private double densityLinear(String[] args, List<PriorDensity> priors,
-			double[] x, int n) {
+	private double densityLinear(String[] args, List<PriorDensity> priors, double[] x, int n) {
 		// esitmate the denstiy at x
 		assert n > 1;
 
@@ -892,9 +880,7 @@ public class SGA {
 		for (int i = 0; i < n; i++) {
 			// System.out.println("ARGS:"+Arrays.toString(args));
 			pasteSeed(args);
-			MSLike.main(args, null,
-					(List<? extends StatsCollector>) collectionStats,
-					new NullPrintStream(), null);
+			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			double[] v = collectStatitics(collectionStats);
 			stats[i] = norm2(v, data);
 
@@ -923,15 +909,13 @@ public class SGA {
 			ksum += Math.exp(-.5 * stat * stat / bw2);
 		}
 		// System.out.println("KLinSUM:" + ksum);
-		double dens = ksum
-				/ (sigmaNorm * Math.pow(2 * Math.PI, data.length / 2.0));
+		double dens = ksum / (sigmaNorm * Math.pow(2 * Math.PI, data.length / 2.0));
 		if (dens == 0 || Double.isNaN(dens))
 			return Double.MIN_VALUE;
 		return dens;
 	}
 
-	private void bwEstimation(String[] args, List<PriorDensity> priors,
-			double[] x, int n) {
+	private void bwEstimation(String[] args, List<PriorDensity> priors, double[] x, int n) {
 		// esitmate the denstiy at x
 		assert n > 1;
 
@@ -941,9 +925,7 @@ public class SGA {
 		for (int i = 0; i < n; i++) {
 			// System.out.println("ARGS:"+Arrays.toString(args));
 			pasteSeed(args);
-			MSLike.main(args, null,
-					(List<? extends StatsCollector>) collectionStats,
-					new NullPrintStream(), null);
+			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			stats[i] = collectStatitics(collectionStats);
 			// System.out.println("CollectedStats:"+Arrays.toString(stats[i]));
 
@@ -960,23 +942,18 @@ public class SGA {
 			double[] stat = stats[i];
 			// System.out.println(stat[20]);
 			for (int j = 0; j < means.length; j++) {
-				assert !Double.isNaN(data[j]) && !Double.isNaN(stat[j]) : "NaNs!"
-						+ data[j] + "\t" + stat[j] + "\t" + j;
+				assert !Double.isNaN(data[j]) && !Double.isNaN(stat[j]) : "NaNs!" + data[j] + "\t" + stat[j] + "\t" + j;
 				double d = data[j] - stat[j];
 				stds[j] += d * d;
 				means[j] += d / n;
 			}
 		}
-		double nfactor2 = Math.pow(4.0 / (2 + data.length),
-				2.0 / (4 + data.length))
-				* Math.pow(n, -2 / (4.0 + data.length));
+		double nfactor2 = Math.pow(4.0 / (2 + data.length), 2.0 / (4 + data.length)) * Math.pow(n, -2 / (4.0 + data.length));
 		for (int i = 0; i < stds.length; i++) {
 			if ((stds[i] / n) - (means[i] * means[i]) < 0) {
 				stds[i] = means[i];
 			} else {
-				stds[i] = Math.sqrt(((stds[i] / (n - 1)) - n * means[i]
-						* means[i] / (n - 1))
-						* nfactor2);
+				stds[i] = Math.sqrt(((stds[i] / (n - 1)) - n * means[i] * means[i] / (n - 1)) * nfactor2);
 			}
 
 		}
@@ -1024,7 +1001,7 @@ public class SGA {
 			t[i] = pd.getLastValueUI();
 		}
 		// System.out.println("itran: "+Arrays.toString(x)+"\t"+Arrays.toString(t));
-		return t;
+		return t;//checking
 	}
 
 	private void clamp(double[] x, List<PriorDensity> priors, double delta) {
@@ -1128,15 +1105,13 @@ public class SGA {
 	private void initStatCollectors(String[] msmsArgs) {
 		CommandLineMarshal msmsparser = new CommandLineMarshal();
 		try {
-			CmdLineParser<CommandLineMarshal> marshel = CommandLineMarshal
-					.getCacheParser();// new
-										// CmdLineParser<CommandLineMarshal>(msmsparser);
+			CmdLineParser<CommandLineMarshal> marshel = CommandLineMarshal.getCacheParser();// new
+																							// CmdLineParser<CommandLineMarshal>(msmsparser);
 			marshel.processArguments(msmsArgs, msmsparser);
 			SampleConfiguration sampleConfig = msmsparser.getSampleConfig();
 			// for (StatsCollector stat : collectionStats)
 			// stat.init(sampleConfig); //FIXME
-			List<StatsCollector> defaultCollectors = msmsparser
-					.getStatsCollectors();
+			List<StatsCollector> defaultCollectors = msmsparser.getStatsCollectors();
 
 			this.collectionStats.addAll(defaultCollectors);
 
@@ -1147,8 +1122,7 @@ public class SGA {
 
 	private void initDataFile() {
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(
-					dataFileName));
+			BufferedReader reader = new BufferedReader(new FileReader(dataFileName));
 			dataStats.clear();
 			loadStats(reader, dataStats);
 			initDataStatsCollectionStats();
@@ -1176,8 +1150,7 @@ public class SGA {
 		while (iter.hasNext()) {
 			StatsCollector stat = iter.next();
 			if (!containsClass(stat.getClass(), dataStats)) {
-				System.out.println("warrning: Stat in Collection ignored:"
-						+ stat);
+				System.out.println("warrning: Stat in Collection ignored:" + stat);
 				iter.remove();
 			}
 		}
@@ -1201,20 +1174,17 @@ public class SGA {
 		return false;
 	}
 
-	private void loadStats(BufferedReader reader, List<StatsCollector> stats)
-			throws IOException {
+	private void loadStats(BufferedReader reader, List<StatsCollector> stats) throws IOException {
 		YamlReader yamlReader = new YamlReader(reader);
 		yamlReader.getConfig().setPrivateFields(true);
 		yamlReader.getConfig().setPrivateConstructors(true);
-		List<StatsCollector> readStats = (List<StatsCollector>) yamlReader
-				.read();
+		List<StatsCollector> readStats = (List<StatsCollector>) yamlReader.read();
 		if (readStats != null)
 			stats.addAll(readStats);
 		yamlReader.close();
 	}
 
-	private void saveStats(Writer writer, List<StatsCollector> stats)
-			throws IOException {
+	private void saveStats(Writer writer, List<StatsCollector> stats) throws IOException {
 		YamlWriter yamlWriter = new YamlWriter(writer);
 		yamlWriter.getConfig().setPrivateFields(true);
 		yamlWriter.getConfig().setPrivateConstructors(true);
@@ -1229,6 +1199,12 @@ public class SGA {
 		this.anotatedCmdLine = anotatedCmdLine;
 	}
 
+	@CLNames(names={"-LHP","-LHPoint"})
+	@CLDescription("Calulated the kernal likelihood at this point, then exit. Note this needs a full -msms argument and other parameters are used for this. ie BW and enn, also note that all % params must be specified.")
+	public void setLHPoint(double[] point){
+		likelihoodPoint=point;
+	}
+	
 	@CLNames(names = { "-abcstat", "-STAT" })
 	public void addStat(String[] statAndConfig) {
 		String statName = statAndConfig[0];
@@ -1242,22 +1218,17 @@ public class SGA {
 			try {
 				type = Class.forName(statName);
 			} catch (ClassNotFoundException e1) {
-				throw new RuntimeException("Could not find ABCStat class "
-						+ statName);
+				throw new RuntimeException("Could not find ABCStat class " + statName);
 			}
 		}
 		if (!StatsCollector.class.isAssignableFrom(type)) {
-			throw new RuntimeException(
-					"Specified -stat class does not load a ABCStat object but rather a "
-							+ type);
+			throw new RuntimeException("Specified -stat class does not load a ABCStat object but rather a " + type);
 		}
 		StatsCollector stat = null;
 		try {
 			stat = (StatsCollector) type.newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(
-					"Specified -stat class does not have a default constructor",
-					e);
+			throw new RuntimeException("Specified -stat class does not have a default constructor", e);
 		}
 
 		if (statAndConfig.length == 1) {
@@ -1266,11 +1237,9 @@ public class SGA {
 		}
 
 		try {
-			CmdLineParser<StatsCollector> parser = new CmdLineParser<StatsCollector>(
-					(Class<StatsCollector>) stat.getClass());
+			CmdLineParser<StatsCollector> parser = new CmdLineParser<StatsCollector>((Class<StatsCollector>) stat.getClass());
 			if (statAndConfig.length == 2 && statAndConfig[1].contains("help")) {
-				System.err.println("Help for statCollector:" + statName + "\n"
-						+ parser.longUsage());
+				System.err.println("Help for statCollector:" + statName + "\n" + parser.longUsage());
 				return;
 			}
 			String[] args = new String[statAndConfig.length - 1];
@@ -1279,11 +1248,9 @@ public class SGA {
 			parser.processArguments(args, stat);
 			// System.out.println("Object:"+stat+"\t"+parser.longUsage());
 		} catch (CmdLineBuildException e) {
-			throw new RuntimeException(statName
-					+ " does not take options or we have an error", e);
+			throw new RuntimeException(statName + " does not take options or we have an error", e);
 		} catch (CmdLineParseException e) {
-			throw new RuntimeException("Error With stats options:" + statName,
-					e);
+			throw new RuntimeException("Error With stats options:" + statName, e);
 		}
 		collectionStats.add(stat);
 
@@ -1434,20 +1401,16 @@ public class SGA {
 	}
 
 	public class GradFunction {
-		public double[] grad(String[] args, List<PriorDensity> priors,
-				double[] x, double delta, int n, boolean log) {
+		public double[] grad(String[] args, List<PriorDensity> priors, double[] x, double delta, int n, boolean log) {
 			return gradApprox(args, priors, x, delta, n, log);
 		}
 
-		public double density(String[] args, List<PriorDensity> priors,
-				double[] x, int n, boolean log) {
+		public double density(String[] args, List<PriorDensity> priors, double[] x, int n, boolean log) {
 			paste(args, priors, x);
 			double sum = 0;
 			for (int i = 0; i < n; i++) {
 				pasteSeed(args);
-				MSLike.main(args, null,
-						(List<? extends StatsCollector>) collectionStats,
-						new NullPrintStream(), null);
+				MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 				double[] sp = collectStatitics(collectionStats);
 				sum += norm2(sp, data);
 			}
@@ -1456,26 +1419,22 @@ public class SGA {
 	}
 
 	public class FullGradFunction extends GradFunction {
-		public double[] grad(String[] args, List<PriorDensity> priors,
-				double[] x, double delta, int n, boolean log) {
+		public double[] grad(String[] args, List<PriorDensity> priors, double[] x, double delta, int n, boolean log) {
 			return gradFull(args, priors, x, delta, n, log);
 		}
 
-		public double density(String[] args, List<PriorDensity> priors,
-				double[] x, int n, boolean log) {
+		public double density(String[] args, List<PriorDensity> priors, double[] x, int n, boolean log) {
 			return SGA.this.density(args, priors, x, n, log, false);
 		}
 	}
 
 	public class FastGradFunction extends GradFunction {
-		public double[] grad(String[] args, List<PriorDensity> priors,
-				double[] x, double delta, int n, boolean log) {
+		public double[] grad(String[] args, List<PriorDensity> priors, double[] x, double delta, int n, boolean log) {
 			// System.out.println("FAST");
 			return gradFast(args, priors, x, delta, n, log);
 		}
 
-		public double density(String[] args, List<PriorDensity> priors,
-				double[] x, int n, boolean log) {
+		public double density(String[] args, List<PriorDensity> priors, double[] x, int n, boolean log) {
 			return (SGA.this.density(args, priors, x, n, log, false));
 		}
 	}
@@ -1514,6 +1473,18 @@ public class SGA {
 			likelihood = like;
 			parameters = p;
 			// System.out.println("ADDEDPARAMS:"+Arrays.toString(p));
+		}
+		
+		public ResultEntry(String s){
+			StringTokenizer st=new StringTokenizer(s);
+			likelihood=new double[2];
+			likelihood[0]=Double.parseDouble(st.nextToken());
+			likelihood[1]=Double.parseDouble(st.nextToken());
+			ArrayList<Double> parms=new ArrayList<>();
+			while(st.hasMoreTokens()){
+				parms.add(Double.parseDouble(st.nextToken()));
+			}
+			parameters=Util.toArrayPrimitiveDouble(parms);
 		}
 
 		public double[] getLikelihood() {

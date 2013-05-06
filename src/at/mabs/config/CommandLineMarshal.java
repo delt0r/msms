@@ -265,7 +265,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 
 	@CLNames(names ={ "-eng2s" })
 	@CLDescription("set a deme to have exponetial growth, parameterized start size and by final size. This acts as a -en and -eg option")
-	@CLUsage("t deme finalT finalSize")
+	@CLUsage("t deme startSize finalT finalSize")
 	public void addExpEventSize(double time, int deme, double startSize,double finalT,double finalSize) {
 		if(finalT<=time){
 			throw new RuntimeException("Can't have a final time less pastward than time!");
