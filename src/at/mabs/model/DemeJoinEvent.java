@@ -61,6 +61,7 @@ public class DemeJoinEvent extends ModelEvent {
 	@Override
 	public void processEventCoalecent(LineageState state) {
 		// this is pretty easy. move everthing from i to j..
+		//System.err.println("JOIN that Loser");
 		int n = state.getLineageSize(i, 0);
 		for (int c = 0; c < n; c++)
 			state.migrationEvent(i, j, 0, 0.0);
@@ -81,7 +82,7 @@ public class DemeJoinEvent extends ModelEvent {
 	protected void processEventSelection(SelectionData oldData, SelectionData currentData, FrequencyState state) {
 		double f = state.getFrequency(j, 1);// assume biallelic
 		double changeTime = currentData.getParent().getEndTime();
-		//System.out.println("PROCESSING EJ "+currentData.getParent().getPopulationSizeModels().length);
+		//System.err.println("PROCESSING EJ "+currentData.getParent().getPopulationSizeModels().length);
 		///System.exit(-1);
 		int Ni = (int) currentData.getParent().getPopulationSizeModels()[i].populationSize(changeTime);
 		int Nj = (int) currentData.getParent().getPopulationSizeModels()[j].populationSize(changeTime);

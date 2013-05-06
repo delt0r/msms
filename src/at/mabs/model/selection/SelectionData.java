@@ -84,6 +84,7 @@ public class SelectionData {
 	 * be a really bad idea.
 	 */
 	public SelectionData(Model model) {
+		//System.err.println("Kreating SelectionData:"+model+'\t'+model.hashCode());
 		// start and end on integer generations.
 		assert model.getStartTime() < model.getEndTime() : model.getStartTime();
 		// if(true)throw new
@@ -129,8 +130,9 @@ public class SelectionData {
 				// FrequencyTrace((int)model.getStartTime(),(int)model.getStartTime()+1,model.getDemeCount(),2);
 		// }else{
 		{
-			// System.out.println("About to crate:"+parent+"\t"+Long.MAX_VALUE);
+			 //System.err.println("About to crate:"+parent);
 			frequencys = new SuperFrequencyTrace(parent.getDemeCount(), parent.getStartTime(), (int) (parent.getEndTime() - parent.getStartTime() + 1));
+			// System.err.println("kreated:"+parent+"\t"+frequencys.hashCode());
 		}
 	}
 
@@ -168,12 +170,15 @@ public class SelectionData {
 	 * to be merged/sorted into the event list.
 	 * 
 	 * Note that previous elements added need to be removed. ie the volitile
-	 * 
+	 * @return more events or null if need a restart aka rejection condition meet. 
 	 */
 	public List<ModelEvent> runSelectionSimulation() {
 		// frequencys.reset();
 		// frequencys.setIndexMostPastward();
-		List<ModelEvent> events = grandparent.getSelectionSimulator().forwardSimulator(parent, grandparent, selectionStrength, frequencys);
+		List<ModelEvent> events =null;
+		//while(events==null){
+			events = grandparent.getSelectionSimulator().forwardSimulator(parent, grandparent, selectionStrength, frequencys);
+		//}
 		// frequencys.setUsed(true);
 		// System.out.println("SelectionEvents"+events);
 		return events;
@@ -291,10 +296,10 @@ public class SelectionData {
 		double delta = 1 - time + (int) time;
 		sum += delta / f;
 		double g = delta;// already dealt with the first increment.
-		// System.out.println("gTime "+(g+time));
+		//System.err.println("gTime "+(g+time)+"\tMaxT:"+maxTime);
 		while (sum < residue && (time + g) <= maxTime) {
 			f = getFrequency(deme, allele, time + g) * size.populationSize(time + g);
-			// System.out.println("loop:"+size.populationSize(time + g)+"\t"+f);
+			//System.err.println("loop:"+size.populationSize(time + g)+"\t"+f);
 			if (f <= n) {
 				// special case... more linages that population size. Force a C
 				// event here...

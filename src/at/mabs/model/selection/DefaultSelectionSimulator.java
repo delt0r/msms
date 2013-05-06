@@ -278,11 +278,7 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 				//System.err.println("Oh yea!"+Arrays.toString(thisGen));
 				selectionSimulationStep(thisGen, nextGen, ssm, time);
 				if (restartCondition.isMeet(nextGen, ndeme)) {
-					frequencys.setIndexMostPastward();// start at the very back.
-					initFrequencys(model, frequencys);
-					frequencys.getFrequencys(thisGen);
-					//System.err.println("START AGAIN:"+Arrays.toString(nextGen)+"\t"+stopping);
-					continue;
+					return null;//bubble up the call stack to where we need it. 
 				}
 				// copy data back.
 				frequencys.moveForward();
@@ -314,16 +310,15 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 		assert time==model.getEndTime():time+"\t"+model.getEndTime();
 		double[] thisGen=frequencys.getFrequencys(null);
 		double[] nextGen=new double[thisGen.length];
+		//System.out.println("StartLoop 2 "+restartCondition.isMeet(thisGen, ndeme));
 		while(frequencys.hasMoreForward()){
 			selectionSimulationStep(thisGen, nextGen, ssm, time);
 			frequencys.moveForward();
 			frequencys.setFrequencys(nextGen);
 			time=frequencys.getIndexTime();
-			//System.out.println(restartCondition.isMeet(nextGen, ndeme));
+			//System.out.println("restart.."+restartCondition.isMeet(nextGen, ndeme)+"\t"+Arrays.toString(thisGen));
 			if (restartCondition!=null && restartCondition.isMeet(nextGen, ndeme)) {
-				frequencys.setIndexMostPastward();// start at the very back.
-				frequencys.getFrequencys(thisGen);
-				continue;
+				return null;//bubble  the restart up the stack. 
 			}
 			if(stopping!=null && stopping.isMeet(nextGen)){
 				events.add(new SelectionStartEvent(time, thisGen));
