@@ -270,7 +270,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 
 	@CLNames(names ={ "-g" })
 	@CLUsage("deme alpha")
-	@CLDescription("Set the expontail growth rate in forward time to alpha from time 0")
+	@CLDescription("Set the exponetail growth rate in forward time to alpha from time 0")
 	public void addExpEvent(int deme, double alpha) {
 		addExpEvent(0, deme, alpha);
 	}
@@ -331,7 +331,13 @@ public class CommandLineMarshal implements InitFinishParserObject{
 			saa=coeffecients[2];
 		}
 		SelectionStrengthModel ssm =new SelectionStrengthModel.Simple(saa / n2, saA / n2, sAA / n2);
-		events.add(new SelectionStrengthEvent(Math.round(time * 4 * N0), deme - 1, ssm));
+		long g=Math.round(time * 4 * N0);
+		if(g==0){
+			//System.err.println("Applying -Sc 0 x x fix.");
+			g=1;
+		}
+			
+		events.add(new SelectionStrengthEvent(g, deme - 1, ssm));
 		if(time!=0)
 			timeInvarient=false;
 	}

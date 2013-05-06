@@ -110,6 +110,7 @@ public class ModelHistroy {
 		// break;
 		// }
 		// }
+		
 
 		List<ModelEvent> shortList = new ArrayList<ModelEvent>();
 
@@ -124,13 +125,14 @@ public class ModelHistroy {
 		// models.add(model);
 		// model.commitObject();
 		// model=new Model(model);
-		// System.out.println("modelFirst:"+Arrays.tomodel.getMigrationRatesByDeme());
+		//System.out.println("modelFirst:"+Arrays.tomodel.getMigrationRatesByDeme());
 		while (iterator.hasNext()) {
 			ModelEvent event = iterator.next();
 			if (event.getEventTime() == time) {
 				// collect all events for this model break
 				shortList.add(event);
 			} else {
+				//System.err.println("ShortList:"+shortList);
 				// we have finished this model break...
 				model.setEndTime(event.getEventTime());
 				// so end and start time are set
@@ -148,7 +150,7 @@ public class ModelHistroy {
 			}
 			if (event.isModelOnly()) {
 				iterator.remove();
-				// System.out.println("RM:"+event+"\t"+event.getEventTime());
+				 //System.out.println("RM:"+event+"\t"+event.getEventTime());
 			}
 		}
 		// now finish the last model
@@ -156,8 +158,8 @@ public class ModelHistroy {
 		for (ModelEvent me : shortList) {
 			me.modifiyModel(model);
 		}
-		model.commitObject();
-		models.add(model);
+//		model.commitObject();
+//		models.add(model);
 //		System.err.println("Models:" + models);
 //		for (Model mm : models) {
 //			System.err.println("WTH:" + mm.hashCode());
