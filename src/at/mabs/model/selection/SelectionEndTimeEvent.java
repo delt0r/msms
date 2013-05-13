@@ -53,12 +53,14 @@ public class SelectionEndTimeEvent extends ModelEvent {
 		super(t);
 		initalFrequencys=null;
 		volitle=true;
+		//throw new RuntimeException("WTF");
 	}
 	
 	public SelectionEndTimeEvent(long t, FrequencyState initalFrequencys,boolean v) {
 		super(t);
 		this.initalFrequencys =initalFrequencys;
 		volitle=v;
+		//throw new RuntimeException("WTF2");
 	}
 	
 	

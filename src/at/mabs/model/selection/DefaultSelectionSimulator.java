@@ -316,7 +316,7 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			frequencys.moveForward();
 			frequencys.setFrequencys(nextGen);
 			time=frequencys.getIndexTime();
-			//System.out.println("restart.."+restartCondition.isMeet(nextGen, ndeme)+"\t"+Arrays.toString(thisGen));
+			//System.out.println("restart.."+restartCondition.isMeet(nextGen, ndeme)+"\t"+Arrays.toString(thisGen)+"\t"+restartCondition.getClass());
 			if (restartCondition!=null && restartCondition.isMeet(nextGen, ndeme)) {
 				return null;//bubble  the restart up the stack. 
 			}

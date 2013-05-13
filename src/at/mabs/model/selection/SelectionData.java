@@ -84,7 +84,7 @@ public class SelectionData {
 	 * be a really bad idea.
 	 */
 	public SelectionData(Model model) {
-		//System.err.println("Kreating SelectionData:"+model+'\t'+model.hashCode());
+		//System.err.println("Kreating SelectionData:"+model+'\t'+model.hashCode()+"Demes:"+model.getDemeCount());
 		// start and end on integer generations.
 		assert model.getStartTime() < model.getEndTime() : model.getStartTime();
 		// if(true)throw new
@@ -134,6 +134,7 @@ public class SelectionData {
 			frequencys = new SuperFrequencyTrace(parent.getDemeCount(), parent.getStartTime(), (int) (parent.getEndTime() - parent.getStartTime() + 1));
 			// System.err.println("kreated:"+parent+"\t"+frequencys.hashCode());
 		}
+		//System.err.println("freqs? "+frequencys);
 	}
 
 	public Model getParent() {
@@ -212,8 +213,9 @@ public class SelectionData {
 		System.arraycopy(selectionStrength, 0, newSS, 0, size);
 		newSS[size] = selectionStrength[size - 1];// TODO could be better...
 		selectionStrength = newSS;
-
-		// frequencys.addDeme();
+		//if(frequencys!=null)
+		//	throw new RuntimeException("Firetruck+"+frequencys);
+		 //frequencys.addDeme();
 	}
 
 	public void getFrequencysFromStart(FrequencyState state) {
@@ -254,8 +256,9 @@ public class SelectionData {
 		// }
 		frequencys.setIndexMostPastward();
 		double[] freqs = new double[parent.getDemeCount()];// frequencys.getFrequencys(null);
+		//System.err.println("Doing Freq:"+parent.getDemeCount()+"\t"+data);
 		for (int d = 0; d < freqs.length; d++) {
-			// System.out.println(d+" "+lastIndex);
+			// System.err.println("Freqs:"+d+" "+Arrays.toString(freqs));
 
 			freqs[d] = data.getFrequency(d, 1);
 		}

@@ -174,7 +174,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	
 	private boolean printTableStats=true;
 	
-	private RestartCondition restartCondition=new RestartCondition.Default();
+	private RestartCondition restartCondition=null;//new RestartCondition.Default();
 	
 	private boolean foldMutations=false;
 	
@@ -220,7 +220,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	
 	
 
-	@CLNames(names ={ "-ej" })
+	@CLNames(names ={ "-ej" },rank=1)
 	@CLUsage("t demeI demeJ")
 	@CLDescription("Join deme I to J. The outward migration rates of deme I are set to zero. Population parameters are left unchanged.")
 	public void addDemeJoin(double time, int demeI, int demeJ) {

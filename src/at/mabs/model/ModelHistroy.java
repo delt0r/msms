@@ -291,7 +291,7 @@ public class ModelHistroy {
 		//ugly as hell. Required to supprt -SFC/ 
 		//if an event results in a resampling that hits the restart condition we can't restart locally. we must restart from the real start.
 		while (true) {
-			// System.err.println("MH simulation called:"+selection);
+			//System.err.println("MH simulation called in the while:"+selection);
 			if (!selection)
 				return 0;
 			if (N == Integer.MAX_VALUE || N == Long.MAX_VALUE)// not correct...its a note for me
@@ -339,6 +339,7 @@ public class ModelHistroy {
 					return wraped.hasNext();
 				}
 			};
+			eventIterator  = events.descendingIterator();
 			Iterator<Model> modelIterator = models.descendingIterator();
 
 			ModelEvent startEvent = eventIterator.next();
@@ -374,9 +375,11 @@ public class ModelHistroy {
 				model.getSelectionData().setFrequencyToEnd(init);
 			}
 			List<ModelEvent> newEvents = model.getSelectionData().runSelectionSimulation();
-			if (newEvents == null)
+			//System.err.println("Events? "+newEvents);
+			if (newEvents == null){
+				//System.err.println("First continue!");
 				continue;// restart simulations from the start!
-
+			}
 			lastSweepTime = model.getSelectionData().getSweepTime();
 
 			while (modelIterator.hasNext()) {
@@ -418,6 +421,7 @@ public class ModelHistroy {
 				data.setFrequencyToEnd(fstate);
 				List<ModelEvent> reallyNewEvents = data.runSelectionSimulation();
 				if(reallyNewEvents == null) {
+					//System.err.println("First continue!");
 					continue;//restart from the start
 				}
 				newEvents.addAll(reallyNewEvents);

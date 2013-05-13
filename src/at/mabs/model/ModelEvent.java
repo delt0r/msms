@@ -45,7 +45,7 @@ import at.mabs.model.selection.SelectionData;
  * models to add: split. Merge. Zeros for selection.
  */
 public abstract class ModelEvent implements Comparable<ModelEvent>{
-	private final long eventTime;
+	protected final long eventTime;
 	protected int fineSortOrder=0;//permits subclass to be sorted in a predefined way
 	
 	

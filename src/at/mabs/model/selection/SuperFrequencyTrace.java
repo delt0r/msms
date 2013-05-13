@@ -53,7 +53,7 @@ public class SuperFrequencyTrace {
 	 */
 	public SuperFrequencyTrace(int maxDemes, long startPastWard, int generations) {
 		assert startPastWard < Integer.MAX_VALUE;
-		//System.out.println("CreateSuperFreq:"+generations+"\tstartPastward:"+startPastWard+"\t"+this.hashCode());
+		//System.err.println("CreateSuperFreq:"+generations+"\tstartPastward:"+startPastWard+"\t"+this.hashCode());
 		startIndexTime = (int) startPastWard;
 		demes = maxDemes;
 		freq = new double[demes * alleles * generations];
@@ -170,13 +170,15 @@ public class SuperFrequencyTrace {
 
 	@Override
 	public String toString() {
-		StringBuilder bs = new StringBuilder();
-		bs.append("StartTraceDumpRaw:");
-		for (double d : freq) {
-			bs.append(d + "\n");
-		}
-		bs.append("END");
-		return bs.toString();
+//		StringBuilder bs = new StringBuilder();
+//		bs.append("StartTraceDumpRaw:");
+//		for (double d : freq) {
+//			bs.append(d + "\n");
+//		}
+//		bs.append("END");
+//		return bs.toString();
+		
+		return "SuperFreq:"+this.demes+"\t"+this.alleles+"\t"+this.genDelta;
 	}
 
 	public int getIndex() {
