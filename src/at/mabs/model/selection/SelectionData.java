@@ -130,7 +130,7 @@ public class SelectionData {
 				// FrequencyTrace((int)model.getStartTime(),(int)model.getStartTime()+1,model.getDemeCount(),2);
 		// }else{
 		{
-			 //System.err.println("About to crate:"+parent);
+			// System.err.println("About to crate:"+parent+"\t"+parent.hashCode());
 			frequencys = new SuperFrequencyTrace(parent.getDemeCount(), parent.getStartTime(), (int) (parent.getEndTime() - parent.getStartTime() + 1));
 			// System.err.println("kreated:"+parent+"\t"+frequencys.hashCode());
 		}
@@ -268,7 +268,7 @@ public class SelectionData {
 	public double getFrequency(int deme, int allele, double time) {
 		assert (time >= parent.getStartTime()) : time + ">=" + parent.getStartTime();
 		assert (time <= parent.getEndTime()) : time + "<" + parent.getEndTime();
-		// System.err.println("Getting Freq for C sim:"+deme+"\t"+allele+"\t"+time);
+		// System.err.println("Getting Freq for C sim:"+deme+"\t"+allele+"\t"+time+"\t"+frequencys);
 		// if(true)throw new RuntimeException("BORK");
 		frequencys.setIndexTime((int) time);
 		// System.err.println("time:"+time+"\t"+frequencys.getIndexTime()+"\t"+frequencys.getIndex()+"\tpStart:"+parent.getStartTime());
@@ -281,7 +281,7 @@ public class SelectionData {
 	}
 
 	public double coalescentCumulantIntegration(int deme, int allele, double time, double maxTime, double residue, int n) {
-		// System.out.println("CALLED");
+		//System.err.println("CALLED");
 		if (time >= maxTime) {
 			// System.out.println("Bork");
 			return 0;

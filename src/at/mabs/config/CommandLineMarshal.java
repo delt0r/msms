@@ -174,7 +174,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	
 	private boolean printTableStats=true;
 	
-	private RestartCondition restartCondition=null;//new RestartCondition.Default();
+	private RestartCondition restartCondition=new RestartCondition.Default();
 	
 	private boolean foldMutations=false;
 	
@@ -332,9 +332,10 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		}
 		SelectionStrengthModel ssm =new SelectionStrengthModel.Simple(saa / n2, saA / n2, sAA / n2);
 		long g=Math.round(time * 4 * N0);
+		//System.err.println("B4 Fix: "+g);
 		if(g==0){
 			//System.err.println("Applying -Sc 0 x x fix.");
-			g=1;
+			//g=1;
 		}
 			
 		events.add(new SelectionStrengthEvent(g, deme - 1, ssm));

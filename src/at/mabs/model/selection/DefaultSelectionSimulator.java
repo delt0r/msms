@@ -249,6 +249,7 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 
 		FrequencyCondition stopping =modelHistory.getTimedCondition();
 		RestartCondition restartCondition=modelHistory.getRestartCondtion();
+		//System.err.println("Stop:"+stopping+"\tstart:"+restartCondition);
 		// boolean zeroFlag =true;
 		// boolean fixFlag =true;
 
@@ -284,6 +285,7 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 				frequencys.moveForward();
 				frequencys.setFrequencys(nextGen);
 				// check if we are done.
+				//System.err.println("Stopping?"+stopping.isMeet(nextGen));
 				if (stopping.isMeet(nextGen)) {
 					//System.err.println("We Stoped Doing it:"+Arrays.toString(nextGen)+"\t"+stopping);
 					// shift and stop
@@ -316,10 +318,11 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			frequencys.moveForward();
 			frequencys.setFrequencys(nextGen);
 			time=frequencys.getIndexTime();
-			//System.out.println("restart.."+restartCondition.isMeet(nextGen, ndeme)+"\t"+Arrays.toString(thisGen)+"\t"+restartCondition.getClass());
+			//System.out.println("restart..");//)+restartCondition.isMeet(nextGen, ndeme)+"\t"+Arrays.toString(thisGen)+"\t"+restartCondition.getClass());
 			if (restartCondition!=null && restartCondition.isMeet(nextGen, ndeme)) {
 				return null;//bubble  the restart up the stack. 
 			}
+			//System.err.println("Stopping?"+stopping.isMeet(nextGen));
 			if(stopping!=null && stopping.isMeet(nextGen)){
 				events.add(new SelectionStartEvent(time, thisGen));
 				//System.out.println("Stop:"+events+"\t"+Arrays.toString(nextGen)+"\t"+time);
@@ -363,7 +366,8 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			double sAA =ssm[d].getStrength(1, 1, time);
 			double sAa =ssm[d].getStrength(1, 0, time);
 			double saa =ssm[d].getStrength(0, 0, time);
-			//System.out.println("SAA @ time:"+time+"\t"+sAA+"\t"+sAa+"\t"+saa);
+			//System.err.println("SAA @ time:"+time+"\t"+sAA+"\t"+sAa+"\t"+saa);
+			//System.err.println("x's:"+x+"\t"+ax);
 			afterSelectionA[d] =x * (1 + ax * sAa + x * sAA);
 			afterSelectiona[d] =ax * (1 + x * sAa + ax * saa);
 		}
@@ -385,15 +389,19 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			for (int count =0; count < directions.length; count++) {
 				int j =directions[count];
 				rate =rates[count];
-				//System.out.println(Arrays.toString(afterSelectionA)+"\t"+j+"\t"+Arrays.toString(directions));
+				//System.err.println("After!"+Arrays.toString(afterSelectionA)+"\t"+j+"\tD:"+Arrays.toString(directions));
 				nA +=rate * afterSelectionA[j];
 				na +=rate * afterSelectiona[j];
 			}
 			// now put it together for xp
+			
 			double xp =(nA * (1 - nu) + mu * na) / (nA + na);
 			// we keep N in the sample for now...
-			int N =(int) sizes[d].populationSize(time) * 2;//
+			int N =(int)Math.ceil( sizes[d].populationSize(time) * 2);//
+			//System.err.println("CallBin "+N+" "+xp+"\t"+sizes[d].populationSize(time));
 			double f =(double) binomial.generateBinomial(N, xp) / N;
+			//System.err.println("return bin "+f);
+			//what if N is zero!
 			// update
 			next[d] =f;
 		}

@@ -80,7 +80,7 @@ public final  class Model {
 	 * @param model
 	 */
 	protected Model(Model model) {
-		//System.err.println("Model creation A:"+this.hashCode());
+		//System.err.println("Model creation A:"+this.hashCode()+"\t"+model);
 		if (!model.finalized)
 			throw new RuntimeException("Model must be finalized before its data is acessed");
 		parent =model.parent;
@@ -93,9 +93,6 @@ public final  class Model {
 		}
 		sizeModels =model.sizeModels.clone();
 		forwardOnly=model.isForwardOnly();
-		if(model.selectionData!=null){
-			selectionData=new SelectionData(model);
-		}
 	}
 
 	/**
