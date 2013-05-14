@@ -81,7 +81,7 @@ public class ThetaEstimators implements StringStatsCollector {
 		}
 		//System.out.println("Config:"+Arrays.toString(sampleConfig));
 		harmonicNumbers[demeCount] = Util.haromicNumber(totalSamples - 1);
-		demeMasks=sampleConfig.getDemeMasks();
+		demeMasks=sampleConfig.getMasks();
 		
 		leafCount=sampleConfig.getMaxSamples();
 	}

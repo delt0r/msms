@@ -62,7 +62,7 @@ public class AlleleFrequencySpectrum implements StringStatsCollector {
 		gloabalAFS = new int[sampleCount - 1];
 		ndemes = sampleConfig.getDemeCount();
 		
-		demeMasks=sampleConfig.getDemeMasks();
+		demeMasks=sampleConfig.getMasks();
 		if (jAFS) {
 			if (ndemes < 1)
 				throw new RuntimeException("Can't collect jAFS stats with only one deme");

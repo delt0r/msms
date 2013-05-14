@@ -978,12 +978,12 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	@CLUsage("-stat name [deme ...] -StatType[help for list] [extra options]")
 	public void setStat(String[] args) {
 		FixedBitSet mask =new FixedBitSet(sampleConfig.getMaxSamples());
-		FixedBitSet[] demeMasks=sampleConfig.getDemeMasks();
+		FixedBitSet[] masks=sampleConfig.getMasks();
 		//System.out.println("DemeMasks:"+Arrays.toString(demeMasks));
 		int count =0;
 		while (count < args.length && args[count] != null && args[count].matches("\\d*")) {
 			int demeId =Integer.parseInt(args[count]) - 1;
-			mask.or(demeMasks[demeId]);
+			mask.or(masks[demeId]);
 			count++;
 		}
 
@@ -993,7 +993,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		FixedBitSet nextMask =new FixedBitSet(sampleConfig.getMaxSamples());
 		while (countnext < args.length && args[countnext] != null && args[countnext].matches("\\d*")) {
 			int demeId =Integer.parseInt(args[countnext]) - 1;
-			nextMask.or(demeMasks[demeId]);
+			nextMask.or(masks[demeId]);
 			countnext++;
 		}
 		if (count == 0) {
