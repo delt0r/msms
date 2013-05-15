@@ -140,6 +140,7 @@ public class ModelHistroy {
 					me.modifiyModel(model);
 				}
 				model.commitObject();
+				//model.initSelectionData();
 				models.add(model);
 				// now for the next model
 				model = new Model(model);
@@ -368,6 +369,7 @@ public class ModelHistroy {
 
 			FrequencyState fstate = new FrequencyState(this.getMaxDemeCount(), model.getDemeCount());
 			// so the current "start" event
+			//System.err.println("ModelH!");
 			model.initSelectionData();
 			// System.err.println("SSim:"+model);
 			if (startEvent instanceof SelectionEndTimeEvent) {
@@ -638,6 +640,7 @@ public class ModelHistroy {
 			while (currentModel.getStartTime() != currentEvent.getEventTime() && modelIterator.hasNext()) {
 				currentModel = modelIterator.next();
 			}
+			//System.err.println("Forward Iterator!");
 			currentModel.initSelectionData();
 		}
 

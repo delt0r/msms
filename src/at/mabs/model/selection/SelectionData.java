@@ -58,7 +58,7 @@ import at.mabs.util.random.RandomGenerator;
  */
 public class SelectionData {
 	private final Model parent;
-	private final ModelHistroy grandparent;
+	
 
 	private final Binomial binomial = RandomGenerator.getBinomial();
 	private final Random random = RandomGenerator.getRandom();
@@ -90,7 +90,7 @@ public class SelectionData {
 		// if(true)throw new
 		// RuntimeException(""+model.getStartTime()+"\t"+model.getEndTime());
 		parent = model;
-		grandparent = model.getParent();
+		ModelHistroy modelHistory = model.getModelHistory();
 		forwardOnly = model.isForwardOnly();
 		// if (!model.isFinalized())
 		// throw new RuntimeException("Parent Model Not Finalized");
@@ -104,18 +104,31 @@ public class SelectionData {
 		// FrequencyTrace((int)model.getStartTime(),(int)model.getStartTime()+gens,model.getDemeCount(),2);
 
 		selectionStrength = new SelectionStrengthModel[model.getDemeCount()];
-		// System.out.println("CREATING SSM:"+grandparent.getSAA()+"\t"+Arrays.toString(model.getSelectionData().selectionStrength));
+		//System.err.println("CREATING SSM:"+modelHistory.getSAA());
 		if (model.getSelectionData() != null) {
+			//System.err.println("NOt Null");
 			selectionStrength = model.getSelectionData().selectionStrength.clone();
 
+		}if(model.getParent()!=null && model.getParent().getSelectionData()!=null){
+			SelectionStrengthModel[] previous=model.getParent().getSelectionData().selectionStrength; 
+			for(int i=0;i<previous.length && i<selectionStrength.length;i++){
+				selectionStrength[i]=previous[i];
+			}
+			//if there are extra demes. Set them to the normal defaults.
+			SelectionStrengthModel ssm = new SelectionStrengthModel.Simple(modelHistory.getSaa(), modelHistory.getSaA(), modelHistory.getSAA());
+			for(int i=previous.length;i<selectionStrength.length;i++){
+				selectionStrength[i]=ssm;
+			}
+			
 		} else {
-			SelectionStrengthModel ssm = new SelectionStrengthModel.Simple(grandparent.getSaa(), grandparent.getSaA(), grandparent.getSAA());
+			//System.err.println("Null");
+			SelectionStrengthModel ssm = new SelectionStrengthModel.Simple(modelHistory.getSaa(), modelHistory.getSaA(), modelHistory.getSAA());
 
 			for (int i = 0; i < selectionStrength.length; i++) {
 				selectionStrength[i] = ssm;// shared instance
 			}
 		}
-		// System.out.println("SettingSelection:"+grandparent.getSaa()+"\t"+grandparent.getSAA());
+	//	System.err.println("SettingSelection:"+modelHistory.getSaa()+"\t"+modelHistory.getSAA()+"\t"+model);
 		initFrequencyData();
 	}
 
@@ -178,7 +191,8 @@ public class SelectionData {
 		// frequencys.setIndexMostPastward();
 		List<ModelEvent> events =null;
 		//while(events==null){
-			events = grandparent.getSelectionSimulator().forwardSimulator(parent, grandparent, selectionStrength, frequencys);
+		ModelHistroy modelHistory=parent.getModelHistory();
+			events = modelHistory.getSelectionSimulator().forwardSimulator(parent, modelHistory, selectionStrength, frequencys);
 		//}
 		// frequencys.setUsed(true);
 		// System.out.println("SelectionEvents"+events);

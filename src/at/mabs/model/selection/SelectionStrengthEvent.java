@@ -50,13 +50,14 @@ public class SelectionStrengthEvent extends ModelEvent {
 
 	@Override
 	protected void modifiyModel(Model model) {
-		//System.err.println("applying selection strength");
+		//System.err.println("applying selection strength:"+model);
 		model.initSelectionData();
 		if (deme < 0) {
 			model.getSelectionData().setSelectionStrength(ssm);
 		} else {
 			model.getSelectionData().setSelectionStrength(deme, ssm);
 		}
+		//System.err.println("Finished:"+model);
 		//throw new RuntimeException("Apply Selection strength");
 	}
 

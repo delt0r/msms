@@ -31,7 +31,7 @@ package at.mabs.model.selection;
  * @author bob
  * 
  */
-public interface SelectionStrengthModel {
+public interface SelectionStrengthModel{
 	/**
 	 * this should always be symmetric in alleleA and alleleB. ie swapping them should not
 	 * change the selection coefficient. 

@@ -437,8 +437,8 @@ public class CoalescentEventCalculator {
 		SelectionData selectionData =model.getSelectionData();
 		double time =state.getCurrentTime();
 		double dt =maxTime - time;
-		double rateForward =model.getParent().getForwardAlleleMutationRate();
-		double rateBackward =model.getParent().getBackAlleleMutationRate();
+		double rateForward =model.getModelHistory().getForwardAlleleMutationRate();
+		double rateBackward =model.getModelHistory().getBackAlleleMutationRate();
 		if ((rateForward + rateBackward) <= 0)
 			return CoalescentEvent.NO_OP;
 		int deme =-1;
