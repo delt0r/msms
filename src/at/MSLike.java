@@ -524,6 +524,7 @@ public class MSLike {
 		modelHistory.setFoldMutations(parser.getFoldMutations());
 		modelHistory.setUnphase(!parser.getIsPhased());
 		modelHistory.setMaxRecombinationRate(parser.getMaxRecombinationRate());
+		modelHistory.setSeedDeme(parser.getSeedDeme());
 		if (parser.isFrequencyTrace()) {
 			modelHistory.setForwardTraceOutput(new ForwardStatsCollector(modelHistory));
 		}

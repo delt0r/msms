@@ -87,6 +87,7 @@ public class ModelHistroy {
 	private boolean unphase;
 
 	private double maxRecombinationRate = Double.MAX_VALUE;
+	private int seedDeme;
 
 	/**
 	 * creates the models. builds up the finalised models from the events. This will not mutate the events list...
@@ -767,5 +768,14 @@ public class ModelHistroy {
 
 	public void setUnphase(boolean unphase) {
 		this.unphase = unphase;
+	}
+
+	public int getSeedDeme() {
+		
+		return seedDeme;
+	}
+	
+	public void setSeedDeme(int seedDeme) {
+		this.seedDeme = seedDeme;
 	}
 }

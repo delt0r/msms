@@ -434,6 +434,9 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 				break;
 			}
 		}
+		int choosen=parent.getModelHistory().getSeedDeme();
+		if(choosen>-1)
+			d=choosen;
 		double[] freqs =new double[sizes.length];// demeCount;
 		freqs[d] =1.0 / (parent.getPopulationSizeModels()[d].populationSize(parent.getEndTime()));// FIXME
 

@@ -24,7 +24,7 @@ java SE 6 or higher is ticked, and drag it to the top of each list.</p>
 for all supported platforms. The same archive works for all platforms,
 and the manual is included.</p>
 <ul>
-	<li><a href="msms3.2rc-b85.zip">msms3.2rc-b85.zip</a></li>
+	<li><a href="msms3.2rc-b87.zip">msms3.2rc-b87.zip</a></li>
 </ul>
 <p>Just unpack the archive to your favorite applications directory
 and you are ready to roll. You may wish to add the <tt>msms/bin</tt>
@@ -33,9 +33,9 @@ can symlink <tt>msms/bin/msms</tt>.</p>
 <h3>Pure jar file</h3>
 This is just the compiled class files in jar and is the smallest
 download. It can be run with the following command:<br />
-<tt>java -jar msms3.2rc-b85.jar</tt> <br />
+<tt>java -jar msms3.2rc-b87.jar</tt> <br />
 <ul>
-	<li><a href="msms3.2rc-b85.jar">Release candidate pure java</a></li>
+	<li><a href="msms3.2rc-b87.jar">Release candidate pure java</a></li>
 </ul>
 <h3>Source</h3>
 The source package includes the ant scripts and developer documentation.
