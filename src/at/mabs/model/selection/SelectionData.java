@@ -272,7 +272,7 @@ public class SelectionData {
 		double[] freqs = new double[parent.getDemeCount()];// frequencys.getFrequencys(null);
 		//System.err.println("Doing Freq:"+parent.getDemeCount()+"\t"+data);
 		for (int d = 0; d < freqs.length; d++) {
-			// System.err.println("Freqs:"+d+" "+Arrays.toString(freqs));
+		// System.err.println("Freqs:"+d+" "+Arrays.toString(freqs));
 
 			freqs[d] = data.getFrequency(d, 1);
 		}
