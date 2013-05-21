@@ -80,7 +80,7 @@ public class SGA {
 
 	private double[] bw;
 	private double[] bwSum;
-	private LinkedList<double[]> bwFifo = new LinkedList<>();
+	private LinkedList<double[]> bwFifo = new LinkedList<double[]>();
 	private int enn = 10;
 	
 	private double[] likelihoodPoint;
@@ -271,7 +271,7 @@ public class SGA {
 				reader.close();
 			}
 			
-			TreeSet<ResultEntry> boots = new TreeSet<>();
+			TreeSet<ResultEntry> boots = new TreeSet<ResultEntry>();
 			for (int i = 0; i < bootstrap; i++) {
 				ResultEntry re = found.first();
 				double[] point = itransform(re.parameters, priors);
@@ -1480,7 +1480,7 @@ public class SGA {
 			likelihood=new double[2];
 			likelihood[0]=Double.parseDouble(st.nextToken());
 			likelihood[1]=Double.parseDouble(st.nextToken());
-			ArrayList<Double> parms=new ArrayList<>();
+			ArrayList<Double> parms=new ArrayList<Double>();
 			while(st.hasMoreTokens()){
 				parms.add(Double.parseDouble(st.nextToken()));
 			}

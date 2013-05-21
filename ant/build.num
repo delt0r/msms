@@ -1,3 +1,8 @@
 #Build Number for ANT. Do not edit!
+<<<<<<< HEAD
 #Wed Apr 24 13:34:22 CEST 2013
 build.number=100
+=======
+#Thu May 16 14:22:49 CEST 2013
+build.number=91
+>>>>>>> master

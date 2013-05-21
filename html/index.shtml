@@ -1,4 +1,24 @@
 <!--#include virtual="header.html" -->
+<div id="oddcontent">
+	<h1>Bug Fixes, workarounds and refactors</h1>
+	14th May 2013
+	<p>
+	I know it has been a long time coming. But finally we have a major bugfix release. Not everything
+	is fixed and there is a workaround for the last remaining major bug. Also due to complications sorting 
+	out these bugs I am now going rewrite this section of code. 
+	<p>
+	<h3>Workarounds for <tt>-es</tt> and <tt>-ej</tt></h3>	
+	In the case that there <tt>-es</tt> and <tt>-ej</tt> options for the same instant in time, there are bugs. These
+	are not easily fixed however since in theory there can be an unlimited number of these options at the same time
+	instant. A full fix requires a code restructure. 
+	<p>
+	But we can work around this bug. Simply move all the <tt>-ej</tt> options one generation past-ward and everything 
+	should work fine.
+	<h2>Refactor</h2>
+	Because of this and how long it has taken to find and fix the last set of bugs. I will refactor this section of code.
+	This is a bit of work and will mean all new bugs will be considered for the refactor. I expect this to take approximately 
+	4 weeks.	
+</div>
 <div id="content">
 	<h1>Important bug-fix release</h1>
 	3rd Dec 2012

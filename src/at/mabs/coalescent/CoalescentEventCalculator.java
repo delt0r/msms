@@ -437,8 +437,8 @@ public class CoalescentEventCalculator {
 		SelectionData selectionData =model.getSelectionData();
 		double time =state.getCurrentTime();
 		double dt =maxTime - time;
-		double rateForward =model.getParent().getForwardAlleleMutationRate();
-		double rateBackward =model.getParent().getBackAlleleMutationRate();
+		double rateForward =model.getModelHistory().getForwardAlleleMutationRate();
+		double rateBackward =model.getModelHistory().getBackAlleleMutationRate();
 		if ((rateForward + rateBackward) <= 0)
 			return CoalescentEvent.NO_OP;
 		int deme =-1;
@@ -514,7 +514,7 @@ public class CoalescentEventCalculator {
 		state.setCurrentMaxTime(time);
 		double timeBound=1e5*modelHistroy.getN();
 		while (state.getLinagesActive() > 1 && state.getCurrentTime()<timeBound) {
-			//System.out.println("Lines:"+state.getCurrentTime()+"\t"+time);
+			//System.err.println("Lines:"+state.getCurrentTime()+"\t"+time+"\tTB:"+timeBound);
 			CoalescentEvent cevent =null;
 			if (state.isSelection()) {
 				cevent =nextEventSelection(model);
@@ -522,10 +522,10 @@ public class CoalescentEventCalculator {
 				cevent =nextEvent(model);
 			}
 
-			// System.out.println("CEvent:"+cevent+"\t"+state.getCurrentTime()+"\t"+model+"\ttimeBound:"+timeBound+"\t"+model.getSelectionData());
+			//System.err.println("CEvent:"+cevent+"\t"+state.getCurrentTime()+"\t"+model+"\ttimeBound:"+timeBound+"\t"+model.getSelectionData()+"\ttime:"+time);
 			// System.out.println("State:"+state);
 			if (cevent == CoalescentEvent.NO_OP || (cevent.dt + state.getCurrentTime()) >= time) {
-				//System.out.println("NextModel");
+				//System.err.println("NextModel");
 				// move to the next event.
 				iterator.nextModel(state);
 				model =iterator.getCurrentModel();

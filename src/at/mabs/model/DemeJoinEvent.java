@@ -24,6 +24,8 @@ http://www.gnu.org/software/classpath/license.html
 */
 package at.mabs.model;
 
+import java.util.Arrays;
+
 import at.mabs.coalescent.LineageState;
 import at.mabs.model.selection.SelectionData;
 import at.mabs.util.random.RandomGenerator;
@@ -61,6 +63,7 @@ public class DemeJoinEvent extends ModelEvent {
 	@Override
 	public void processEventCoalecent(LineageState state) {
 		// this is pretty easy. move everthing from i to j..
+		//System.err.println("JOIN that Loser");
 		int n = state.getLineageSize(i, 0);
 		for (int c = 0; c < n; c++)
 			state.migrationEvent(i, j, 0, 0.0);
@@ -80,8 +83,10 @@ public class DemeJoinEvent extends ModelEvent {
 	@Override
 	protected void processEventSelection(SelectionData oldData, SelectionData currentData, FrequencyState state) {
 		double f = state.getFrequency(j, 1);// assume biallelic
-		double changeTime = currentData.getParent().getEndTime();
-		//System.out.println("PROCESSING EJ "+currentData.getParent().getPopulationSizeModels().length);
+		double changeTime = eventTime;
+		//System.err.println("PROCESSING EJ "+currentData.getParent().getPopulationSizeModels().length+"\t"+i+"\t"+j);
+		//System.err.println("PROCESSING EJ :"+Arrays.toString(currentData.getParent().getPopulationSizeModels()));
+		//System.err.println("PROCESSING EJ Old:"+Arrays.toString(oldData.getParent().getPopulationSizeModels()));
 		///System.exit(-1);
 		int Ni = (int) currentData.getParent().getPopulationSizeModels()[i].populationSize(changeTime);
 		int Nj = (int) currentData.getParent().getPopulationSizeModels()[j].populationSize(changeTime);

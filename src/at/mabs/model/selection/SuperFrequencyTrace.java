@@ -1,6 +1,7 @@
 package at.mabs.model.selection;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * sick of the buggy frequency trace. We are going to replace it with this.
@@ -25,7 +26,7 @@ import java.util.Arrays;
  * 
  */
 public class SuperFrequencyTrace {
-
+	
 	private double[] freq; // index=gen*(#alleles*#deme)+deme*(#alleles)+alleles;
 	private final int alleles = 1;// count of *non* wild type alleles
 	private final int demes;
@@ -53,7 +54,7 @@ public class SuperFrequencyTrace {
 	 */
 	public SuperFrequencyTrace(int maxDemes, long startPastWard, int generations) {
 		assert startPastWard < Integer.MAX_VALUE;
-		//System.out.println("CreateSuperFreq:"+generations);
+		//System.err.println("CreateSuperFreq:"+generations+"\tstartPastward:"+startPastWard+"\t"+this.hashCode());
 		startIndexTime = (int) startPastWard;
 		demes = maxDemes;
 		freq = new double[demes * alleles * generations];
@@ -69,7 +70,11 @@ public class SuperFrequencyTrace {
 	public void setIndexTime(long time) {
 
 		index = ((int) time - startIndexTime + offsetTime) * genDelta;
-		//System.err.println("SetIndexTo:"+index+"\t"+freq.length+"\tfromtime:"+time+"\tOF:"+offsetTime+"\tSI:"+startIndexTime);
+			
+		//System.err.println("SetIndexTo:"+index+"\t"+freq.length+"\tfromtime:"+time+"\tOF:"+offsetTime+"\tSI:"+startIndexTime+"\tHC:"+this.hashCode());
+		if(index>=freq.length)
+			throw new ArrayIndexOutOfBoundsException(index+"\t"+freq.length);
+		
 	}
 
 	public void setEndTime() {
@@ -138,7 +143,7 @@ public class SuperFrequencyTrace {
 	public double[] getFrequencys(double[] data) {
 		if (data == null || data.length!=genDelta)
 			data = new double[genDelta];
-		//System.err.println("Freq: "+index);
+		//System.err.println("getFreq: "+index+"\t"+freq.length);
 		System.arraycopy(freq, index, data, 0, data.length);
 		return data;
 	}
@@ -163,20 +168,22 @@ public class SuperFrequencyTrace {
 	private void resize() {
 		//System.out.println("ReSize ");
 		double[] newData = new double[freq.length * 2];
-		System.arraycopy(freq, 0, newData, freq.length, freq.length);
+		//System.arraycopy(freq, 0, newData, freq.length, freq.length);
 		index += freq.length;
 		freq = newData;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder bs = new StringBuilder();
-		bs.append("StartTraceDumpRaw:");
-		for (double d : freq) {
-			bs.append(d + "\n");
-		}
-		bs.append("END");
-		return bs.toString();
+//		StringBuilder bs = new StringBuilder();
+//		bs.append("StartTraceDumpRaw:");
+//		for (double d : freq) {
+//			bs.append(d + "\n");
+//		}
+//		bs.append("END");
+//		return bs.toString();
+		
+		return "SuperFreq:["+this.demes+","+this.alleles+","+this.genDelta+","+freq.length+","+this.hashCode()+"]";
 	}
 
 	public int getIndex() {

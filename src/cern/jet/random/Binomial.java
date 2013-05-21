@@ -139,6 +139,8 @@ public final class Binomial /* extends AbstractDiscreteDistribution */{
 			return n;
 		if(p<=eps || n==0)
 			return 0;
+		if(Double.isNaN(p))
+			throw new RuntimeException("Argument p is NaN!");
 		double npp=n*p;
 		//this fixes some rounding errors that really matter. 
 		if(npp<10e-3){

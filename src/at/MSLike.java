@@ -325,15 +325,15 @@ public class MSLike {
 					}
 					stringBuilder.append('\n');
 					printFlush(stringBuilder);
-
+					//memory means we write to the stream. 
 					ForwardStatsCollector forward = modelHistory.getForwardTraceOutput();
 					if (forward != null) {
 						List<SuperFrequencyTrace> traces = modelHistory.getSelectionTraces();
-						stringBuilder.append("Frequency Trace:\n");
+						ps.println("Frequency Trace:\n");
 						for (SuperFrequencyTrace ft : traces) {
 							// stringBuilder.append("Frequency Trace:\t"+ft.getStartTime()+"\t"+ft.getEndTime()+"\n");
-							forward.collectStats(ft, stringBuilder);
-							printFlush(stringBuilder);
+							forward.collectStats(ft, ps);
+							//printFlush(stringBuilder);
 						}
 					}
 				}
@@ -525,6 +525,7 @@ public class MSLike {
 		modelHistory.setUnphase(!parser.getIsPhased());
 		modelHistory.setMaxRecombinationRate(parser.getMaxRecombinationRate());
 		modelHistory.setWeightedMutations(parser.isWeightedMutations());
+		modelHistory.setSeedDeme(parser.getSeedDeme());
 		if (parser.isFrequencyTrace()) {
 			modelHistory.setForwardTraceOutput(new ForwardStatsCollector(modelHistory));
 		}

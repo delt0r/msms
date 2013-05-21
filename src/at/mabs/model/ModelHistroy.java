@@ -43,11 +43,9 @@ import at.mabs.model.selection.RestartCondition;
 import at.mabs.stats.ForwardStatsCollector;
 
 /**
- * the container for models and events. It describes a history of models and how to map changes
- * between them. Everything has a strict order.
+ * the container for models and events. It describes a history of models and how to map changes between them. Everything has a strict order.
  * 
- * We also provide a place for gloabal parameters. Such as mutation rate, recombination rate and
- * forward/reverse benifical mutation rate.
+ * We also provide a place for gloabal parameters. Such as mutation rate, recombination rate and forward/reverse benifical mutation rate.
  * 
  * @author bob
  * 
@@ -73,9 +71,8 @@ public class ModelHistroy {
 	private FrequencyCondition timedCondition=new BasicFrequencyCondition(-1, -1, 1);//fixation!
 	private RestartCondition restartCondtion=new RestartCondition.Default();//restart on none.
 	/*
-	 * each model has a set of events between it and the next model. If there is only one model the
-	 * event set is empty. these need to be both a list and a Deque... we want constant time
-	 * insertion and removal. Almost all changes should be done via ListIterators.
+	 * each model has a set of events between it and the next model. If there is only one model the event set is empty. these need to be both a list and a
+	 * Deque... we want constant time insertion and removal. Almost all changes should be done via ListIterators.
 	 */
 	private LinkedList<Model> models;
 	private LinkedList<ModelEvent> events;
@@ -90,10 +87,10 @@ public class ModelHistroy {
 	private boolean unphase;
 	private boolean weightedMutations;
 	private double maxRecombinationRate=Double.MAX_VALUE;
+	private int seedDeme;
 	
 	/**
-	 * creates the models. builds up the finalised models from the events. This will not mutate the
-	 * events list...
+	 * creates the models. builds up the finalised models from the events. This will not mutate the events list...
 	 * 
 	 * @param N
 	 * @param nDemes
@@ -115,6 +112,7 @@ public class ModelHistroy {
 //			}
 //		}
 
+
 		List<ModelEvent> shortList =new ArrayList<ModelEvent>();
 
 		models =new LinkedList<Model>();
@@ -135,6 +133,7 @@ public class ModelHistroy {
 				// collect all events for this model break
 				shortList.add(event);
 			} else {
+				//System.err.println("ShortList:"+shortList);
 				// we have finished this model break...
 				model.setEndTime(event.getEventTime());
 				// so end and start time are set
@@ -142,6 +141,7 @@ public class ModelHistroy {
 					me.modifiyModel(model);
 				}
 				model.commitObject();
+				//model.initSelectionData();
 				models.add(model);
 				// now for the next model
 				model =new Model(model);
@@ -162,36 +162,10 @@ public class ModelHistroy {
 		}
 		model.commitObject();
 		models.add(model);
-		//System.out.println("Models:"+models);
+//		System.err.println("Models:" + models);
 //		for (Model mm : models) {
-//			System.out.println("Models:" + Arrays.toString(mm.getTotalMigrationRates()) + "\t" + mm.getStartTime() + "\t" + mm.getEndTime());
-//		}
-//		for (ModelEvent me : events) {
-//			System.out.println("Events:" + me);
-//		}
-//		modelsAndEvents=new LinkedList<Object>();
-//		modelsAndEvents.addAll(events);
-//		modelsAndEvents.addAll(models);
-//		Collections.sort(modelsAndEvents,new Comparator<Object>() {
-//			@Override
-//			public int compare(Object o1, Object o2) {
-//				double time1=getTime(o1);
-//				double time2=getTime(o2);
-//				if(time1>time2)
-//					return 1;
-//				if(time1<time2)
-//					return -1;
-//				return 0;
+//			System.err.println("WTH:" + mm.hashCode());
 //			}
-//			
-//			private double getTime(Object o){
-//				assert o!=null;
-//				if(o instanceof Model)
-//					return ((Model)o).getStartTime();
-//				return ((ModelEvent)o).getEventTime();
-//			}
-//		});
-		//System.out.println(modelsAndEvents);
 	}
 
 	public int getMaxDemeCount() {
@@ -199,6 +173,7 @@ public class ModelHistroy {
 	}
 
 	public int getFirstModelDemeCount() {
+		//System.err.println("FirstModel:"+models.size());
 		return models.getFirst().getDemeCount();
 	}
 
@@ -315,7 +290,10 @@ public class ModelHistroy {
 	}
 
 	public double simulateSelection(){
-		//System.err.println("MH simulation called:"+selection);
+		//ugly as hell. Required to supprt -SFC/ 
+		//if an event results in a resampling that hits the restart condition we can't restart locally. we must restart from the real start.
+		while (true) {
+			//System.err.println("MH simulation called in the while:"+selection);
 		if(!selection)
 			return 0;
 		if (N == Integer.MAX_VALUE || N==Long.MAX_VALUE)//not correct...its a note for me
@@ -341,6 +319,7 @@ public class ModelHistroy {
 		// we hit a start selection event. then all all the new selection events...
 		Iterator<ModelEvent> eventIterator=new Iterator<ModelEvent>() {
 			Iterator<ModelEvent> wraped=events.descendingIterator();
+
 			@Override
 			public void remove() {
 				throw new RuntimeException("Bugger off ");
@@ -362,6 +341,7 @@ public class ModelHistroy {
 				return wraped.hasNext();
 			}
 		};
+			eventIterator  = events.descendingIterator();
 		Iterator<Model> modelIterator=models.descendingIterator();
 		
 		ModelEvent startEvent=eventIterator.next();
@@ -390,13 +370,19 @@ public class ModelHistroy {
 		
 		FrequencyState fstate=new FrequencyState(this.getMaxDemeCount(), model.getDemeCount());
 		//so the current "start" event
+			//System.err.println("ModelH!");
 		model.initSelectionData();
 		//System.err.println("SSim:"+model);
 		if(startEvent instanceof SelectionEndTimeEvent){
 			FrequencyState init=((SelectionEndTimeEvent)startEvent).getInitalFrequencys();
 			model.getSelectionData().setFrequencyToEnd(init);
 		}
-		List<ModelEvent> newEvents=model.getSelectionData().runSelectionSimulation();// side effect, uses selection simulator thats inited.
+			List<ModelEvent> newEvents = model.getSelectionData().runSelectionSimulation();
+			//System.err.println("Events? "+newEvents);
+			if (newEvents == null){
+				//System.err.println("First continue!");
+				continue;// restart simulations from the start!
+			}
 		lastSweepTime=model.getSelectionData().getSweepTime();
 		
 		while(modelIterator.hasNext()){
@@ -437,6 +423,10 @@ public class ModelHistroy {
 			SelectionData data=nextModel.getSelectionData();
 			data.setFrequencyToEnd(fstate);
 			List<ModelEvent> reallyNewEvents=data.runSelectionSimulation();
+				if(reallyNewEvents == null) {
+					//System.err.println("First continue!");
+					continue;//restart from the start
+				}
 			newEvents.addAll(reallyNewEvents);
 			lastSweepTime=data.getSweepTime();
 			model=nextModel;
@@ -447,8 +437,7 @@ public class ModelHistroy {
 		//System.out.println(lastSweepTime);
 		return lastSweepTime;
 	}
-	
-	
+	}
 
 	private boolean containtsForwardSimStopEvent(List<ModelEvent> newEvents) {
 		for(ModelEvent me:newEvents){
@@ -458,14 +447,11 @@ public class ModelHistroy {
 		return false;
 	}
 
-
-
 	/**
 	 * this gives access to the events and models...
 	 * 
-	 * This permits internal management of events that occur in the middle of a valid model. Such
-	 * events are dynamic in that they occur at different times due to zeros in the selection
-	 * simulation.
+	 * This permits internal management of events that occur in the middle of a valid model. Such events are dynamic in that they occur at different times due
+	 * to zeros in the selection simulation.
 	 * 
 	 * Backward is in the sense of time. ie pastward.
 	 * 
@@ -483,6 +469,7 @@ public class ModelHistroy {
 		private Model currentModel;
 
 		private BackwardIterator() {
+			//System.err.println("BackIteratorEvents:+" + events);
 			eventIterator =events.listIterator();
 			if (eventIterator.hasNext())
 				currentEvent =eventIterator.next();
@@ -515,8 +502,7 @@ public class ModelHistroy {
 
 			if (time == Long.MAX_VALUE) {
 				//assert false:state.getLinagesActive();
-				throw new RuntimeException(
-						"Model does not permit full coalescent of linages.\n Check for zero migration rates or for exp population growth pastward");
+				throw new RuntimeException("Model does not permit full coalescent of linages.\n Check for zero migration rates or for exp population growth pastward");
 			}
 			// we have severl posible states.
 			// -1 we have important events at time zero.... ie newSamples
@@ -562,8 +548,9 @@ public class ModelHistroy {
 	/**
 	 * we relax the original assumptions and try and keep the code cleaner. 
 	 * 
-	 * In particular we relax that model boundaries and events times must coincide. ie events 
-	 * can happen in the middle of a model. And these can be selection events. 
+	 * In particular we relax that model boundaries and events times must coincide. ie events can happen in the middle of a model. And these can be selection
+	 * events.
+	 * 
 	 * @author greg
 	 *
 	 */
@@ -594,7 +581,6 @@ public class ModelHistroy {
 			}
 			assert false;
 			
-			
 		}
 		
 		private void moveToModel(long time){
@@ -604,18 +590,14 @@ public class ModelHistroy {
 		}
 	}
 	
-	
-	
-	/*FIXME
-	 * this class provides a similar function to the backwards iterator. the assumption will be cut
-	 * and pasted here from the selection simulation block. That is the only thing that should use
-	 * this.
+	/*
+	 * FIXME this class provides a similar function to the backwards iterator. the assumption will be cut and pasted here from the selection simulation block.
+	 * That is the only thing that should use this.
 	 * 
-	 * the current model is always the model *above* the currentEvent. In otherwords the first event
-	 * to get to the "next" model is the current Event.
+	 * the current model is always the model *above* the currentEvent. In otherwords the first event to get to the "next" model is the current Event.
 	 * 
-	 * we seek to the SelectionEndTime Event and throw exceptions if we Find a FixationTimeEvent or
-	 * no selectionEvent...Note that the current model is the model ABOVE the SelectionEndTimeEvent
+	 * we seek to the SelectionEndTime Event and throw exceptions if we Find a FixationTimeEvent or no selectionEvent...Note that the current model is the model
+	 * ABOVE the SelectionEndTimeEvent
 	 * 
 	 * @author bob
 	 */
@@ -659,6 +641,7 @@ public class ModelHistroy {
 			while (currentModel.getStartTime() != currentEvent.getEventTime() && modelIterator.hasNext()) {
 				currentModel =modelIterator.next();
 			}
+			//System.err.println("Forward Iterator!");
 			currentModel.initSelectionData();
 		}
 
@@ -773,6 +756,7 @@ public class ModelHistroy {
 	public void setFoldMutations(boolean foldMutations) {
 		this.foldMutations=foldMutations;	
 	}
+
 	public boolean isFoldMutations() {
 		return foldMutations;
 	}
@@ -786,11 +770,21 @@ public class ModelHistroy {
 		this.unphase = unphase;
 	}
 
+
 	public boolean isWeightedMutations() {
 		return weightedMutations;
 	}
 	
 	public void setWeightedMutations(boolean weightedMutations) {
 		this.weightedMutations = weightedMutations;
+	}
+	
+	public int getSeedDeme() {
+		
+		return seedDeme;
+	}
+	
+	public void setSeedDeme(int seedDeme) {
+		this.seedDeme = seedDeme;
 	}
 }
