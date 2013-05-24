@@ -36,7 +36,7 @@ public class EHHBeta implements StringStatsCollector {
 	private double lastP;
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {
-		List<InfinteMutation> muts=recorder.getMutations();
+		List<InfinteMutation> muts=recorder.getMutationsSorted();
 		if(muts.isEmpty())
 			return;
 		builder.append("EHHBeta:\n");

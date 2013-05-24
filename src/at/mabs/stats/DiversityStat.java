@@ -21,7 +21,7 @@ public class DiversityStat implements StringStatsCollector {
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {
 		//builder.append("Diversity:\n");
-		List<InfinteMutation> mutations=recorder.getMutations();
+		List<InfinteMutation> mutations=recorder.getMutationsSorted();
 		if(mutations.size()<size){
 			return;
 		}

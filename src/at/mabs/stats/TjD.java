@@ -26,7 +26,7 @@ public class TjD extends StatsCollectorAdapter {
 		double pairSum=0;
 		int maskCount=mask.countSetBits();
 		
-		List<InfinteMutation> mutations=recorder.getMutations();
+		List<InfinteMutation> mutations=recorder.getMutationsSorted();
 		for(InfinteMutation m:mutations){
 			int setCount=m.leafSet.countSetBitsMask(mask);
 			if(setCount!=0 || setCount!=maskCount)

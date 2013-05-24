@@ -26,7 +26,7 @@ public class JAFS extends StatsCollectorAdapter {
 		//assert false;
 		double[] result=new double[(asize+1)*(bsize+1)];
 		
-		for(InfinteMutation m:recorder.getMutations()){
+		for(InfinteMutation m:recorder.getMutationsUnsorted()){
 			int a=m.leafSet.countSetBitsMask(mask);
 			int b=m.leafSet.countSetBitsMask(mask2);
 			result[a+b*(asize+1)]++;

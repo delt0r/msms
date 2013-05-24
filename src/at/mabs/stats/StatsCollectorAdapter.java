@@ -37,8 +37,8 @@ public abstract class StatsCollectorAdapter implements StatsCollector {
 		}
 		double[] results=new double[sum.length*2];
 		for(int i=0;i<sum.length;i++){
-			double mu=sum[i]/n;
-			results[i+sum.length]=Math.sqrt(sum2[i]/n-mu*mu);
+			double mu=sum[i]/(n);
+			results[i+sum.length]=Math.sqrt(sum2[i]/(n-1)-n*mu*mu/(n-1));
 			results[i]=mu;
 		}
 		

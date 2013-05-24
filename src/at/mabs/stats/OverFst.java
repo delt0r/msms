@@ -11,17 +11,17 @@ import java.util.*;
  * @author bob
  *
  */
-public class Fst extends StatsCollectorAdapter {
+public class OverFst extends StatsCollectorAdapter {
 	private FixedBitSet inMask;
 	private FixedBitSet outMask;
 	private FixedBitSet allMask;
 	private String name;
 	
-	public Fst() {
+	public OverFst() {
 		name="fst";
 	}
 	
-	public Fst(String name) {
+	public OverFst(String name) {
 		this.name=name;
 	}
 	
@@ -40,7 +40,7 @@ public class Fst extends StatsCollectorAdapter {
 	
 	@Override
 	public double[] collectStatsImp(SegmentEventRecoder recorder) {
-		List<InfinteMutation> mutations=recorder.getMutationsUnsorted();
+		List<InfinteMutation> mutations=recorder.getMutationsSorted();
 		double inDiff=0;
 		double outDiff=0;
 		double allDiff=0;
@@ -59,7 +59,7 @@ public class Fst extends StatsCollectorAdapter {
 		double out=outDiff;
 		out/=outSize*(outSize-1)/2;
 		double w=inSize/(inSize+outSize);
-		double[] result= {((between-(in*w+(1-w)*out))/between)};
+		double[] result= {1.0/((between-(in*w+(1-w)*out))/between)};
 		return result;
 	}
 	

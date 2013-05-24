@@ -109,7 +109,7 @@ public class AlleleFrequencySpectrum implements StringStatsCollector {
 		
 		if (!jAFS)
 			return;
-		List<InfinteMutation> mutations = recorder.getMutations();
+		List<InfinteMutation> mutations = recorder.getMutationsUnsorted();
 		clearPairArrays();
 		int ndemes = demeMasks.length;
 		int[] demeFreq = new int[ndemes];
@@ -165,7 +165,7 @@ public class AlleleFrequencySpectrum implements StringStatsCollector {
 	}
 
 	private int[] getFrequencySpectrum(SegmentEventRecoder recorder) {
-		List<InfinteMutation> mutations = recorder.getMutations();
+		List<InfinteMutation> mutations = recorder.getMutationsUnsorted();
 		if (mutations.isEmpty())
 			return new int[0];// nice than null;
 

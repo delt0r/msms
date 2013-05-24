@@ -27,7 +27,7 @@ public class AFS extends StatsCollectorAdapter {
 		// System.out.println("\nAsize:"+asize+"\t"+bsize);
 		// assert false;
 		double[] result = new double[(asize + 1) * bins];
-		for (InfinteMutation m : recorder.getMutations()) {
+		for (InfinteMutation m : recorder.getMutationsUnsorted()) {
 			int bin = (int) (m.position * bins);
 			int a = m.leafSet.countSetBitsMask(mask);
 

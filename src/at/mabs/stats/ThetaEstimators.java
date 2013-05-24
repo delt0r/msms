@@ -94,7 +94,7 @@ public class ThetaEstimators implements StringStatsCollector {
 		// get past the valid element...this way large overlaps don't hit
 		// performance at all.
 		collectedSamples++;
-		List<InfinteMutation> segsites = recorder.getMutations();
+		List<InfinteMutation> segsites = recorder.getMutationsUnsorted();
 		// we start with the first mutation. but windows are zero allined.
 		if (segsites.isEmpty())
 			return;

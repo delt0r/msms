@@ -7,6 +7,7 @@ import at.mabs.segment.InfinteMutation;
 import at.mabs.segment.SegmentEventRecoder;
 import at.mabs.stats.MSStats;
 import at.mabs.stats.StatsCollector;
+import at.mabs.util.Bag;
 import at.mabs.util.Util;
 import at.mabs.util.random.Random64;
 
@@ -16,7 +17,7 @@ import java.util.*;
 import com.esotericsoftware.yamlbeans.YamlWriter;
 
 /**
- * reads in next gen sequences from std in, spits out a stats thing.
+ * reads in next gen sequences from std in, spits out a stats thing. Using the GMI type format... 
  * 
  * @author bob
  * 
@@ -107,11 +108,11 @@ public class StatsExport {
 				for(StatsCollector sc:collectors){
 					sc.init();
 				}
-				int snps = clm.getSegSiteCount();
+				int snps = (int)clm.getSegSiteCount();
 				Random rand = new Random64();
 				for (int i = 0; i < clm.getRepeats(); i++) {
 					int start = rand.nextInt(mutations.size());
-					List<InfinteMutation> sublist = mutations.subList(start, Math.min(start + snps, mutations.size() - 1));
+					Bag<InfinteMutation> sublist =new Bag(mutations.subList(start, Math.min(start + snps, mutations.size() - 1)));
 					SegmentEventRecoder ser = new SegmentEventRecoder(sublist, true, false);
 					for (StatsCollector sc : collectors) {
 						sc.collectStats(ser);

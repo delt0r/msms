@@ -40,12 +40,12 @@ public class EHHMax extends StatsCollectorAdapter {
 
 		int[] counts = new int[binCount];
 		double[] values = new double[binCount];
-		if (recorder.getMutations().size() <bits)
+		if (recorder.getMutationsSorted().size() <bits)
 			return values;
 
-		FixedBitSet[] seqAsBits = transposeToSequences(recorder.getMutations());
+		FixedBitSet[] seqAsBits = transposeToSequences(recorder.getMutationsSorted());
 		double[] maxF=subStringMaxFrequency(seqAsBits);//note that this destroys the seqAsBits
-		List<InfinteMutation> muts=recorder.getMutations();
+		List<InfinteMutation> muts=recorder.getMutationsSorted();
 		for(int i=0;i<maxF.length;i++){
 			double start=muts.get(i).position;
 			double end=muts.get(i+bits).position;

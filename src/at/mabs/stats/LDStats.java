@@ -55,7 +55,7 @@ public class LDStats implements StringStatsCollector {
 	
 	@Override
 	public void collectStats(SegmentEventRecoder recorder, StringBuilder builder) {
-		List<InfinteMutation> mutations=recorder.getMutations();
+		List<InfinteMutation> mutations=recorder.getMutationsSorted();
 		if(mutations.isEmpty())
 			return;
 		//builder.append("LD matrix:\n");

@@ -23,7 +23,7 @@ public class EHHNewStat extends StatsCollectorAdapter {
 
 	@Override
 	public double[] collectStatsImp(SegmentEventRecoder recorder) {
-		List<InfinteMutation> mutations = recorder.getMutations();
+		List<InfinteMutation> mutations = recorder.getMutationsSorted();
 		if (mutations.size() < 2)
 			return new double[binCount];
 

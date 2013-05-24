@@ -33,7 +33,7 @@ public class GEHH extends StatsCollectorAdapter {
 	public double[] collectStatsImp(SegmentEventRecoder recorder) {
 		//so for each snp we go in both directions.
 		double[] data=new double[binCount];
-		List<InfinteMutation> muts=recorder.getMutations();
+		List<InfinteMutation> muts=recorder.getMutationsSorted();
 		if(muts.size()==0){
 			return data;
 		}

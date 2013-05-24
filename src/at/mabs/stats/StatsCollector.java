@@ -57,7 +57,7 @@ public interface StatsCollector {
 		static{
 			namedClasses=new HashMap<String, Class<? extends StatsCollector>>();
 			namedClasses.put("Fst",Fst.class);
-			namedClasses.put("HackStat",HackStat.class);
+			namedClasses.put("HackStat",GaussNLStat.class);
 		}
 		
 		public static Class<? extends StatsCollector> getNamedStatsCollector(String name){

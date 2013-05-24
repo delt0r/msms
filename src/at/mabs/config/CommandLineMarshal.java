@@ -162,7 +162,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	private boolean isSeedSet;
 	private boolean isCondtionalMutation;
 
-	private int segSiteCount;
+	private double segSiteCount;
 
 	private FrequencyCondition stoppingCondition=new BasicFrequencyCondition(-1, -1, 1);//fixation is good
 
@@ -183,6 +183,8 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	private RestartCondition restartCondition=new RestartCondition.Default();
 	
 	private boolean foldMutations=false;
+	
+	private boolean weightedMutations=false;
 	
 	private double maxRecombinationRate=Double.MAX_VALUE;
 	
@@ -250,7 +252,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 			timeInvarient =false;
 	}
 
-	@CLNames(names ={ "-G" })
+	@CLNames(names ={ "-G" }) 
 	@CLUsage("alpha")
 	@CLDescription("Set the expontail growth rate in forward time to alpha. N/N_i = exp{-alpha*t}")
 	public void addExpEvent(double alpha) {
@@ -266,6 +268,22 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		
 	}
 
+
+	@CLNames(names ={ "-eng2s" })
+	@CLDescription("set a deme to have exponetial growth, parameterized start size and by final size. This acts as a -en and -eg option")
+	@CLUsage("t deme startSize finalT finalSize")
+	public void addExpEventSize(double time, int deme, double startSize,double finalT,double finalSize) {
+		if(finalT<=time){
+			throw new RuntimeException("Can't have a final time less pastward than time!");
+		}
+		double alpha=-Math.log(finalSize/startSize)/(finalT-time);
+		//now we just apply the 2 real options.
+		//System.err.println("OUR ALPHA##:"+alpha);
+		addSizeChangeEvent(time, deme,startSize);
+		addExpEvent(time,deme,alpha);
+	}
+	
+	
 	@CLNames(names ={ "-eg" })
 	@CLDescription("set a deme to have exponetial growth in forward time starting from time t. N/N_i = exp{-alpha*t}")
 	@CLUsage("t deme alpha")
@@ -580,7 +598,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		return seed;
 	}
 
-	public int getSegSiteCount() {
+	public double getSegSiteCount() {
 		return segSiteCount;
 	}
 
@@ -960,6 +978,15 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		isCondtionalMutation =true;
 	}
 
+	@CLNames(names ={ "-ws" })
+	@CLDescription("Weighted mutations. All edges get a weighted mutations. This reduces shot noise. Most statistics are not weight aware. Not a general user option")
+	@CLUsage("segsites")
+	public void setWeightedSegregatingSites(double n) {
+		this.segSiteCount =n;
+		isCondtionalMutation =true;
+		weightedMutations=true;
+	}
+	
 	@CLNames(names ={ "-T" })
 	@CLUsage("")
 	@CLDescription("Output gene trees")
@@ -1125,5 +1152,8 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 
 	
+	public boolean isWeightedMutations() {
+		return weightedMutations;
+	}
 	
 }

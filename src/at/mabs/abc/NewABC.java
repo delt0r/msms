@@ -87,7 +87,7 @@ public class NewABC {
 
 	// best n of the bunch.
 	private TreeSet<ParameterStatPair> sampledPoints = new TreeSet<ParameterStatPair>();
-	
+
 	private double[] stds;
 	// first n parameters produced.
 	private List<ParameterStatPair> bootstrapPoints = new ArrayList<ParameterStatPair>();
@@ -102,8 +102,8 @@ public class NewABC {
 	private List<StatsCollector> dataStats = new ArrayList<StatsCollector>();
 	private int priorUpdate = 5000;
 	private Random random = new Random64();
-	
-	private int truncatStats=Integer.MAX_VALUE;
+
+	private int truncatStats = Integer.MAX_VALUE;
 
 	// private double[] normalizingFactors;
 
@@ -149,28 +149,28 @@ public class NewABC {
 			double[] distances = collectStatitics(collectionStats);
 			ParameterStatPair psp = ParameterStatPair.packIntoParamStat(distances, priors);
 			bootstrapPoints.add(psp);
-			if (bootstrapPoints.size() % (1+sampleSize / 80) == 0) {
+			if (bootstrapPoints.size() % (1 + sampleSize / 80) == 0) {
 				System.out.print("=");
 			}
 		}
 		System.out.println("|");
 		transformData = ParameterStatPair.calculateTransformData(bootstrapPoints, false, pcaNormalzation, plsNormalzation);
 
-		ParameterStatPair dataStatPair=getDataStatPair(dataStats);
+		ParameterStatPair dataStatPair = getDataStatPair(dataStats);
 		dataStatPair.transform(transformData);
 		for (ParameterStatPair pair : bootstrapPoints) {
 			pair.transform(transformData);
-			pair.calculateDistance(dataStatPair,truncatStats);// euclid
+			pair.calculateDistance(dataStatPair, truncatStats);// euclid
 		}
 
 		sampledPoints.addAll(bootstrapPoints);
-		
-		stds=new double[priors.size()];
-		for(int i=0;i<stds.length;i++){
-			PriorDensity pd=priors.get(i);
-			stds[i]=pd.getMax()-pd.getMin();
+
+		stds = new double[priors.size()];
+		for (int i = 0; i < stds.length; i++) {
+			PriorDensity pd = priors.get(i);
+			stds[i] = pd.getMax() - pd.getMin();
 		}
-		
+
 		saveResultState();
 
 		// init thing for mcmc.
@@ -196,15 +196,15 @@ public class NewABC {
 				ArrayList<ParameterStatPair> list = new ArrayList<ParameterStatPair>(sampledPoints);
 				values = list.get(r % list.size()).getParameters();
 			}
-			//paste(msmsArgs, priors, mcmc, values);
-			pasteFancy(msmsArgs, priors);
+			paste(msmsArgs, priors, mcmc, values);
+			// pasteFancy(msmsArgs, priors);
 			// System.out.println("Args:"+Arrays.toString(msmsArgs));
 			MSLike.main(msmsArgs, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			double[] distances = collectStatitics(collectionStats);
 			ParameterStatPair psp = ParameterStatPair.packIntoParamStat(distances, priors);
 			psp.transform(transformData);
-			psp.calculateDistance(dataStatPair,truncatStats);
-			
+			psp.calculateDistance(dataStatPair, truncatStats);
+
 			if (psp.getDistance() < sampledPoints.last().getDistance()) {
 				sampledPoints.add(psp);
 				sampledPoints.pollLast();
@@ -223,19 +223,22 @@ public class NewABC {
 				if (chainPoints.size() >= 10)
 					saveChain();
 			}
-			
+
 			if (r % priorUpdate == 0 && r >= priorUpdate) {
 				updatePriors(priors);
-				
-//				transformData = ParameterStatPair.calculateTransformData(bootstrapPoints, false, pcaNormalzation, plsNormalzation);
-//				dataStatPair.transform(transformData);
-//				TreeSet<ParameterStatPair> nSampledPoints=new TreeSet<ParameterStatPair>();
-//				for(ParameterStatPair p:sampledPoints){
-//					p.transform(transformData);
-//					p.calculateDistance(dataStatPair);
-//					nSampledPoints.add(p);
-//				}
-//				sampledPoints=nSampledPoints;
+
+				// transformData =
+				// ParameterStatPair.calculateTransformData(bootstrapPoints,
+				// false, pcaNormalzation, plsNormalzation);
+				// dataStatPair.transform(transformData);
+				// TreeSet<ParameterStatPair> nSampledPoints=new
+				// TreeSet<ParameterStatPair>();
+				// for(ParameterStatPair p:sampledPoints){
+				// p.transform(transformData);
+				// p.calculateDistance(dataStatPair);
+				// nSampledPoints.add(p);
+				// }
+				// sampledPoints=nSampledPoints;
 			}
 			if (r % sampleSize == 0) {
 				saveResultState();
@@ -246,31 +249,31 @@ public class NewABC {
 	}
 
 	private void updateStds(List<PriorDensity> priors) {
-		double[] sum=new double[priors.size()];
-		double[] sum2=new double[priors.size()];
-		for(ParameterStatPair psp:sampledPoints){
-			double[] params=psp.getParameters();
-			for(int i=0;i<sum.length;i++){
-				sum[i]+=params[i];
-				sum2[i]+=params[i]*params[i];
+		double[] sum = new double[priors.size()];
+		double[] sum2 = new double[priors.size()];
+		for (ParameterStatPair psp : sampledPoints) {
+			double[] params = psp.getParameters();
+			for (int i = 0; i < sum.length; i++) {
+				sum[i] += params[i];
+				sum2[i] += params[i] * params[i];
 			}
 		}
-		int n=sampledPoints.size();
-		for(int i=0;i<stds.length;i++){
-			double mu=sum[i]/n;
-			stds[i]=Math.sqrt((sum2[i]/n)-(mu*mu));
+		int n = sampledPoints.size();
+		for (int i = 0; i < stds.length; i++) {
+			double mu = sum[i] / n;
+			stds[i] = Math.sqrt((sum2[i] / n) - (mu * mu));
 		}
 	}
 
 	private ParameterStatPair getDataStatPair(List<StatsCollector> dataStats) {
-		ArrayList<Double> stats=new ArrayList<Double>();
-		for(StatsCollector sc:dataStats){
-			double[] s=sc.summaryStats();
-			for(double d:s){
+		ArrayList<Double> stats = new ArrayList<Double>();
+		for (StatsCollector sc : dataStats) {
+			double[] s = sc.summaryStats();
+			for (double d : s) {
 				stats.add(d);
 			}
 		}
-		ParameterStatPair dpsp=new ParameterStatPair(null,Util.toArrayPrimitiveDouble(stats));
+		ParameterStatPair dpsp = new ParameterStatPair(null, Util.toArrayPrimitiveDouble(stats));
 		return dpsp;
 	}
 
@@ -295,7 +298,7 @@ public class NewABC {
 			if (pd instanceof CopyPriorDensity)
 				continue;
 			pd.updateMinMax(mins[i], maxs[i]);
-			System.out.println("UpdateMinMax:" + mins[i] + "\t" + maxs[i]+"\tspred:"+stds[i]);
+			System.out.println("UpdateMinMax:" + mins[i] + "\t" + maxs[i] + "\tspred:" + stds[i]);
 		}
 	}
 
@@ -409,7 +412,7 @@ public class NewABC {
 		CommandLineMarshal msmsparser = new CommandLineMarshal();
 		try {
 			CmdLineParser<CommandLineMarshal> marshel = CommandLineMarshal.getCacheParser();
-			marshel.processArguments(msmsArgs,msmsparser);
+			marshel.processArguments(msmsArgs, msmsparser);
 			SampleConfiguration sampleConfig = msmsparser.getSampleConfig();
 			// for (StatsCollector stat : collectionStats)
 			// stat.init(sampleConfig);FIXME?
@@ -429,14 +432,15 @@ public class NewABC {
 			if (proposial) {
 				value = pd.nextProp(values[i]);
 			} else {
-				value = pd.next();
+				pd.generateRandom();
+				value = pd.getValue();
 			}
 			args[pd.getArgIndex()] = "" + value;
 		}
 	}
 
 	private void pasteFancy(String[] args, List<PriorDensity> priors) {
-		final double scale=Math.sqrt(12)/2;
+		final double scale = Math.sqrt(12) / 2;
 		int randIndex = -1;// random.nextInt(priors.size());
 		ArrayList<ParameterStatPair> randomlist = new ArrayList<ParameterStatPair>(sampledPoints);
 		for (int i = 0; i < priors.size(); i++) {
@@ -444,15 +448,16 @@ public class NewABC {
 			double value = Double.MAX_VALUE;//
 
 			if (pd instanceof CopyPriorDensity) {
-				value = pd.getLastValue();
+				value = pd.getValue();
 			} else if (i == randIndex) {
-				value = pd.next();
+				pd.generateRandom();
+				value = pd.getValue();
 			} else {
 				ParameterStatPair psp = randomlist.get(random.nextInt(randomlist.size()));
 				while (value > pd.getMax() || value < pd.getMin())
-					value = psp.getParameters()[i] + scale * random.nextGaussian() * stds[i] ;
-				pd.setLastValue(value);
-				value = pd.getLastValue();// clamp just in case
+					value = psp.getParameters()[i] + scale * random.nextGaussian() * stds[i];
+				pd.setValue(value);
+				value = pd.getValue();// clamp just in case
 			}
 
 			args[pd.getArgIndex()] = "" + value;
@@ -549,12 +554,12 @@ public class NewABC {
 
 	@CLNames(names = { "-pca" })
 	public void setPCATrue() {
-		this.pcaNormalzation=true;
+		this.pcaNormalzation = true;
 	}
-	
+
 	@CLNames(names = { "-pls" })
 	public void setPLSTrue() {
-		this.plsNormalzation=true;
+		this.plsNormalzation = true;
 	}
 
 	@CLNames(names = { "-mcmc" })
@@ -566,7 +571,7 @@ public class NewABC {
 	public void setChainFileName(String chainFileName) {
 		this.chainFileName = chainFileName;
 	}
-	
+
 	@CLNames(names = { "-truncate" })
 	public void setTruncatStats(int truncatStats) {
 		this.truncatStats = truncatStats;
@@ -604,7 +609,7 @@ public class NewABC {
 		}
 
 		try {
-			CmdLineParser<StatsCollector> parser = new CmdLineParser<StatsCollector>((Class<StatsCollector>)stat.getClass());
+			CmdLineParser<StatsCollector> parser = new CmdLineParser<StatsCollector>((Class<StatsCollector>) stat.getClass());
 			if (statAndConfig.length == 2 && statAndConfig[1].contains("help")) {
 				System.err.println("Help for statCollector:" + statName + "\n" + parser.longUsage());
 				return;
@@ -612,7 +617,7 @@ public class NewABC {
 			String[] args = new String[statAndConfig.length - 1];
 			System.arraycopy(statAndConfig, 1, args, 0, args.length);
 			// System.out.println("StatsARGS:"+Arrays.toString(args));
-			parser.processArguments(args,stat);
+			parser.processArguments(args, stat);
 			// System.out.println("Object:"+stat+"\t"+parser.longUsage());
 		} catch (CmdLineBuildException e) {
 			throw new RuntimeException(statName + " does not take options or we have an error", e);
@@ -664,7 +669,7 @@ public class NewABC {
 		}
 
 		try {
-			parser.processArguments(args,abc);
+			parser.processArguments(args, abc);
 			abc.run();
 		} catch (Exception e) {
 			System.err.println(parser.longUsage());

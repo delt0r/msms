@@ -1,5 +1,5 @@
 #!R 
-animateTrace<-function(x,y,z,frames=100,phi=.01,zoom=1,rotSpeed=1,stheta=0,start=0,end=length(x),radius=1,traces=NaN,xlab='x',ylab='y',zlab='z'){
+animateTrace<-function(x,y,z,frames=100,phi=.01,zoom=1,rotSpeed=1,stheta=0,start=0,end=length(x),radius=1,traces=NaN,xlab='x',ylab='y',zlab='z',SnapShots=FALSE){
 	#first we need to get the traces...add a NaN at the end just to make sure we have a termination NaN
 	x<-c(x,NaN)
 	y<-c(y,NaN)
@@ -55,7 +55,9 @@ animateTrace<-function(x,y,z,frames=100,phi=.01,zoom=1,rotSpeed=1,stheta=0,start
 		#plot3d(x[3,],x[1,],x[2,],type='n')
 		lines3d(x[r],y[r],z[r],col=heat.colors(frames)[c],lwd=1.5)
 		spheres3d(x[p],y[p],z[p],col='blue',radius=radius)
-		#rgl.snapshot(filename=paste('snap',framecounter+c,'.png',sep=''))
+		if(SnapShots){
+			rgl.snapshot(filename=paste('snap',framecounter+c,'.png',sep=''))
+		}
 		rgl.pop()
 		reg<-nreg-1
 	}
