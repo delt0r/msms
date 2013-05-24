@@ -31,7 +31,7 @@ public class AFS extends StatsCollectorAdapter {
 			int bin = (int) (m.position * bins);
 			int a = m.leafSet.countSetBitsMask(mask);
 
-			result[a + (asize + 1) * bin]++;
+			result[a + (asize + 1) * bin]+=m.weight;
 		}
 
 		return result;

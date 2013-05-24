@@ -29,7 +29,7 @@ public class JAFS extends StatsCollectorAdapter {
 		for(InfinteMutation m:recorder.getMutationsUnsorted()){
 			int a=m.leafSet.countSetBitsMask(mask);
 			int b=m.leafSet.countSetBitsMask(mask2);
-			result[a+b*(asize+1)]++;
+			result[a+b*(asize+1)]+=m.weight;
 		}
 		
 		return result;
