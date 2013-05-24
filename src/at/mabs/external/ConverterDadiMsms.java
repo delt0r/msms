@@ -27,6 +27,7 @@ import at.mabs.segment.InfinteMutation;
 import at.mabs.segment.SegmentEventRecoder;
 import at.mabs.stats.MSStats;
 import at.mabs.stats.StatsCollector;
+import at.mabs.util.Bag;
 import at.mabs.util.Util;
 import at.mabs.util.random.Random64;
 
@@ -185,7 +186,7 @@ public class ConverterDadiMsms {
     	
     	//Create fixedbitset mask -1 to pops before stat name, 0 others
 		FixedBitSet mask =new FixedBitSet(sampleConfig.getMaxSamples());
-		FixedBitSet[] demeMasks=sampleConfig.getDemeMasks();
+		FixedBitSet[] demeMasks=sampleConfig.getMasks();
 		//System.out.println("DemeMasks:"+Arrays.toString(demeMasks));
 		int count =0;
 		while (count < args.length && args[count] != null && args[count].matches("\\d*")) {
@@ -429,7 +430,7 @@ public class ConverterDadiMsms {
 				for (int i=0; i<numReps; i++) {
 					int start = rand.nextInt(mutations.size());
 					List<InfinteMutation> sublist = mutations.subList(start, Math.min(start + numSNPs, mutations.size() - 1));
-					SegmentEventRecoder ser = new SegmentEventRecoder(sublist, true, false);
+					SegmentEventRecoder ser = new SegmentEventRecoder(new Bag(sublist), true, false);
 		    		for (StatsCollector sc : statsCollectors) {
 		    			sc.collectStats(ser);
 		    		}
@@ -439,7 +440,7 @@ public class ConverterDadiMsms {
 		    if (numReps==0) {
 		    	for (int j=0; j<(int)(mutations.size()/numSNPs); j++) {
 		    		List<InfinteMutation> sublist = mutations.subList((j*numSNPs), ((j*numSNPs)+numSNPs));
-		    		SegmentEventRecoder ser = new SegmentEventRecoder(sublist, true, false);
+		    		SegmentEventRecoder ser = new SegmentEventRecoder(new Bag(sublist), true, false);
 		    		for (StatsCollector sc : statsCollectors) {
 		    			sc.collectStats(ser);
 		    		}
