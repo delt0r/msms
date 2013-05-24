@@ -111,6 +111,7 @@ public class DemeSplitEvent extends ModelEvent {
 		// (N_i*x_i+N_j*x_j)/(N_i+N_j) == new x
 		// then resample...
 		// first get the pop sizes from the old model
+		//System.err.println("PROCESSING ES!");
 		double changeTime = oldData.getParent().getStartTime();
 		double ni = oldData.getParent().getPopulationSizeModels()[deme].populationSize(changeTime);
 		double nj = oldData.getParent().getPopulationSizeModels()[demeLabel].populationSize(changeTime);

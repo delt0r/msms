@@ -47,7 +47,8 @@ import at.mabs.util.Util;
  * 
  */
 public final  class Model {
-	private final ModelHistroy parent;
+	private final ModelHistroy modelHistory;
+	private final Model parent;
 
 	private PopulationSizeModel[] sizeModels;
 
@@ -73,7 +74,6 @@ public final  class Model {
 	//private Model(ModelHistroy mh) {
 	//	parent =mh;
 	//}
-
 	/**
 	 * copy constructor... Deep copy. The result is *not* finalised.
 	 * SelectionData is not initialised
@@ -81,9 +81,10 @@ public final  class Model {
 	 * @param model
 	 */
 	protected Model(Model model) {
+		//System.err.println("Model creation A:"+this.hashCode()+"\t"+model);
 		if (!model.finalized)
 			throw new RuntimeException("Model must be finalized before its data is acessed");
-		parent =model.parent;
+		modelHistory =model.modelHistory;
 		demeCount =model.demeCount;
 		mDirectionList =new ArrayList[demeCount];
 		mRateList =new ArrayList[demeCount];
@@ -93,9 +94,8 @@ public final  class Model {
 		}
 		sizeModels =model.sizeModels.clone();
 		forwardOnly=model.isForwardOnly();
-		if(model.selectionData!=null){
-			selectionData=new SelectionData(model);
-		}
+		parent=model;
+		
 	}
 
 	/**
@@ -107,7 +107,8 @@ public final  class Model {
 	 * @param m
 	 */
 	protected Model(ModelHistroy mh, int demes, double N, double m) {
-		parent =mh;
+		//System.err.println("Model creation B:"+this.hashCode());
+		modelHistory =mh;
 
 		demeCount =demes;
 
@@ -118,9 +119,14 @@ public final  class Model {
 		initLists();
 		setMigrationMatrix(m);
 		//System.out.println("Matrix:"+mRateList[0]+"\t"+demeCount);
+		parent=null;
 	}
 	
-	public ModelHistroy getParent(){
+	public ModelHistroy getModelHistory(){
+		return modelHistory;
+	}
+	
+	public Model getParent() {
 		return parent;
 	}
 	
@@ -135,6 +141,8 @@ public final  class Model {
 		Util.initArray(mRateList, ArrayList.class);
 	}
 
+	
+	
 	public int[][] getMigrationDirectionsByDeme() {
 		return mDirectionByDeme;
 	}
@@ -156,7 +164,7 @@ public final  class Model {
 	}
 
 	public double getRecombinationRate() {
-		return parent.getRecombinationRate();
+		return modelHistory.getRecombinationRate();
 	}
 
 	protected void setPopulationModel(int deme, PopulationSizeModel popModel) {
@@ -391,6 +399,8 @@ public final  class Model {
 		//initSelectionData();
 		return selectionData;
 	}
+	
+	
 	
 	public String toString(){
 		return "Model("+(double)this.getStartTime()+"<>"+(double)this.getEndTime()+")";

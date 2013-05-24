@@ -68,7 +68,8 @@ public interface PopulationSizeModel {
 		
 		@Override
 		public double populationSize(double t) {
-			return 0;
+			throw new RuntimeException("Linage in a turned Off deme");
+			//return 0;
 		}
 	}
 }	

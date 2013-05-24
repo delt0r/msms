@@ -58,7 +58,7 @@ import at.mabs.util.random.RandomGenerator;
  */
 public class SelectionData {
 	private final Model parent;
-	private final ModelHistroy grandparent;
+	
 
 	private final Binomial binomial = RandomGenerator.getBinomial();
 	private final Random random = RandomGenerator.getRandom();
@@ -84,12 +84,13 @@ public class SelectionData {
 	 * be a really bad idea.
 	 */
 	public SelectionData(Model model) {
+		//System.err.println("Kreating SelectionData:"+model+'\t'+model.hashCode()+"Demes:"+model.getDemeCount());
 		// start and end on integer generations.
 		assert model.getStartTime() < model.getEndTime() : model.getStartTime();
 		// if(true)throw new
 		// RuntimeException(""+model.getStartTime()+"\t"+model.getEndTime());
 		parent = model;
-		grandparent = model.getParent();
+		ModelHistroy modelHistory = model.getModelHistory();
 		forwardOnly = model.isForwardOnly();
 		// if (!model.isFinalized())
 		// throw new RuntimeException("Parent Model Not Finalized");
@@ -103,18 +104,31 @@ public class SelectionData {
 		// FrequencyTrace((int)model.getStartTime(),(int)model.getStartTime()+gens,model.getDemeCount(),2);
 
 		selectionStrength = new SelectionStrengthModel[model.getDemeCount()];
-		// System.out.println("CREATING SSM:"+grandparent.getSAA()+"\t"+Arrays.toString(model.getSelectionData().selectionStrength));
+		//System.err.println("CREATING SSM:"+modelHistory.getSAA());
 		if (model.getSelectionData() != null) {
+			//System.err.println("NOt Null");
 			selectionStrength = model.getSelectionData().selectionStrength.clone();
 
+		}if(model.getParent()!=null && model.getParent().getSelectionData()!=null){
+			SelectionStrengthModel[] previous=model.getParent().getSelectionData().selectionStrength; 
+			for(int i=0;i<previous.length && i<selectionStrength.length;i++){
+				selectionStrength[i]=previous[i];
+			}
+			//if there are extra demes. Set them to the normal defaults.
+			SelectionStrengthModel ssm = new SelectionStrengthModel.Simple(modelHistory.getSaa(), modelHistory.getSaA(), modelHistory.getSAA());
+			for(int i=previous.length;i<selectionStrength.length;i++){
+				selectionStrength[i]=ssm;
+			}
+			
 		} else {
-			SelectionStrengthModel ssm = new SelectionStrengthModel.Simple(grandparent.getSaa(), grandparent.getSaA(), grandparent.getSAA());
+			//System.err.println("Null");
+			SelectionStrengthModel ssm = new SelectionStrengthModel.Simple(modelHistory.getSaa(), modelHistory.getSaA(), modelHistory.getSAA());
 
 			for (int i = 0; i < selectionStrength.length; i++) {
 				selectionStrength[i] = ssm;// shared instance
 			}
 		}
-		// System.out.println("SettingSelection:"+grandparent.getSaa()+"\t"+grandparent.getSAA());
+	//	System.err.println("SettingSelection:"+modelHistory.getSaa()+"\t"+modelHistory.getSAA()+"\t"+model);
 		initFrequencyData();
 	}
 
@@ -129,9 +143,11 @@ public class SelectionData {
 				// FrequencyTrace((int)model.getStartTime(),(int)model.getStartTime()+1,model.getDemeCount(),2);
 		// }else{
 		{
-			// System.out.println("About to crate:"+parent+"\t"+Long.MAX_VALUE);
+			// System.err.println("About to crate:"+parent+"\t"+parent.hashCode());
 			frequencys = new SuperFrequencyTrace(parent.getDemeCount(), parent.getStartTime(), (int) (parent.getEndTime() - parent.getStartTime() + 1));
+			// System.err.println("kreated:"+parent+"\t"+frequencys.hashCode());
 		}
+		//System.err.println("freqs? "+frequencys);
 	}
 
 	public Model getParent() {
@@ -168,12 +184,16 @@ public class SelectionData {
 	 * to be merged/sorted into the event list.
 	 * 
 	 * Note that previous elements added need to be removed. ie the volitile
-	 * 
+	 * @return more events or null if need a restart aka rejection condition meet. 
 	 */
 	public List<ModelEvent> runSelectionSimulation() {
 		// frequencys.reset();
 		// frequencys.setIndexMostPastward();
-		List<ModelEvent> events = grandparent.getSelectionSimulator().forwardSimulator(parent, grandparent, selectionStrength, frequencys);
+		List<ModelEvent> events =null;
+		//while(events==null){
+		ModelHistroy modelHistory=parent.getModelHistory();
+			events = modelHistory.getSelectionSimulator().forwardSimulator(parent, modelHistory, selectionStrength, frequencys);
+		//}
 		// frequencys.setUsed(true);
 		// System.out.println("SelectionEvents"+events);
 		return events;
@@ -207,8 +227,9 @@ public class SelectionData {
 		System.arraycopy(selectionStrength, 0, newSS, 0, size);
 		newSS[size] = selectionStrength[size - 1];// TODO could be better...
 		selectionStrength = newSS;
-
-		// frequencys.addDeme();
+		//if(frequencys!=null)
+		//	throw new RuntimeException("Firetruck+"+frequencys);
+		 //frequencys.addDeme();
 	}
 
 	public void getFrequencysFromStart(FrequencyState state) {
@@ -249,8 +270,9 @@ public class SelectionData {
 		// }
 		frequencys.setIndexMostPastward();
 		double[] freqs = new double[parent.getDemeCount()];// frequencys.getFrequencys(null);
+		//System.err.println("Doing Freq:"+parent.getDemeCount()+"\t"+data);
 		for (int d = 0; d < freqs.length; d++) {
-			// System.out.println(d+" "+lastIndex);
+		// System.err.println("Freqs:"+d+" "+Arrays.toString(freqs));
 
 			freqs[d] = data.getFrequency(d, 1);
 		}
@@ -260,7 +282,7 @@ public class SelectionData {
 	public double getFrequency(int deme, int allele, double time) {
 		assert (time >= parent.getStartTime()) : time + ">=" + parent.getStartTime();
 		assert (time <= parent.getEndTime()) : time + "<" + parent.getEndTime();
-		// System.err.println("Getting Freq for C sim:"+deme+"\t"+allele+"\t"+time);
+		// System.err.println("Getting Freq for C sim:"+deme+"\t"+allele+"\t"+time+"\t"+frequencys);
 		// if(true)throw new RuntimeException("BORK");
 		frequencys.setIndexTime((int) time);
 		// System.err.println("time:"+time+"\t"+frequencys.getIndexTime()+"\t"+frequencys.getIndex()+"\tpStart:"+parent.getStartTime());
@@ -273,7 +295,7 @@ public class SelectionData {
 	}
 
 	public double coalescentCumulantIntegration(int deme, int allele, double time, double maxTime, double residue, int n) {
-		// System.out.println("CALLED");
+		//System.err.println("CALLED");
 		if (time >= maxTime) {
 			// System.out.println("Bork");
 			return 0;
@@ -291,10 +313,10 @@ public class SelectionData {
 		double delta = 1 - time + (int) time;
 		sum += delta / f;
 		double g = delta;// already dealt with the first increment.
-		// System.out.println("gTime "+(g+time));
+		//System.err.println("gTime "+(g+time)+"\tMaxT:"+maxTime);
 		while (sum < residue && (time + g) <= maxTime) {
 			f = getFrequency(deme, allele, time + g) * size.populationSize(time + g);
-			// System.out.println("loop:"+size.populationSize(time + g)+"\t"+f);
+			//System.err.println("loop:"+size.populationSize(time + g)+"\t"+f);
 			if (f <= n) {
 				// special case... more linages that population size. Force a C
 				// event here...

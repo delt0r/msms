@@ -115,7 +115,11 @@ public class CommandLineMarshal implements InitFinishParserObject{
 
 	private int repeats;
 	
+	/**
+	 * do we have a -I or -IT option?
+	 */
 	private boolean flagI;
+	
 	private SampleConfiguration sampleConfig;
 	
 	private EventTracker eventTracker;
@@ -135,6 +139,8 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	private double saa;
 
 	private double allelePostion;
+	private int seedDeme=-1;
+	
 	private boolean noSequence;
 	//private boolean summaryStats;
 
@@ -220,7 +226,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	
 	
 
-	@CLNames(names ={ "-ej" })
+	@CLNames(names ={ "-ej" },rank=1)
 	@CLUsage("t demeI demeJ")
 	@CLDescription("Join deme I to J. The outward migration rates of deme I are set to zero. Population parameters are left unchanged.")
 	public void addDemeJoin(double time, int demeI, int demeJ) {
@@ -246,7 +252,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 
 	@CLNames(names ={ "-G" })
 	@CLUsage("alpha")
-	@CLDescription("Set the expontail growth rate in forward time to alpha")
+	@CLDescription("Set the expontail growth rate in forward time to alpha. N/N_i = exp{-alpha*t}")
 	public void addExpEvent(double alpha) {
 		addExpEvent(0, 0, alpha);// zero for all demes
 		
@@ -254,14 +260,14 @@ public class CommandLineMarshal implements InitFinishParserObject{
 
 	@CLNames(names ={ "-eG" })
 	@CLUsage("t alpha")
-	@CLDescription("Set the expontail growth rate in forward time to alpha for all demes from time t")
+	@CLDescription("Set the expontail growth rate in forward time to alpha for all demes from time t. N/N_i = exp{-alpha*t}")
 	public void addExpEvent(double time, double alpha) {
 		addExpEvent(time, 0, alpha);// zero for all demes
 		
 	}
 
 	@CLNames(names ={ "-eg" })
-	@CLDescription("set a deme to have exponetial growth in forward time starting from time t.")
+	@CLDescription("set a deme to have exponetial growth in forward time starting from time t. N/N_i = exp{-alpha*t}")
 	@CLUsage("t deme alpha")
 	public void addExpEvent(double time, int deme, double alpha) {
 		events.add(new ExpPopulationEvent(Math.round(time * 4 * N0), deme - 1, alpha / (4 * N0)));
@@ -270,7 +276,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 
 	@CLNames(names ={ "-g" })
 	@CLUsage("deme alpha")
-	@CLDescription("Set the expontail growth rate in forward time to alpha from time 0")
+	@CLDescription("Set the exponetail growth rate in forward time to alpha from time 0. N/N_i = exp{-alpha*t}")
 	public void addExpEvent(int deme, double alpha) {
 		addExpEvent(0, deme, alpha);
 	}
@@ -331,14 +337,17 @@ public class CommandLineMarshal implements InitFinishParserObject{
 			saa=coeffecients[2];
 		}
 		SelectionStrengthModel ssm =new SelectionStrengthModel.Simple(saa / n2, saA / n2, sAA / n2);
-		events.add(new SelectionStrengthEvent(Math.round(time * 4 * N0), deme - 1, ssm));
+		long g=Math.round(time * 4 * N0);
+		
+			
+		events.add(new SelectionStrengthEvent(g, deme - 1, ssm));
 		if(time!=0)
 			timeInvarient=false;
 	}
 
 	@CLNames(names ={ "-SI" })
 	@CLUsage("time npop freq1 freq2 ...")
-	@CLDescription("The start time of selection, together with the \"inital\" condtions. There is nothing conditional at this stage, so the -Smu option needs to be used really.")
+	@CLDescription("The start time of selection, together with the \"inital\" condtions. Initial conditions are the frequencies of the benifical alleles in the current demes. Note you need to specifiy the number of demes at the time.")
 	public void addSelectionEndEvent(double time, int npop, double[] freq) {
 		if(freq==null){
 			throw new RuntimeException("missing and argument to -SI");
@@ -358,7 +367,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 	
 	@CLNames(names={"-SForceKeep","-SFC"},rank=1)
-	@CLDescription("Force a restart condition, for use with the -SI option. Will restart the simualtion when ever the frequency drops to zero, note inital conditions must not have zero frequency")
+	@CLDescription("Force a restart condition, for use with the -SI option. Will restart the simualtion when ever the frequency drops to zero, note inital conditions must not have zero frequency or we can hang. Also not this is not the same as conditioning on the allele present at sampling time.")
 	public void setRestartCondition(){
 		restartCondition=new RestartCondition.Default();
 	}
@@ -422,20 +431,20 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 
 	@CLNames(names ={ "-oTPi", "-oTW" }, rank =1)
-	@CLUsage("")
+	@CLUsage("Deprecated. Use -stat options instead")
 	public void addThetaWPiStatsCollector() {
 		addThetaWPiStatsCollector(1, 1, null);
 	}
 
 	@CLNames(names ={ "-oTPi", "-oTW" }, rank =1)
-	@CLUsage("")
+	@CLUsage("Deprecated. Use -stat options instead")
 	public void addThetaWPiStatsCollector(double wSize, double sSize) {
 		addThetaWPiStatsCollector(wSize, sSize, null);
 	}
 
 	@CLNames(names ={ "-oTPi", "-oTW" }, rank =1)
 	@CLUsage("[winSize stepSize] [onlySummary]")
-	@CLDescription("Collected Windowed Wattersons Theta, Pi and TjD estimates.")
+	@CLDescription("Collected Windowed Wattersons Theta, Pi and TjD estimates. Deprecated. Use -stat options instead")
 	public void addThetaWPiStatsCollector(double wSize, double sSize, String onlyS) {
 		boolean onlySummary =false;
 		if (onlyS != null) {
@@ -446,7 +455,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 
 	@CLNames(names ={ "-oTPi", "-oTW" }, rank =1)
-	@CLUsage("")
+	@CLUsage("Deprecated. Use -stat options instead")
 	public void addThetaWPiStatsCollector(String onlyS) {
 		addThetaWPiStatsCollector(1, 1, onlyS);
 	}
@@ -703,7 +712,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 
 	@CLNames(names ={ "-l", "-loci" })
-	@CLDescription("Sets the netrual loci. This must be a even number  ordered real values, where each pair denotes a neutral locus interval")
+	@CLDescription("Sets the netrual loci. This must be a even number  ordered real values, where each pair denotes a neutral locus interval. Note that all parameters assume a unit interval")
 	@CLUsage("intervalStart1 intervalEnd1 intervalStart2 intervalEnd2 ...")
 	public void setLoci(double[] loci) {
 		if ((loci.length & 1) == 1) {
@@ -714,7 +723,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 
 	@CLNames(names ={ "-Smark" })
 	@CLUsage("")
-	@CLDescription("Marks the derived type as a normal mutation. Note that this breaks the implied contract of segregating sites. This is a \"site\" can now all be a derived type.")
+	@CLDescription("Marks the derived type as a normal mutation. Note that this breaks the implied contract of segregating sites. This is a \"site\" can now all be a derived type. Multiple origins are also noted with numbers and letters above 1")
 	public void setMarkSelectedMutationsTrue() {
 		this.markSelectedMutatations =true;
 	}
@@ -769,7 +778,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 
 	@CLNames(names ={ "-Strace", "-STrace" })
 	@CLUsage("filename")
-	@CLDescription("Give a filename for a list of frequency traces. '-' specifies standard input.")
+	@CLDescription("Give a filename for a list of frequency traces. '-' specifies standard input. The format is the same as produced for -oTrace. However an entry per generation is not required and frequencys are interpolated.")
 	public void setTraceInputSelection(String filename) {
 		BufferedReader reader =null;
 		if (filename.equals("-")) {
@@ -786,14 +795,20 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		selection =true;
 	}
 
+	@CLNames(names={"-SseedDeme","-Ssd"})
+	@CLDescription("Sets the deme the first mutation starts in with the -SF option. Otherwise it has no effect")
+	public void setSeedDeme(int seedDeme) {
+		this.seedDeme = seedDeme-1;
+	}
+	
 	@CLNames(names ={ "-SAA" })
-	@CLDescription("The selection strenght of the Homozygote derived type, alpha=2*N*s")
+	@CLDescription("The selection strength of the Homozygote derived type, alpha=2*N*s")
 	public void setsAA(double sAA) {
 		this.sAA =sAA;
 	}
 
 	@CLNames(names ={ "-SA" })
-	@CLDescription("The selection strenght for haploids")
+	@CLDescription("The selection strenght for haploids. Same as setting sAA to 2x this value, and SaA to this value.")
 	public void setsA(double sA) {
 		this.sAA =sA * 2;
 		this.saA =sA;
@@ -847,7 +862,8 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 	
 	@CLNames(names={"-IT"},rank=-2)
-	@CLUsage("no.TimePoints no.Demes t1 d1t1 d2t1 ...  t2 d1t2 ... [defaultMigration]")
+	@CLUsage("no.TimePoints no.Demes t1 sampleCount@t1&d1 sampleCount@t1&d2 ...  t2 sampleCount@t2&d1 ... [defaultMigration]")
+	@CLDescription("Time seperated samples, or serial samples. Typically used for mesurable evolving populations. Time points must be ordered pastward")
 	public void setSampleTimeConfig(int timePoints,int demeCount,double[] values){
 		int totalEntries=timePoints*demeCount+timePoints;
 		if(values.length!=totalEntries && values.length!=totalEntries+1){
@@ -917,14 +933,14 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 
 	@CLNames(names ={ "-t" })
-	@CLDescription("Set the scaled muation rate 4*N*mu")
+	@CLDescription("Set the scaled mutation rate 4*N*mu")
 	public void setTheta(double theta) {
 		this.theta =theta;
 	}
 
 	@CLNames(names ={ "-threads", "-cores", "-thread" })
 	@CLUsage("noThreads")
-	@CLDescription("Run on many threads. Useful when on multicore machines. Note however that if the simulations are fast, then this could make its slower!")
+	@CLDescription("Run on many threads. Useful when on multicore machines. Note however that if the simulations are fast, then this could make its slower! This will produce identical sets of simulations for a given seed. However the order can vary with multiple threads.")
 	public void setThreadCount(int threadCount) {
 		this.threadCount =threadCount;
 	}
@@ -967,16 +983,16 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 
 	@CLNames(names ={ "-stat" })
-	@CLDescription("add a generic stat to the list of stats... experimental--No help yet")
+	@CLDescription("add a generic stat to the list of stats... experimental--No help yet. ")
 	@CLUsage("-stat name [deme ...] -StatType[help for list] [extra options]")
 	public void setStat(String[] args) {
 		FixedBitSet mask =new FixedBitSet(sampleConfig.getMaxSamples());
-		FixedBitSet[] demeMasks=sampleConfig.getDemeMasks();
+		FixedBitSet[] masks=sampleConfig.getMasks();
 		//System.out.println("DemeMasks:"+Arrays.toString(demeMasks));
 		int count =0;
 		while (count < args.length && args[count] != null && args[count].matches("\\d*")) {
 			int demeId =Integer.parseInt(args[count]) - 1;
-			mask.or(demeMasks[demeId]);
+			mask.or(masks[demeId]);
 			count++;
 		}
 
@@ -986,7 +1002,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		FixedBitSet nextMask =new FixedBitSet(sampleConfig.getMaxSamples());
 		while (countnext < args.length && args[countnext] != null && args[countnext].matches("\\d*")) {
 			int demeId =Integer.parseInt(args[countnext]) - 1;
-			nextMask.or(demeMasks[demeId]);
+			nextMask.or(masks[demeId]);
 			countnext++;
 		}
 		if (count == 0) {
@@ -1033,7 +1049,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 	
 	@CLNames(names ={ "-batchMode", "-b" })
-	@CLDescription("Suppress text output. Note this suppress all text output generally")
+	@CLDescription("Suppress text output. Note this suppress all default text output generally. So without -stat options you would get nothing.")
 	public void setBatch() {
 		batchMode =true;
 	}
@@ -1059,7 +1075,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	}
 	
 	@CLNames(names={"-oFold", "-oNoOutgroup", "-oNooutgroup"})
-	@CLDescription("Folds the mutations before any summarys are carried on the data, ie removes polarization. Does not affect selected alleles. Same as no outgroup")
+	@CLDescription("Folds the mutations before any summarys are carried on the data. Does not affect selected alleles. Same as no outgroup")
 	public void setFoldMutationsTrue(){
 		foldMutations=true;
 	}
@@ -1068,13 +1084,17 @@ public class CommandLineMarshal implements InitFinishParserObject{
 		return foldMutations;
 	}
 	
+	public int getSeedDeme() {
+		return seedDeme;
+	}
+	
 	@CLNames(names={"-oNoStats","-oNS"})
 	public void setPrintTableStatsFalse() {
 		this.printTableStats =false;
 	}
 	
 	@CLNames(names={"-oFP","-oFormat","-oformat"})
-	@CLUsage("Change the decimal printing format used")
+	@CLUsage("Change the decimal printing format used. The format string is as defined in java api docs for DecimalFormat")
 	public void setFormatString(String format){
 		try {
 			DecimalFormat nf=new DecimalFormat(format,Util.dfs);
@@ -1099,7 +1119,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	
 	
 	@CLNames(names={"-approxr"})
-	@CLUsage("Approximate Recombination rate")
+	@CLUsage("Approximate Recombination rate. Should be faster. Made almost no difference at all.")
 	public void setMaxRecombinationRate(double maxRecombinationRate) {
 		this.maxRecombinationRate = maxRecombinationRate/(2*getN());
 	}
