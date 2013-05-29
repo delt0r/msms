@@ -73,7 +73,7 @@ public class AssociatedSegmentData implements SegmentTracker<AssociatedSegmentDa
 		this.mutationModel=model;
 		this.storeTrees=model.isTrackTrees();
 		if(storeTrees){
-			treeString=new StringBuilder(""+leafNumber);
+			treeString=new StringBuilder(""+(leafNumber+1));//ms counts from 1.
 		}
 		lastJoinTime=time;//even a leaf can have a non zero last join time!
 	}
