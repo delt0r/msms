@@ -24,16 +24,16 @@ public class AFS extends StatsCollectorAdapter {
 	@Override
 	public double[] collectStatsImp(SegmentEventRecoder recorder) {
 		int asize = mask.countSetBits();
-		// System.out.println("\nAsize:"+asize+"\t"+bsize);
+		// System.out.println("\nAsize:"+asize);
 		// assert false;
 		double[] result = new double[(asize + 1) * bins];
 		for (InfinteMutation m : recorder.getMutationsUnsorted()) {
-			int bin = (int) (m.position * bins);
+			int bin = (int) (Math.min(m.position,1-1e-9) * bins);//clamp. 
 			int a = m.leafSet.countSetBitsMask(mask);
-
+			
 			result[a + (asize + 1) * bin]+=m.weight;
 		}
-
+		
 		return result;
 	}
 

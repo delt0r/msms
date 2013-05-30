@@ -35,8 +35,9 @@ public class RomanStatExport {
 	private boolean plainText = false;
 	private boolean randomizeResamples = false;
 	private String inFileName;
-	private String outFileName;
+	private String outFileName="-";
 	private CommandLineMarshal msmsparser;
+	private boolean help=false;
 
 	@CLNames(names = { "-msms" }, required = true)
 	@CLDescription("The msms comand line for contex. Need the number of demes and sampling stratagy and -s to be correct. Of course this includes the stats collectors used. Dont forget that each indivd is 2 samples")
@@ -47,16 +48,25 @@ public class RomanStatExport {
 																							// CmdLineParser<CommandLineMarshal>(msmsparser);
 			marshel.processArguments(msmsArgs, msmsparser);
 			sampleConfig = msmsparser.getSampleConfig();
-			// for (StatsCollector stat : collectionStats)
-			// stat.init(sampleConfig); //FIXME
-			List<StatsCollector> defaultCollectors = msmsparser.getStatsCollectors();
-
-			// this.collectionStats.addAll(defaultCollectors);
+			
+			collectors = msmsparser.getStatsCollectors();
+			if(collectors==null || collectors.size()==0){
+				throw new RuntimeException("Need at least one -stat option");
+			}
+			for(StatsCollector sc:collectors){
+				sc.init();
+			}
+			
 
 		} catch (Exception e) {
 			System.err.println("Error Parsing MSMS comand line. Note that all non msms options must come before the -msms switch.");
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@CLNames(names={"-help","-h","--help","--h","help"})
+	public void setHelp() {
+		this.help = true;
 	}
 
 	@CLNames(names = { "-oText" })
@@ -65,7 +75,7 @@ public class RomanStatExport {
 		this.plainText = true;
 	}
 
-	@CLNames(names = { "-randomize" })
+	@CLNames(names = { "-randomize","-R" })
 	@CLDescription("Randomize the resampling. Still continus sets of SNPs")
 	public void setRandomizeResamples() {
 		this.randomizeResamples = true;
@@ -132,10 +142,12 @@ public class RomanStatExport {
 			leaf++;
 			line = br.readLine();
 		}
+		int p=-1;
 		List<InfinteMutation> muts=new ArrayList<InfinteMutation>();
 		for(FixedBitSet fbs:list){
+			p++;
 			if(fbs!=null)
-				muts.add(new InfinteMutation(muts.size(),fbs ));
+				muts.add(new InfinteMutation((double)p/list.size(),fbs ));
 		}
 		
 		//so now we work with the output. 
@@ -146,21 +158,41 @@ public class RomanStatExport {
 			int start = i*perLocusSnps;
 			if(randomizeResamples)
 				start=rand.nextInt(muts.size()-perLocusSnps);
+			if(start+perLocusSnps>muts.size()){
+				throw new RuntimeException("more loci than data. Recommend using the randomize option");
+			}
 			Bag<InfinteMutation> sublist =new Bag(muts.subList(start, start+perLocusSnps));
 			SegmentEventRecoder ser = new SegmentEventRecoder(sublist, msmsparser.getFoldMutations(), msmsparser.getFoldMutations());
+			
 			for (StatsCollector sc : collectors) {
 				sc.collectStats(ser);
 			}
 		}
-		System.out.println("Stats Output");
+		
+		Writer writer=null; 
+		if(outFileName.equalsIgnoreCase("-")){
+			writer=new OutputStreamWriter(System.out);
+		}else{
+			writer=new FileWriter(outFileName);
+		}
+		
+		if(plainText){
+			plainTextOut(writer);
+		}else{
+			saveStats(writer, collectors);
+		}
+		
+	}
+	
+	private void plainTextOut(Writer writer) throws IOException{
+		writer.write("Stats Output\n");
 		for(StatsCollector sc:collectors){
 			double[] r=sc.summaryStats();
 			for(double d:r){
-				System.out.print(d+"\t");
+				writer.write(d+"\t");
 			}
 		}
-		System.out.println();
-		
+		writer.write("\n");
 	}
 	
 	private static void saveStats(Writer writer, List<StatsCollector> stats) throws IOException {
@@ -183,9 +215,14 @@ public class RomanStatExport {
 
 		try {
 			parser.processArguments(args, rse);
+			if(rse.help){
+				System.err.println(parser.longUsage());
+				System.exit(0);
+			}
 			rse.run();
 		} catch (Exception e) {
 			System.err.println(parser.longUsage());
+			if(!rse.help)
 			e.printStackTrace();
 
 		}

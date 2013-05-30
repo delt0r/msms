@@ -96,7 +96,7 @@ public class SelectionEndTimeEvent extends ModelEvent {
 			int n =state.getLineageSize(d, 1);
 			//coalese them till we have just one. 
 			while (state.getLineageSize(d, 1)>1) {
-				//System.out.println(state.getLineageSize(d, 1) +"\t"+n);
+				System.out.println(state.getLineageSize(d, 1) +"\t"+n);
 				state.coalescentEvent(d, 1, 0);//?? 
 				//state.alleleMutationEvent(d, 1, 0, 0);//we want to count!
 				
