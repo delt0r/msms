@@ -30,35 +30,24 @@ import at.mabs.util.Util;
 import at.mabs.util.random.Random64;
 
 /**
- * Finalizing the basic ABC framework. Pure rejection is done by simply keeping
- * the n best.
+ * Finalizing the basic ABC framework. Pure rejection is done by simply keeping the n best.
  * 
- * Still need some form of stats normalization. For now default is the mean and
- * variance of every stat. This has problems as discussed in the literature.
+ * Still need some form of stats normalization. For now default is the mean and variance of every stat. This has problems as discussed in the literature.
  * 
  * 
- * We are going to change the formatting a little. We will now use JSON for
- * input and output. JS, python and other script langs all support it. The
- * vector type stats just don't fit with the ABCToolBox, so we will need a
- * marshaling layer anyway.
+ * We are going to change the formatting a little. We will now use JSON for input and output. JS, python and other script langs all support it. The vector type
+ * stats just don't fit with the ABCToolBox, so we will need a marshaling layer anyway.
  * 
- * We now also add the command line marshaling code. We have the ABC options
- * followed by the msms "annotated" options. There are some restrictions. First
- * only "real" values can be changed. Not sample size for example or even the
- * sampling. Adding "random" sampling is something for the future, or is more of
- * a "model" testing problem. As such there are problems with using ABC for
- * this. Secondly we have restrucited prior distributions. Uniform, and log (is
- * X~log(U(a,b))).
+ * We now also add the command line marshaling code. We have the ABC options followed by the msms "annotated" options. There are some restrictions. First only
+ * "real" values can be changed. Not sample size for example or even the sampling. Adding "random" sampling is something for the future, or is more of a "model"
+ * testing problem. As such there are problems with using ABC for this. Secondly we have restrucited prior distributions. Uniform, and log (is X~log(U(a,b))).
  * 
- * We are adding quite a few statistics. This gets messy when you have a lot.
- * And for now linear combinations are not going to happen. There are defualt
- * stats, namely SFS.
+ * We are adding quite a few statistics. This gets messy when you have a lot. And for now linear combinations are not going to happen. There are defualt stats,
+ * namely SFS.
  * 
- * Note that stats often can take arguments as well. These are just past on to
- * the respective stat.
+ * Note that stats often can take arguments as well. These are just past on to the respective stat.
  * 
- * more changes. Stats are going to be restricted to R^n. No fancy "objects"
- * hence distance metrics and normalizations are all handled more simply here.
+ * more changes. Stats are going to be restricted to R^n. No fancy "objects" hence distance metrics and normalizations are all handled more simply here.
  * 
  * @author greg
  * 
@@ -84,6 +73,8 @@ public class NewABC {
 	private boolean mcmc;
 
 	private boolean hackSample = false;
+	
+	private boolean reductions=false;
 
 	// best n of the bunch.
 	private TreeSet<ParameterStatPair> sampledPoints = new TreeSet<ParameterStatPair>();
@@ -196,8 +187,11 @@ public class NewABC {
 				ArrayList<ParameterStatPair> list = new ArrayList<ParameterStatPair>(sampledPoints);
 				values = list.get(r % list.size()).getParameters();
 			}
-			paste(msmsArgs, priors, mcmc, values);
-			// pasteFancy(msmsArgs, priors);
+			if (!reductions) {
+				paste(msmsArgs, priors, mcmc, values);
+			} else {
+				pasteFancy(msmsArgs, priors);
+			}
 			// System.out.println("Args:"+Arrays.toString(msmsArgs));
 			MSLike.main(msmsArgs, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			double[] distances = collectStatitics(collectionStats);
@@ -213,8 +207,7 @@ public class NewABC {
 				currentState = psp;
 			}
 			if (r % 100 == 0) {
-				System.out.println("Completed:" + r + " out of " + reps + "\tDistance Range:" + sampledPoints.first().getDistance() + " <-->"
-						+ sampledPoints.last().getDistance());
+				System.out.println("Completed:" + r + " out of " + reps + "\tDistance Range:" + sampledPoints.first().getDistance() + " <-->" + sampledPoints.last().getDistance());
 				if (mcmc)
 					System.out.println("MCMC Distance:" + currentState.getDistance() + "\teps:" + epsilon);
 			}
@@ -553,31 +546,37 @@ public class NewABC {
 	}
 
 	@CLNames(names = { "-pca" })
+	@CLDescription("PCA of the stats.")
 	public void setPCATrue() {
 		this.pcaNormalzation = true;
 	}
 
 	@CLNames(names = { "-pls" })
+	@CLDescription("Automagic PLS of the stats. Doesn't really work. But then PLS doesn't really anyway")
 	public void setPLSTrue() {
 		this.plsNormalzation = true;
 	}
 
 	@CLNames(names = { "-mcmc" })
+	@CLDescription("mcmc version of abc. All thats bad with abc combined with all that is hard with mcmc. Not enought tunining options to use.")
 	public void setMcmcTrue() {
 		this.mcmc = true;
 	}
 
 	@CLNames(names = { "-chainFile" })
+	@CLDescription("mcmc output file when mcmc is enabled.")
 	public void setChainFileName(String chainFileName) {
 		this.chainFileName = chainFileName;
 	}
 
 	@CLNames(names = { "-truncate" })
+	@CLDescription("ignore the last X summary stats")
 	public void setTruncatStats(int truncatStats) {
 		this.truncatStats = truncatStats;
 	}
 
 	@CLNames(names = { "-abcstat", "-STAT" })
+	@CLDescription("Old way of adding stats. Deprecated")
 	public void addStat(String[] statAndConfig) {
 		String statName = statAndConfig[0];
 		// turn this into a class in 2 ways. if it contains no . try using this
@@ -629,6 +628,7 @@ public class NewABC {
 	}
 
 	@CLNames(names = { "-keep" })
+	@CLDescription("Keep this many \"best of\" simulations. Based on euclidain distance")
 	public void setSampleSize(int sampleSize) {
 		this.sampleSize = sampleSize;
 	}
@@ -638,6 +638,7 @@ public class NewABC {
 	}
 
 	@CLNames(names = { "-reps" })
+	@CLDescription("Total number of iterations/simulations to carry out")
 	public void setReps(int reps) {
 		this.reps = reps;
 	}
@@ -646,13 +647,21 @@ public class NewABC {
 		return reps;
 	}
 
+	@CLNames(names={"-pReductions","-pR"})
+	@CLDescription("Unproven faster convergance method. Should still contain the MAP with high probablity. NOT TESTED")
+	public void setReductions() {
+		this.reductions = true;
+	}
+	
 	@CLNames(names = { "-write" })
+	@CLDescription("Simulate data with these options. Overwrites -data file")
 	public void setWriteDataTrue(String[] writeArgs) {
 		this.writeData = true;
 		this.writeArgs = writeArgs;
 	}
 
 	@CLNames(names = { "-hackSample" })
+	@CLDescription("No idea what this does. don't use it")
 	public void setHackSampleTrue() {
 		this.hackSample = true;
 	}

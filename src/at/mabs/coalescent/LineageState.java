@@ -261,7 +261,7 @@ public class LineageState<T extends LineageData<T>> {
 			partialSumsTree.remove(a);
 			//we note that a is removed. if the selection was containted here we need to mark it
 			if(allele==1 && selectedSiteContatined){
-				System.err.println("REMOVE tha FRAKER ");
+				//System.err.println("REMOVE tha FRAKER ");
 				int otherAllele=allele==1?0:1;
 				a.markSelectedAllele(otherAllele, this.alleleLocation);//mutate out of this allele
 			}
