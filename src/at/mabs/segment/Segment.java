@@ -68,12 +68,12 @@ public class Segment implements Comparable<Segment> {
 		
 	}
 
-	Segment(double s, double e, Segment superSet) {
-		start =s;
-		end =e;
-		
-
-	}
+//	Segment(double s, double e, Segment superSet) {
+//		start =s;
+//		end =e;
+//		
+//
+//	}
 
 	/**
 	 * cut this segment at p. If p<start or p>end then this is an error.

@@ -203,7 +203,7 @@ public class LineageState<T extends LineageData<T>> {
 		assert (currentTime + dt <= currentMaxTime) : "tried to create event past maxTime for interval:" + (currentTime + dt) + "\t" + currentMaxTime;
 		if (currentTime + dt > currentMaxTime)
 			throw new RuntimeException("Error, tried to create event past maxTime for interval");
-		// System.out.println(allLineages.size());
+		//System.err.println("Cevent:");
 		
 		currentTime +=dt;
 		
@@ -256,7 +256,8 @@ public class LineageState<T extends LineageData<T>> {
 		
 		if (a.isEmpty()) {
 			totalSamples -=2;
-
+			//System.err.println("Cevent:Empty");
+			
 			// allLineages.remove(a);
 			partialSumsTree.remove(a);
 			//we note that a is removed. if the selection was containted here we need to mark it
@@ -267,6 +268,8 @@ public class LineageState<T extends LineageData<T>> {
 			}
 			// linageCount();
 			return;
+		}else{
+			//System.err.println("Cevent:!Empty");
 		}
 		assert !a.isEmpty();
 		list.add(a);
@@ -495,6 +498,7 @@ public class LineageState<T extends LineageData<T>> {
 	 * @param deme
 	 */
 	public void addSample(int deme) {
+		//System.err.println("Adding samples:"+samplesLeft);
 		int allele=0;
 		if(selection && selectionData!=null){
 			if(selectionData.getFrequency(deme, 1, currentTime-1e-9)>random.nextDouble()){
@@ -511,8 +515,6 @@ public class LineageState<T extends LineageData<T>> {
 		totalSamples++;
 		samplesLeft--;
 		assert samplesLeft>=0;
-		
-
 	}
 
 	/**
