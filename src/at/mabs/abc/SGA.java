@@ -136,7 +136,6 @@ public class SGA {
 				} else {
 					pd.setValue(Double.parseDouble(writeArgs[argIndex++]));
 					args[pd.getArgIndex()] = "" + pd.getValue();
-					;
 				}
 			}
 			pasteSeed(args);
@@ -163,9 +162,10 @@ public class SGA {
 		if(likelihoodPoint!=null){
 			System.out.println("Likelihood at point:"+Arrays.toString(likelihoodPoint));
 			System.out.println("Calulating BW");
+			double[] tlp=itransform(likelihoodPoint, priors);
 			for (int i = 0; i < 100; i++)
-				bwEstimation(args, priors, likelihoodPoint, enn);
-			double[] lh=likelihoodEstimator(args, priors, likelihoodPoint, enn*2, 20, true);
+				bwEstimation(args, priors, tlp, enn);
+			double[] lh=likelihoodEstimator(args, priors,tlp, enn*2, 20, true);
 			System.out.println("loglikelihood(std):"+lh[0]+"\t"+lh[1]);
 			return;
 		}
@@ -922,12 +922,14 @@ public class SGA {
 		double[][] stats = new double[n][0];
 
 		paste(args, priors, x);// need to set n....
+		//System.out.println(Arrays.toString(args)+"\t"+Arrays.toString(x));
 		for (int i = 0; i < n; i++) {
 			// System.out.println("ARGS:"+Arrays.toString(args));
 			pasteSeed(args);
 			MSLike.main(args, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			stats[i] = collectStatitics(collectionStats);
-			// System.out.println("CollectedStats:"+Arrays.toString(stats[i]));
+			 //System.out.println("CollectedStats:"+Arrays.toString(stats[i])+"\t"+Arrays.toString(args));
+			 
 
 		}
 		bwEstimation(stats, true);
