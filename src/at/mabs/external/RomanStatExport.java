@@ -205,11 +205,12 @@ public class RomanStatExport {
 
 		if (plainText) {
 			plainTextOut(writer);
+			writer.flush();
+			writer.close();
 		} else {
 			saveStats(writer, collectors);
 		}
-		writer.flush();
-		writer.close();
+		
 
 	}
 

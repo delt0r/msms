@@ -36,9 +36,9 @@ public class GaussNLStat extends StatsCollectorAdapter {
 
 		switch (results.length) {
 		case 10:
-			results[9]=rnorms[8]*rnorms[9];
+			results[9]=rnorms[9]*rnorms[8];
 		case 9:
-			results[8]=rnorms[8]+rnorms[9];
+			results[8]=rnorms[8];
 		case 8:
 			results[7]=rnorms[6]+rnorms[7];
 		case 7:

@@ -86,6 +86,7 @@ public class Statistics {
 		Statistics cv = new Statistics(new CDF.StudentTcdf(new StudentT(dof, null)));
 		double low = cv.critcalValue(alpha / 2);
 		double hi = cv.critcalValue(1 - alpha / 2);
+		//System.out.println("##$$@@##$$ T Crit:" + low+"\t"+hi);
 		return t <= low || t >= hi;
 	}
 

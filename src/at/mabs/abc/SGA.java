@@ -66,7 +66,7 @@ public class SGA {
 	private double clampLength = .1;
 
 	private double talpha = .2;
-
+	private double balpha=.05;//1-Math.pow(1-talpha,.1);//FIXME
 	private boolean verbose;
 
 	private int bootstrap = 0;
@@ -85,9 +85,10 @@ public class SGA {
 	
 	private double[] likelihoodPoint;
 
-	private int iterations = 5000;
+	private int iterations = 100000;
+	private int minIter=2000;
 
-	private long seed = System.nanoTime()*(1+(new Object()).hashCode());
+	private long seed = System.nanoTime()*(1+(new Object()).hashCode());//good for clusters
 
 	private Random random;
 
@@ -224,7 +225,7 @@ public class SGA {
 
 			TreeSet<ResultEntry> found = new TreeSet<ResultEntry>();
 			for (PointDensity pd : preconditioned) {
-				double[] np = genericKWAlgo(args, priors, pd.point, enn, iterations, better);
+				double[] np = genericKWAlgo(args, priors, pd.point, enn, iterations,minIter, better);
 
 				if (np == null)
 					continue;
@@ -282,7 +283,7 @@ public class SGA {
 				initDataStatsCollectionStats(); // puts the data stats into
 												// data[]
 
-				double[] np = genericKWAlgo(args, priors, point, enn, iterations, better);
+				double[] np = genericKWAlgo(args, priors, point, enn, iterations,minIter, better);
 				double[] likes = likelihoodEstimator(args, priors, np, enn * 2, 20, true);
 				double[] bpoint = transform(np, priors);
 				ResultEntry bentry = new ResultEntry(likes, bpoint);
@@ -341,7 +342,7 @@ public class SGA {
 	 * @param n
 	 * @param maxK
 	 */
-	private double[] genericKWAlgo(String[] args, List<PriorDensity> priors, double[] start, int n, int maxK, GradFunction grad) {
+	private double[] genericKWAlgo(String[] args, List<PriorDensity> priors, double[] start, int n, int maxK,int minK, GradFunction grad) {
 		System.out.println("\ninit starting parameters:" + Arrays.toString(transform(start, priors)));
 
 		System.out.println("KWMethod with alpha:" + alpha + "\tand gamma:" + gamma);
@@ -415,7 +416,7 @@ public class SGA {
 		double[] lastChecked = x.clone();
 		double[] last = x.clone();
 
-		int worseCount = 0;
+		int notBetterCount = 0;
 		int[] biasCount = new int[x.length];
 		trace.add(transform(x, priors));
 		trace2.add(transform(x, priors));
@@ -429,7 +430,8 @@ public class SGA {
 		boolean newTrace = true;
 
 		double[] a_k = new double[a.length];
-		for (int k = 0; k < maxK && worseCount < 4; k++) {
+		int k=0;
+		for (; (k < maxK && notBetterCount < 4 )|| k<minK; k++) {
 			for (int i = 0; i < a.length; i++) {
 				a_k[i] = a[i] / Math.pow(k + A + 1, alpha);
 			}
@@ -484,21 +486,21 @@ public class SGA {
 				lastChecked = movingAverageEstimate;
 				System.out.println("Better:" + better);
 				if (!better) {
-					worseCount++;
+					notBetterCount++;
 				} else {
-					worseCount = 0;
+					notBetterCount = 0;
 				}
 				boolean ajump = false;
 				for (int p = 0; p < x.length; p++) {
-					if (Statistics.timeSeriesBiasTest(fifoParams, p, talpha)) {
+					if (Statistics.timeSeriesBiasTest(fifoParams, p, balpha)) {
 						biasCount[p]++;
-						worseCount = 0;// we never stop when there is bias.
+						notBetterCount = 0;// we never stop when there is bias.
 						System.out.println("%% bias in parameter:" + p);
 					} else {
 						biasCount[p] = 0;
 					}
-					if ((worseCount > 1 && biasCount[p] > 0) || biasCount[p] > 0) {
-						a[p] *= 2;
+					if ((notBetterCount > 1 && biasCount[p] > 0)|| biasCount[p] > 0 ) {
+						a[p] *= 1.5;
 						System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ Incressing A in param:" + p);
 						ajump = true;
 						biasCount[p] = 0;
@@ -510,14 +512,14 @@ public class SGA {
 				double[] range = maxRange(fifoParams);
 				for (int p = 0; p < range.length; p++) {
 					if (range[p] > .8 && biasCount[p] == 0) {
-						a[p] /= 2;
+						a[p] /= 1.5;
 						System.out.println("!!!!!!!!!!!!!!!!!!!!!!!! Decressing A in param:" + p + "\t" + range[p]);
 						ajump = true;
 					}
 				}
 				// }
 				if (ajump) {
-					worseCount = 0;
+					notBetterCount = 0;
 				}
 
 				saveTrace(trace,".traces", newTrace);
@@ -547,6 +549,9 @@ public class SGA {
 		saveTrace(trace,".traces", newTrace);
 		saveTrace(trace2,".mave", newTrace);
 		// if (ttestIsBetter(args, priors, paramSums, start, n, grad))
+		if(k==maxK){
+			return null;
+		}
 		return paramSums;
 		// return null;
 
@@ -647,6 +652,7 @@ public class SGA {
 		int k = 25;
 		double[] meanStdx = likelihoodEstimator(args, priors, x, n, k, true);
 		double[] meanStdy = likelihoodEstimator(args, priors, y, n, k, true);
+		System.out.println("TTest:\n\t"+Arrays.toString(x)+"\n\t"+Arrays.toString(y));
 		return Statistics.welchTestBigger(meanStdx, meanStdy, k, alpha);
 	}
 
@@ -953,7 +959,8 @@ public class SGA {
 		double nfactor2 = Math.pow(4.0 / (2 + data.length), 2.0 / (4 + data.length)) * Math.pow(n, -2 / (4.0 + data.length));
 		for (int i = 0; i < stds.length; i++) {
 			if ((stds[i] / n) - (means[i] * means[i]) < 0) {
-				stds[i] = means[i];
+				stds[i] = Math.sqrt( means[i]);//assume a poisson.
+				//System.err.println("Std hack:"+means[i]);
 			} else {
 				stds[i] = Math.sqrt(((stds[i] / (n - 1)) - n * means[i] * means[i] / (n - 1)) * nfactor2);
 			}
@@ -1138,6 +1145,13 @@ public class SGA {
 
 		Collections.sort(dataStats, new ClassNameOrder());
 		Collections.sort(collectionStats, new ClassNameOrder());
+		//special case when stats are not set, use all in  the data..
+		if(collectionStats.isEmpty()){
+			for(StatsCollector sc:dataStats){
+				collectionStats.add(sc);//don't clone because we only read the dataStats once below. 
+			}
+		}
+		
 		// we now remove anything that dataStats has that Collection doesn't
 		// and vice versa
 		ListIterator<StatsCollector> iter = dataStats.listIterator();
@@ -1294,6 +1308,11 @@ public class SGA {
 		this.iterations = iterations;
 	}
 
+	@CLNames(names = { "-minIter", "-mi","-minReps" })
+	public void setMinIter(int iterations) {
+		this.minIter = iterations;
+	}
+	
 	@CLNames(names = { "-bootstrap", "-bs" })
 	public void setBootstrap(int reps) {
 		this.bootstrap = reps;
@@ -1319,6 +1338,7 @@ public class SGA {
 	@CLNames(names = { "-alpha" })
 	public void setAlpha(double alpha) {
 		this.alpha = alpha;
+		this.balpha=1-alpha;
 	}
 
 	@CLNames(names = { "-gamma" })
