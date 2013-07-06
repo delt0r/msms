@@ -31,7 +31,7 @@ import at.mabs.util.random.Random64;
 import cern.jet.random.Binomial;
 
 public class SteppingStones2 {
-	private int demeCount = 1000;
+	private int demeCount = 3;
 	private double mnear = 1e-2;
 	private double mfar = 1e-7;
 	// private double msame = 1.0 - mnear * 2 - mfar;// 1-2mnear-mfar
@@ -39,7 +39,7 @@ public class SteppingStones2 {
 	private double s = 0.01;
 	private double sp1 = s + 1;// s+1;
 
-	private double mu = 1e-8;
+	private double mu = 1e-6;
 
 	private boolean noDrift;
 

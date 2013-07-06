@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Random;
 import java.util.RandomAccess;
 
 /**
@@ -373,6 +374,14 @@ public class Bag<E> implements  List<E>,RandomAccess {
 
 	public void sort() {
 		Arrays.sort(list,0,size);
+	}
+
+	public void addRandom(E item,Random random) {
+		add(item);
+		int n=random.nextInt(size);
+		E swp=(E)list[n];
+		list[n]=list[size-1];
+		list[size-1]=swp;
 	}
 	
 }

@@ -73,8 +73,8 @@ public class NewABC {
 	private boolean mcmc;
 
 	private boolean hackSample = false;
-	
-	private boolean reductions=false;
+
+	private boolean reductions = false;
 
 	// best n of the bunch.
 	private TreeSet<ParameterStatPair> sampledPoints = new TreeSet<ParameterStatPair>();
@@ -91,7 +91,7 @@ public class NewABC {
 
 	private List<StatsCollector> collectionStats = new ArrayList<StatsCollector>();
 	private List<StatsCollector> dataStats = new ArrayList<StatsCollector>();
-	private int priorUpdate = 5000;
+	private int priorUpdate = Integer.MAX_VALUE;
 	private Random random = new Random64();
 
 	private int truncatStats = Integer.MAX_VALUE;
@@ -102,16 +102,8 @@ public class NewABC {
 	}
 
 	public void run() {
-		List<PriorDensity> priors = new ArrayList<PriorDensity>();
-		for (int i = 0; i < anotatedCmdLine.length; i++) {
-			String arg = anotatedCmdLine[i];
-			if (arg.contains("%") && !arg.startsWith("%")) {
-				priors.add(new PriorDensity(arg, i));
-			} else if (arg.startsWith("%")) {
-				int code = Integer.parseInt(arg.substring(1));
-				priors.add(new CopyPriorDensity(priors.get(code), i));
-			}
-		}
+		List<PriorDensity> priors = PriorDensity.parseAnnotatedStrings(anotatedCmdLine);
+
 		String[] msmsArgs = anotatedCmdLine.clone();
 		paste(msmsArgs, priors, false, null);
 		initStatCollectors(msmsArgs);
@@ -419,42 +411,55 @@ public class NewABC {
 	}
 
 	private void paste(String[] args, List<PriorDensity> priors, boolean proposial, double[] values) {
-		for (int i = 0; i < priors.size(); i++) {
-			PriorDensity pd = priors.get(i);
-			double value = 0;//
-			if (proposial) {
-				value = pd.nextProp(values[i]);
-			} else {
-				pd.generateRandom();
-				value = pd.getValue();
+		do {
+			for (int i = 0; i < priors.size(); i++) {
+				PriorDensity pd = priors.get(i);
+				double value = 0;//
+				if (proposial) {
+					value = pd.nextProp(values[i]);
+				} else {
+					pd.generateRandom();
+					value = pd.getValue();
+				}
+				args[pd.getArgIndex()] = "" + value;
 			}
-			args[pd.getArgIndex()] = "" + value;
+		} while (isInvalid(priors));
+
+	}
+
+	private boolean isInvalid(List<PriorDensity> priors) {
+		for (PriorDensity pd : priors) {
+			if (!pd.isValid())
+				return true;
 		}
+		return false;
 	}
 
 	private void pasteFancy(String[] args, List<PriorDensity> priors) {
-		final double scale = Math.sqrt(12) / 2;
+		final double scale = 1.06 / Math.pow(this.sampleSize, 1.0 / priors.size());
 		int randIndex = -1;// random.nextInt(priors.size());
 		ArrayList<ParameterStatPair> randomlist = new ArrayList<ParameterStatPair>(sampledPoints);
-		for (int i = 0; i < priors.size(); i++) {
-			PriorDensity pd = priors.get(i);
-			double value = Double.MAX_VALUE;//
+		do {
+			for (int i = 0; i < priors.size(); i++) {
+				PriorDensity pd = priors.get(i);
+				double value = Double.MAX_VALUE;//
 
-			if (pd instanceof CopyPriorDensity) {
-				value = pd.getValue();
-			} else if (i == randIndex) {
-				pd.generateRandom();
-				value = pd.getValue();
-			} else {
-				ParameterStatPair psp = randomlist.get(random.nextInt(randomlist.size()));
-				while (value > pd.getMax() || value < pd.getMin())
-					value = psp.getParameters()[i] + scale * random.nextGaussian() * stds[i];
-				pd.setValue(value);
-				value = pd.getValue();// clamp just in case
+				if (pd instanceof CopyPriorDensity) {
+					value = pd.getValue();
+				} else if (i == randIndex) {
+					pd.generateRandom();
+					value = pd.getValue();
+				} else {
+					ParameterStatPair psp = randomlist.get(random.nextInt(randomlist.size()));
+					while (value > pd.getMax() || value < pd.getMin())
+						value = psp.getParameters()[i] + scale * random.nextGaussian() * stds[i];
+					pd.setValue(value);
+					value = pd.getValue();// clamp just in case
+				}
+
+				args[pd.getArgIndex()] = "" + value;
 			}
-
-			args[pd.getArgIndex()] = "" + value;
-		}
+		} while (isInvalid(priors));
 	}
 
 	private void initDataFile() {
@@ -647,12 +652,12 @@ public class NewABC {
 		return reps;
 	}
 
-	@CLNames(names={"-pReductions","-pR"})
+	@CLNames(names = { "-pReductions", "-pR" })
 	@CLDescription("Unproven faster convergance method. Should still contain the MAP with high probablity. NOT TESTED")
 	public void setReductions() {
 		this.reductions = true;
 	}
-	
+
 	@CLNames(names = { "-write" })
 	@CLDescription("Simulate data with these options. Overwrites -data file")
 	public void setWriteDataTrue(String[] writeArgs) {
@@ -664,6 +669,12 @@ public class NewABC {
 	@CLDescription("No idea what this does. don't use it")
 	public void setHackSampleTrue() {
 		this.hackSample = true;
+	}
+
+	@CLNames(names = { "-priorUpdateInterval", "-pui" })
+	@CLDescription("How long to adjust the bounds of the sampler? ie sample the AABB of the current points.")
+	public void setPriorUpdate(int priorUpdate) {
+		this.priorUpdate = priorUpdate;
 	}
 
 	public static void main(String[] args) {

@@ -390,7 +390,7 @@ public class CmdLineParser<T> {
 			}
 			// System.out.println(a);
 			if (clm == null) {
-				throw new CmdLineParseException(name + " has an incorrect number of arguments.", name, a);
+				throw new CmdLineParseException(name + " has an incorrect number of arguments. "+a, name, a);
 			}
 			method = clm;
 		}

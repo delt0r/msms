@@ -35,9 +35,12 @@ public class CopyPriorDensity extends PriorDensity {
 		return pd.getValue();
 	}
 
+	
+	
+
 	@Override
-	public double getTransformedValue() {
-		return pd.getTransformedValue();
+	public boolean isValid() {
+		return pd.isValid();
 	}
 
 	@Override
@@ -47,12 +50,12 @@ public class CopyPriorDensity extends PriorDensity {
 	}
 
 	@Override
-	public double getLastValueUI() {
-		return pd.getLastValueUI();
+	public double getValueUI() {
+		return pd.getValueUI();
 	}
 
 	@Override
-	public void setLastValueUI(double uiValue) {
+	public void setValueUI(double uiValue) {
 		// noop
 	}
 	
