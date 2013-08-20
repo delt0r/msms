@@ -64,6 +64,10 @@ public class CopyPriorDensity extends PriorDensity {
 		//noop
 	}
 	
-	
+	@Override
+	public String toString() {
+		
+		return super.toString()+":"+argIndex;
+	}
 
 }
