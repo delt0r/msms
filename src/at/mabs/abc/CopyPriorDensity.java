@@ -17,7 +17,7 @@ public class CopyPriorDensity extends PriorDensity {
 
 	@Override
 	public void generateRandom() {
-		throw new RuntimeException("Copy does not create randomness!");
+		//throw new RuntimeException("Copy does not create randomness!");
 	}
 
 	@Override

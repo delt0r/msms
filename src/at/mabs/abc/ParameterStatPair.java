@@ -152,8 +152,8 @@ public class ParameterStatPair implements Comparable<ParameterStatPair> {
 	}
 
 	public static TransformData calculateTransformData(List<ParameterStatPair> data, boolean boxCox, boolean pca, boolean pls) {
-		//if (!boxCox && !pca)
-		//	return null;
+		if (data==null || data.size()==0)
+			return null;
 
 		double[] lams = null;
 		if (boxCox) {

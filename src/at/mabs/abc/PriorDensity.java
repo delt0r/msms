@@ -222,6 +222,7 @@ public class PriorDensity {
 			params.put(pd.getName(), pd);
 			list.add(pd);
 		}
+		//System.out.println("First pass:"+list+"\t"+list.size());
 		//now link em.
 		for(int i=0;i<list.size();i++){
 			PriorDensity pd=list.get(i);
@@ -231,7 +232,7 @@ public class PriorDensity {
 					throw new RuntimeException("Incorrect copy label name:"+pd.copyName+"\n"+params);
 				}
 				CopyPriorDensity cpd=new CopyPriorDensity(copyD, pd.getArgIndex());
-				list.set(i, copyD);
+				list.set(i, cpd);
 				continue;
 			}
 			//link upper and lower bounds.

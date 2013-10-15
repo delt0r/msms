@@ -1,6 +1,7 @@
 package at.mabs.abc;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.*;
+import java.util.zip.GZIPOutputStream;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
@@ -65,6 +67,8 @@ public class NewABC {
 	private boolean plsNormalzation;
 	private boolean pcaNormalzation;
 
+	private boolean dumpAll;
+
 	private ParameterStatPair.TransformData transformData;
 
 	private boolean writeData;// good for simulations.
@@ -103,15 +107,17 @@ public class NewABC {
 
 	public void run() {
 		List<PriorDensity> priors = PriorDensity.parseAnnotatedStrings(anotatedCmdLine);
-
+		System.out.println(priors);
 		String[] msmsArgs = anotatedCmdLine.clone();
 		paste(msmsArgs, priors, false, null);
 		initStatCollectors(msmsArgs);
 
 		if (writeData) {
 			int argIndex = 0;
+			// System.out.println("Write Lenght:"+writeArgs.length+"\t"+priors.size());
 			for (PriorDensity pd : priors) {
-				msmsArgs[pd.getArgIndex()] = writeArgs[argIndex++];
+				String temp = writeArgs[argIndex++];
+				msmsArgs[pd.getArgIndex()] = temp;
 			}
 			MSLike.main(msmsArgs, null, (List<? extends StatsCollector>) collectionStats, new NullPrintStream(), null);
 			writeDataStats(collectionStats);
@@ -170,6 +176,17 @@ public class NewABC {
 			// epsilon = 5.5;// sampledPoints.last().getDistance();
 		}
 		// System.out.println(sampledPoints);
+		Writer allResults = null;
+
+		if(dumpAll){
+			//write out reps simulations in a gzip file...
+			try {
+				allResults=new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(outputFileName+".dump.gz"))));
+			}catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
 		for (int r = 0; r < this.reps; r++) {
 			double[] values = null;
 			if (currentState != null) {
@@ -191,15 +208,24 @@ public class NewABC {
 			psp.transform(transformData);
 			psp.calculateDistance(dataStatPair, truncatStats);
 
-			if (psp.getDistance() < sampledPoints.last().getDistance()) {
+			if (dumpAll && allResults!=null) {
+				// write out reps simulations in a gzip file...
+				writeResult(psp,allResults);
+			}
+
+			if (!sampledPoints.isEmpty() && psp.getDistance() < sampledPoints.last().getDistance()) {
 				sampledPoints.add(psp);
 				sampledPoints.pollLast();
 			}
 			if (mcmc && psp.getDistance() < epsilon) {
 				currentState = psp;
 			}
-			if (r % 100 == 0) {
+			if (r % 100 == 0 ) {
+				if( !sampledPoints.isEmpty()){
 				System.out.println("Completed:" + r + " out of " + reps + "\tDistance Range:" + sampledPoints.first().getDistance() + " <-->" + sampledPoints.last().getDistance());
+				}else{
+					System.out.println("Completed:"+r+" out of " + reps);
+				}
 				if (mcmc)
 					System.out.println("MCMC Distance:" + currentState.getDistance() + "\teps:" + epsilon);
 			}
@@ -225,12 +251,28 @@ public class NewABC {
 				// }
 				// sampledPoints=nSampledPoints;
 			}
-			if (r % sampleSize == 0) {
+			if (!sampledPoints.isEmpty() && r % sampleSize == 0) {
 				saveResultState();
 				updateStds(priors);
 			}
 		}
 		saveResultState();
+		if(allResults!=null){
+			try {
+				allResults.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void writeResult(ParameterStatPair psp, Writer allResults) {
+		try {
+			allResults.write(psp.toString()+"\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void updateStds(List<PriorDensity> priors) {
@@ -301,6 +343,8 @@ public class NewABC {
 	}
 
 	private void saveResultState() {
+		if(sampledPoints.isEmpty())
+			return;
 		try {
 			Writer writer = new FileWriter(outputFileName);
 			for (ParameterStatPair psp : sampledPoints) {
@@ -402,7 +446,6 @@ public class NewABC {
 			// for (StatsCollector stat : collectionStats)
 			// stat.init(sampleConfig);FIXME?
 			List<StatsCollector> defaultCollectors = msmsparser.getStatsCollectors();
-
 			this.collectionStats.addAll(defaultCollectors);
 
 		} catch (Exception e) {
@@ -554,6 +597,12 @@ public class NewABC {
 	@CLDescription("PCA of the stats.")
 	public void setPCATrue() {
 		this.pcaNormalzation = true;
+	}
+	
+	@CLNames(names = { "-dump" })
+	@CLDescription("Store all simulations in a gzip dump file")
+	public void setDumpAllTrue() {
+		this.dumpAll = true;
 	}
 
 	@CLNames(names = { "-pls" })
