@@ -38,7 +38,7 @@ import at.mabs.util.random.RandomGenerator;
  * @author bob
  * 
  */
-public class DemeSplitEvent extends ModelEvent {
+public class DemeSplitEvent extends Event {
 	private final int deme;
 	private final double q, N;
 	private int demeLabel;
@@ -51,83 +51,6 @@ public class DemeSplitEvent extends ModelEvent {
 		this.N = N;
 	}
 
-	/**
-	 * should be some kind of error to call this 2x on the same model.
-	 */
-	@Override
-	public void modifiyModel(Model model) {
-		// System.out.println("DemeSplit");
-		demeLabel = model.getDemeCount();
-		model.addDeme(N);
-
-	}
-
-	/**
-	 * This requires that lineage state has the right number of demes (or more)
-	 * In practice this should be easy to do, since after the models in the
-	 * histroy are created we can have a max deme count parameter...
-	 * 
-	 * but performance?
-	 */
-	@Override
-	public void processEventCoalecent(LineageState state) {
-		// we need to move linages from deme to demeLabel with
-		// probablity q=1-p.
-		assert demeLabel == state.getDemeCount() || demeLabel + 1 == state.getDemeCount();
-		// need to do this for the rather odd case where we use this in the
-		// first model. Since this model
-		// will already have the "added" deme, hence the odd assert.
-		if (demeLabel == state.getDemeCount())
-			state.setCurrentDemeCount(state.getDemeCount() + 1);
-		// System.out.println("SplitCount:"+state.getDemeCount());
-		int n = state.getLineageSize(deme, 0);
-		if (n > 0) {
-			int m = binomial.generateBinomial(n, q);
-			// System.out.println("Moving "+m+"\tlinages out of "+n );
-			for (int i = 0; i < m; i++) {
-				state.migrationEvent(deme, demeLabel, 0, 0.0);
-				// System.out.println("State:"+state);
-			}
-		}
-		if (!state.isSelection())
-			return;
-
-		n = state.getLineageSize(deme, 1);
-		if (n > 0) {
-			int m = binomial.generateBinomial(n, q);
-			for (int i = 0; i < m; i++)
-				state.migrationEvent(deme, demeLabel, 1, 0.0);
-		}
-
-	}
-
-	/**
-	 * we use a resampled weighted average to produce a new frequency.
-	 */
-	@Override
-	protected void processEventSelection(SelectionData oldData, SelectionData currentData, FrequencyState state) {
-		// this needs to merge the 2 different allele frequencys.
-		// this is done via a weighted average--ie
-		// (N_i*x_i+N_j*x_j)/(N_i+N_j) == new x
-		// then resample...
-		// first get the pop sizes from the old model
-		//System.err.println("PROCESSING ES!");
-		double changeTime = oldData.getParent().getStartTime();
-		double ni = oldData.getParent().getPopulationSizeModels()[deme].populationSize(changeTime);
-		double nj = oldData.getParent().getPopulationSizeModels()[demeLabel].populationSize(changeTime);
-
-		double xi = state.getFrequency(deme, 1);// selected allele assumeing 2
-												// allele only for now.
-		double xj = state.getFrequency(demeLabel, 1);
-		double xp = (xi * ni + xj * nj) / (ni + nj);
-		// now to resample
-		int N = (int) currentData.getParent().getPopulationSizeModels()[deme].populationSize(changeTime);
-		double f = (double) binomial.generateBinomial(N, xp) / N;
-
-		state.setFrequency(deme, 1, f);
-		state.setFrequency(deme, 0, 1 - f);
-		state.setCurrentDemeCount(demeLabel);
-
-	}
+	
 
 }

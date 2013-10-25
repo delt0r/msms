@@ -33,7 +33,7 @@ import at.mabs.coalescent.LineageState;
  * @author bob
  *
  */
-public class ExpPopulationEvent extends ModelEvent{
+public class ExpPopulationEvent extends Event{
 	private final double alpha;
 	private final int deme;//-1 for all demes
 	
@@ -47,27 +47,6 @@ public class ExpPopulationEvent extends ModelEvent{
 		this(t,-1,alpha);
 	}
 	
-	@Override
-	public void modifiyModel(Model model) {
-		//System.out.println("Setting ExpGroth");
-		if(deme<0){
-			model.setExpGrowth(alpha, this.getEventTime());
-		}else{
-			model.setExpGrowth(deme, alpha, this.getEventTime());
-		}
-		
-	}
-
-	@Override
-	public void processEventCoalecent(LineageState state) {
-		//no op... nothing needs to be done
-		
-	}
-
-	@Override
-	public boolean isModelOnly() {
-		return true;
-	}
 	
 	
 }

@@ -30,7 +30,7 @@ import at.mabs.coalescent.LineageState;
  * @author bob
  *
  */
-public class PopulationSizeEvent extends ModelEvent{
+public class PopulationSizeEvent extends Event{
 	private final PopulationSizeModel sizeModel;
 	private final int deme;//-1 for all demes
 	
@@ -44,25 +44,5 @@ public class PopulationSizeEvent extends ModelEvent{
 		this(t,-1,sizeModel);
 	}
 	
-	@Override
-	public void modifiyModel(Model model) {
-		if(deme<0){
-			model.setPopulationModel(sizeModel);
-		}else{
-			model.setPopulationModel(deme, sizeModel);
-		}
-		
-	}
-
-	@Override
-	public void processEventCoalecent(LineageState state) {
-		//no op... nothing needs to be done
-		
-	}
-
-	@Override
-	public boolean isModelOnly() {
-		return true;
-	}
 	
 }

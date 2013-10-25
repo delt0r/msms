@@ -26,7 +26,7 @@ package at.mabs.model;
 
 import at.mabs.coalescent.LineageState;
 
-public class MigrationMatrixEvent extends ModelEvent {
+public class MigrationMatrixEvent extends Event {
 	private final double[][] matrix;//implied nxn where we ignore i==j
 	
 	
@@ -36,21 +36,5 @@ public class MigrationMatrixEvent extends ModelEvent {
 		this.matrix =matrix;
 	}
 
-	@Override
-	public void modifiyModel(Model model) {
-		model.setMigrationRates(matrix);
-
-	}
-
-	@Override
-	public void processEventCoalecent(LineageState state) {
-		//no op
-
-	}
-
-	@Override
-	public boolean isModelOnly() {
-		return true;
-	}
-
+	
 }

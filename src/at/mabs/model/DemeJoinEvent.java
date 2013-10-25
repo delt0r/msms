@@ -46,7 +46,7 @@ import at.mabs.util.random.RandomGenerator;
  * 
  */
 
-public class DemeJoinEvent extends ModelEvent {
+public class DemeJoinEvent extends Event {
 	private final int i, j;
 
 	public DemeJoinEvent(long t, int i, int j) {
@@ -55,37 +55,6 @@ public class DemeJoinEvent extends ModelEvent {
 		this.j = j;
 	}
 
-	@Override
-	public void modifiyModel(Model model) {
-		
-	}
-
-	@Override
-	public void processEventCoalecent(LineageState state) {
-		// this is pretty easy. move everthing from i to j..
-		//System.err.println("JOIN that Loser");
-		int n = state.getLineageSize(i, 0);
-		for (int c = 0; c < n; c++)
-			state.migrationEvent(i, j, 0, 0.0);
-
-		if (!state.isSelection())
-			return;
-
-		n = state.getLineageSize(i, 1);
-		for (int c = 0; c < n; c++)
-			state.migrationEvent(i, j, 1, 0.0);
-
-	}
-
-	/**
-	 * we simply resample for the 2 new population sizes. Nothing fancy.
-	 */
-	@Override
-	protected void processEventSelection(SelectionData oldData, SelectionData currentData, FrequencyState state) {
-		
-
-		// state.setCurrentDemeCount(state.getCurrentDemeCount()+1);
-
-	}
+	
 
 }

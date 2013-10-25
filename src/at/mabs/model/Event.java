@@ -71,6 +71,14 @@ public class Event implements Comparable<Event>{
     protected void applyEvent(Model model){
     	
     }
+    /**
+     * for forward pass. 
+     */
+    protected void applyPresentward(){}
+    /**
+     * for reverse pass. 
+     */
+    protected void applyPastward(){}
     
     public long getTime() {
 		return time;

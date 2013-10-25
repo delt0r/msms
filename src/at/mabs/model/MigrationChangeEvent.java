@@ -26,7 +26,7 @@ package at.mabs.model;
 
 import at.mabs.coalescent.LineageState;
 
-public class MigrationChangeEvent extends ModelEvent {
+public class MigrationChangeEvent extends Event {
 	private final int i,j;// -1 for all...
 	private final double rate;
 	
@@ -41,28 +41,6 @@ public class MigrationChangeEvent extends ModelEvent {
 	public MigrationChangeEvent(long t,double rate) {
 		this(t,-1,-1,rate);
 	}
-	
-	@Override
-	public void modifiyModel(Model model) {
-		//System.out.println("ApplyMatrixChangeEvent:"+model);
-		if(i<0){
-			model.setMigrationMatrix(rate);
-		}else{
-			model.setMigrationRate(i, j, rate);
-		}
-	}
 
-	@Override
-	public void processEventCoalecent(LineageState state) {
-		//no op
-		//System.out.println("MigraionChangeCoalescent:"+state.getCurrentTime());
-
-	}
-
-	@Override
-	public boolean isModelOnly() {
-		return true;
-	}
-	
 
 }
