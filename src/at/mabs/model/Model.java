@@ -66,6 +66,7 @@ public final  class Model{
 	//should only be called by Event
 	void setPresentward(Event forwd) {
 		this.presentward=forwd;
+		forwd.setPastward(this);
 	}
 	
 	//should only be called by Event
@@ -98,4 +99,10 @@ public final  class Model{
 		}
 		
 	} 
+	
+	@Override
+	public String toString() {
+		
+		return "Model:"+populationSizes;
+	}
 }

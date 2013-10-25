@@ -19,24 +19,34 @@ public class ModelEventList {
 		events.clear();
 		events.addAll(event);
 		init();
-		 
-	
 	}
 	
 	private void init(){
 		Collections.sort(events);
+		
 		Model model=new Model();
-		model.setPresentward(present); 
-		present.setPresentward(model);
+		model=present.link(model);
 		for(Event e:events){
 			model=e.link(model);
 		}
 		model.setPastward(past);
-		
+		past.setPresentward(model);
+		//System.out.println(this);
 	}
 	
 	public Event getPresent() {
 		return present;
+	}
+	
+	@Override
+	public String toString() {
+		String s="ModelEventList:{";
+		Event e=present;
+		while(e!=null && e.getPastward()!=null){
+			s+=e+"->"+e.getPastward()+"->";
+			e=e.getPastward().getPastward();
+		}
+		return s+"}";
 	}
 
 }

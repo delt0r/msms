@@ -37,19 +37,28 @@ public class Event implements Comparable<Event>{
     void setPresentward(Model presentward) {
 		this.presentward = presentward;
 	}
+    
+    void setPastward(Model pastward) {
+		this.pastward = pastward;
+	}
 
     /**
      * creates the link to more "present" model. ie this event is more pastward, and returns the more pastward model with this event applied. 
      * @param parent
      * @return
      */
-    public Model link(Model presentward) {
-    	assert presentward.getPresentward().time<=this.time;
-    	this.presentward=presentward;
-    	Model pastwardModel=new Model(presentward);
+    public Model link(Model presentwardModel) {
+    	assert presentwardModel.getPresentward().time<=this.time;
+    	
+    	this.presentward=presentwardModel;
+    	presentwardModel.setPastward(this);
+    	
+    	Model pastwardModel=new Model(presentwardModel);
     	this.applyEvent(pastwardModel);
-    	pastward=pastwardModel;
-    	pastward.setPresentward(this);
+    	
+    	this.pastward=pastwardModel;
+    	pastwardModel.setPresentward(this);
+    	
     	return pastwardModel;
 	}
     
@@ -66,5 +75,11 @@ public class Event implements Comparable<Event>{
     public long getTime() {
 		return time;
 	}
+    
+    @Override
+    public String toString() {
+    	
+    	return "Event @ "+time;
+    }
     
 }
