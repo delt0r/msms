@@ -47,13 +47,13 @@ public class Event implements Comparable<Event>{
      * @param parent
      * @return
      */
-    public Model link(Model presentwardModel) {
+    Model link(Model presentwardModel, ModelEventList mel) {
     	assert presentwardModel.getPresentward().time<=this.time;
     	
     	this.presentward=presentwardModel;
     	presentwardModel.setPastward(this);
     	
-    	Model pastwardModel=new Model(presentwardModel);
+    	Model pastwardModel=new Model(presentwardModel,mel);
     	this.applyEvent(pastwardModel);
     	
     	this.pastward=pastwardModel;

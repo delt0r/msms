@@ -24,10 +24,18 @@ public class ModelEventList {
 	private void init(){
 		Collections.sort(events);
 		
-		Model model=new Model();
+		for(Event e:events){
+			if(e instanceof DemeSplitEvent)
+				totalDemeCount++;
+		}
+		
+		
+		Model model=new Model(this);
 		model=present.link(model);
 		for(Event e:events){
 			model=e.link(model);
+			if(e instanceof DemeSplitEvent)
+				totalDemeCount++;
 		}
 		model.setPastward(past);
 		past.setPresentward(model);

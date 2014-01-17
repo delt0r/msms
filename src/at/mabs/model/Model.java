@@ -55,12 +55,14 @@ public final  class Model{
 	 * clone constructor.
 	 * @param model
 	 */
-	Model(Model model) {
-		
+	Model(Model model, ModelEventList mlist) {
+		populationSizes=model.populationSizes.clone();//SHALLOW clone. 
+		migrations.addAll(model.migrations);
 	}
 	
-	Model() {
-		
+	Model(ModelEventList mlist) {
+		populationSizes=new PopulationSizeModel[1];
+		populationSizes[0]=new ConstantPopulation(Integer.MAX_VALUE);
 	}
 	
 	//should only be called by Event
