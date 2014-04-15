@@ -71,15 +71,19 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import cern.colt.Arrays;
+
 import at.MSLike;
 import at.ProgressControl;
 import at.mabs.cmdline.CmdLineParser;
 import at.mabs.config.CommandLineMarshal;
 import at.mabs.model.SampleConfiguration;
 import at.mabs.stats.AlleleFrequencySpectrum;
+import at.mabs.stats.MSStats;
 import at.mabs.stats.StatsCollector;
 import at.mabs.stats.StringStatsCollector;
 import at.mabs.stats.ThetaEstimators;
+import at.mabs.stats.ThetaW;
 import at.mabs.util.NullPrintStream;
 import at.mabs.util.Util;
 
@@ -550,8 +554,10 @@ public class Play extends JPanel {
 					List<StringStatsCollector> collectors =new ArrayList<StringStatsCollector>();
 					collectors.add(afsCollector);
 					collectors.add(te);
+					collectors.add(new MSStats());
+					
 
-					MSLike.main(args, collectors, new NullPrintStream(), control);
+					MSLike.main(args, collectors, System.out, control);//new NullPrintStream(), control);
 
 					int[][][] jafsData=afsCollector.getCumulantJAFS();
 					
@@ -565,9 +571,14 @@ public class Play extends JPanel {
 					}
 					
 					int[] data =afsCollector.getGlobalAFS();
+					
 					histogram.setData(data);
 					
 					double[][] plotData=te.getWindowedData();
+					for(double[] row:plotData){
+						System.out.println(Arrays.toString(row));
+					}
+					System.out.println();
 					thetaPlots.setData(plotData,0,1);
 					tjdPlot.setData(plotData, 2, 2);
 					

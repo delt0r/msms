@@ -8,8 +8,7 @@ import java.util.Random;
 import cern.jet.random.StudentT;
 
 /**
- * critical value via numerical root finding. Need to use a few wrappers for the
- * colt lib.
+ * critical value via numerical root finding. Need to use a few wrappers for the colt lib.
  * 
  * @author bob
  * 
@@ -82,11 +81,11 @@ public class Statistics {
 		double var = sum2 / (count - 1) - mean * mean * count / (count - 1);
 		double dof = count - 1;
 		double t = mean / Math.sqrt(var / count);
-		//System.out.println("##$$@@##$$ T stat:" + t);
+		// System.out.println("##$$@@##$$ T stat:" + t);
 		Statistics cv = new Statistics(new CDF.StudentTcdf(new StudentT(dof, null)));
 		double low = cv.critcalValue(alpha / 2);
 		double hi = cv.critcalValue(1 - alpha / 2);
-		//System.out.println("##$$@@##$$ T Crit:" + low+"\t"+hi);
+		// System.out.println("##$$@@##$$ T Crit:" + low+"\t"+hi);
 		return t <= low || t >= hi;
 	}
 
@@ -120,7 +119,7 @@ public class Statistics {
 		Statistics cv = new Statistics(new CDF.StudentTcdf(new StudentT(dof, null)));
 		double hi = cv.critcalValue(1 - alpha / 2);
 		double lo = cv.critcalValue(alpha / 2);
-		//System.out.println("Ttest:" + t + "\t" + xbar + "\t" + ybar + "\tdof:" + dof + "\tcrit:" + t + "\t" + lo + " -> " + hi);
+		// System.out.println("Ttest:" + t + "\t" + xbar + "\t" + ybar + "\tdof:" + dof + "\tcrit:" + t + "\t" + lo + " -> " + hi);
 		return t <= lo || t >= hi;
 	}
 
@@ -151,7 +150,7 @@ public class Statistics {
 		alpha = 1 - Math.pow(1 - alpha, 1.0 / testCount);
 		for (int i = 0; i < x.length; i += 2) {
 			if (welchTestDifferent(x[i], x[i + 1], y[i], y[i + 1], N, alpha)) {
-				//System.out.println("NullFail:" + x[i] + "\t" + x[i + 1] + "\t" + y[i] + "\t" + y[i + 1] + "\t" + i);
+				// System.out.println("NullFail:" + x[i] + "\t" + x[i + 1] + "\t" + y[i] + "\t" + y[i + 1] + "\t" + i);
 				return true;
 			}
 		}
@@ -213,24 +212,12 @@ public class Statistics {
 	}
 
 	public static void main(String[] args) {
-		int N = 1000;
-		int V = 6;
-		Random random = new Random64();
-		int tcount = 0;
-		for (int reps = 0; reps < 10000; reps++) {
-			ArrayList<double[]> list = new ArrayList<double[]>();
-			double last = 0;
-			for (int i = 0; i < 2000; i++) {
-				double next = last + random.nextGaussian()+random.nextDouble()*.2;
-				list.add(new double[] { next });
-				last = next;
-			}
-			if (timeSeriesBiasTest(list, 0, .01)) {
-				tcount++;
-			}
-			if(reps%10==0){
-				System.out.println((double)tcount/(reps+1));
-			}
+		double alpha=0.025;
+		for (int dof = 1; dof < 400; dof++) {
+			Statistics cv = new Statistics(new CDF.StudentTcdf(new StudentT(dof, null)));
+			double hi = cv.critcalValue(1 - alpha / 2);
+			double lo = cv.critcalValue(alpha / 2);
+			System.out.println(dof+"\t"+hi+"\t"+lo);
 		}
 	}
 

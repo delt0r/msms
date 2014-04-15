@@ -128,7 +128,12 @@ public class SGA {
 				if (pd instanceof CopyPriorDensity) {
 					args[pd.getArgIndex()] = "" + pd.getValue();
 				} else {
-					pd.setValue(Double.parseDouble(writeArgs[argIndex++]));
+					String txtValue=writeArgs[argIndex++];
+					if(txtValue.equals("RND")){
+						pd.generateRandom();
+					}else{
+						pd.setValue(Double.parseDouble(txtValue));
+					}
 					args[pd.getArgIndex()] = "" + pd.getValue();
 				}
 			}
@@ -137,6 +142,7 @@ public class SGA {
 			writeDataStats(collectionStats);
 			initDataFile();
 			System.out.println("DataGen With msms cmd Line:" + Arrays.toString(args));
+			System.out.println("Using Param Vector:"+Arrays.toString(transform(currentPoint(priors),priors)));
 			// now lets calculate the Likelihood here.
 			double[] p = currentPoint(priors);
 			System.out.println("Estimating BW");

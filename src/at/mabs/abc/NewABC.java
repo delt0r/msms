@@ -98,7 +98,7 @@ public class NewABC {
 	private int priorUpdate = Integer.MAX_VALUE;
 	private Random random = new Random64();
 
-	private int truncatStats = Integer.MAX_VALUE;
+	private int truncatStats = Integer.MAX_VALUE; 
 
 	// private double[] normalizingFactors;
 

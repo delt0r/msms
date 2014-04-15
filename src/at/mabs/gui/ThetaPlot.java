@@ -77,7 +77,7 @@ public class ThetaPlot extends JPanel implements AxisModel {
 		this.data =data;
 		double max =-Double.MAX_VALUE;
 		double min =Double.MAX_VALUE;
-		for (int i =0; i < data.length; i++) {
+		for (int i =0; i < data.length-2; i++) {
 			for (int j =paramStart; j <= paramEnd; j++) {
 				int jindex=j*2+1;
 				max =Math.max(max, data[i][jindex]+data[i][jindex+1]);
