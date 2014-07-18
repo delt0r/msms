@@ -274,7 +274,7 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	@CLUsage("t deme startSize finalT finalSize")
 	public void addExpEventSize(double time, int deme, double startSize,double finalT,double finalSize) {
 		if(finalT<=time){
-			throw new RuntimeException("Can't have a final time less pastward than time!");
+			throw new RuntimeException("Can't have a final time less pastward than time!:"+time+"\t"+finalT);
 		}
 		double alpha=-Math.log(finalSize/startSize)/(finalT-time);
 		//now we just apply the 2 real options.

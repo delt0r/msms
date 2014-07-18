@@ -29,7 +29,7 @@ public class PriorDensity {
 	
 
 	protected PriorDensity() {
-
+		
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class PriorDensity {
 			System.err.println("WARNING! Some parameters not used for PriorDensity. Or parameter prior.");
 		}
 		
-		
+		clampToConstraints();
 	}
 
 	public void updateMinMax(double min, double max) {
@@ -242,6 +242,7 @@ public class PriorDensity {
 					throw new RuntimeException("Incorrect min label name:"+pd.pminName+"\n"+params);
 				}
 				pd.pmin=pmin;
+				pd.clampToConstraints();
 			}
 			
 			if(pd.pmaxName!=null){
@@ -250,9 +251,12 @@ public class PriorDensity {
 					throw new RuntimeException("Incorrect max label name:"+pd.pmaxName+"\n"+params);
 				}
 				pd.pmax=pmax;
+				pd.clampToConstraints();
 			}
 			
-		}		
+		}	
+		for(PriorDensity pd:list)
+			pd.clampToConstraints();
 		return list;
 	}
 }
