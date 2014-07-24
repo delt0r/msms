@@ -151,7 +151,7 @@ public class ModelHistroy {
 				shortList.add(event);
 			}
 			if (event.isModelOnly()) {
-				iterator.remove();
+				//iterator.remove(); //BIG CHANGE. No Events Removed. 
 				// System.out.println("RM:"+event+"\t"+event.getEventTime());
 			}
 		}
@@ -349,6 +349,7 @@ public class ModelHistroy {
 			startEvent=eventIterator.next();
 		}
 		//System.err.println("StartEvent:"+startEvent);
+		//FIXME No Warning here. Incorrect cmd lines my cycle forever...........
 		//if(!(startEvent instanceof SelectionEndTimeEvent)){
 		//	throw new RuntimeException("No Selection \"end\"!");
 		//}

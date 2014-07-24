@@ -70,7 +70,7 @@ public class DemeJoinEvent extends ModelEvent {
 
 		if (!state.isSelection())
 			return;
-
+		
 		n = state.getLineageSize(i, 1);
 		for (int c = 0; c < n; c++)
 			state.migrationEvent(i, j, 1, 0.0);
@@ -84,20 +84,20 @@ public class DemeJoinEvent extends ModelEvent {
 	protected void processEventSelection(SelectionData oldData, SelectionData currentData, FrequencyState state) {
 		double f = state.getFrequency(j, 1);// assume biallelic
 		double changeTime = eventTime;
-		//System.err.println("PROCESSING EJ "+currentData.getParent().getPopulationSizeModels().length+"\t"+i+"\t"+j);
-		//System.err.println("PROCESSING EJ :"+Arrays.toString(currentData.getParent().getPopulationSizeModels()));
-		//System.err.println("PROCESSING EJ Old:"+Arrays.toString(oldData.getParent().getPopulationSizeModels()));
+		//System.out.println("PROCESSING EJ\t"+currentData.getParent().getPopulationSizeModels().length+"\t"+i+"\t"+j);
+		//System.out.println("PROCESSING EJ :"+Arrays.toString(currentData.getParent().getPopulationSizeModels()));
+		//System.out.println("PROCESSING EJ Old:"+Arrays.toString(oldData.getParent().getPopulationSizeModels()));
 		///System.exit(-1);
 		int Ni = (int) currentData.getParent().getPopulationSizeModels()[i].populationSize(changeTime);
 		int Nj = (int) currentData.getParent().getPopulationSizeModels()[j].populationSize(changeTime);
 
 		double fi = (double) RandomGenerator.getBinomial().generateBinomial(Ni, f) / Ni;
 		double fj = (double) RandomGenerator.getBinomial().generateBinomial(Nj, f) / Nj;
-
+		//System.out.println("EJ selection stuff:"+fi+"\t"+fj);
 		state.setFrequency(i, 1, fi);
 		state.setFrequency(i, 0, 1 - fi);
 
-		state.setFrequency(j, 1, fj);
+		state.setFrequency(j, 1, fj); 
 		state.setFrequency(j, 0, 1 - fj);
 
 		// state.setCurrentDemeCount(state.getCurrentDemeCount()+1);
