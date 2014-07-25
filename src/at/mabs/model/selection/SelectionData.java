@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import cern.jet.random.Binomial;
 
+import at.mabs.cern.jet.random.Binomial;
 import at.mabs.model.FrequencyState;
 import at.mabs.model.Model;
 import at.mabs.model.ModelEvent;

@@ -26,8 +26,8 @@ package at.mabs.external;
 
 import java.util.Random;
 
-import cern.jet.random.Binomial;
 
+import at.mabs.cern.jet.random.Binomial;
 import at.mabs.util.random.Random64;
 
 /**

@@ -24,7 +24,7 @@ http://www.gnu.org/software/classpath/license.html
 */
 package test;
 
-import cern.jet.random.Binomial;
+import at.mabs.cern.jet.random.Binomial;
 import at.mabs.util.random.RandomGenerator;
 
 public class CoEvol {

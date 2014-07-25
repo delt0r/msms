@@ -27,8 +27,8 @@ package at.mabs.external;
 import java.util.Arrays;
 import java.util.Random;
 
+import at.mabs.cern.jet.random.Binomial;
 import at.mabs.util.random.Random64;
-import cern.jet.random.Binomial;
 
 public class SteppingStones2 {
 	private int demeCount = 3;

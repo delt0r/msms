@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import cern.jet.random.Binomial;
 
+import at.mabs.cern.jet.random.Binomial;
 import at.mabs.model.Model;
 import at.mabs.model.ModelEvent;
 import at.mabs.model.ModelHistroy;
@@ -412,10 +412,13 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			double xp =(nA * (1 - nu) + mu * na) / (nA + na);
 			// we keep N in the sample for now...
 			int N =(int)Math.ceil( sizes[d].populationSize(time) * 2);//
-			//System.err.println("CallBin "+N+" "+xp+"\t"+sizes[d].populationSize(time));
+			//System.err.println("CallBin "+N+" "+xp+"\t"+sizes[d].populationSize(time)+"\t"+nA+"\t"+na);
 			double f =(double) binomial.generateBinomial(N, xp) / N;
 			//System.err.println("return bin "+f);
 			//what if N is zero!
+			if(N==0){
+				f=0;//throw new RuntimeException("NaN, PopulationSize is probably zero! "+N);
+			}
 			// update
 			next[d] =f;
 		}

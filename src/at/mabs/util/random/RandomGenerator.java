@@ -27,9 +27,10 @@ package at.mabs.util.random;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import at.mabs.cern.jet.random.Binomial;
+import at.mabs.cern.jet.random.Poisson;
 
-import cern.jet.random.Binomial;
-import cern.jet.random.Poisson;
+
 
 /**
  * Just a single place to manage the random number generation. All thread based. class are permitied to 

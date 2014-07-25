@@ -30,13 +30,14 @@ that both that copyright notice and this permission notice appear in supporting 
 CERN makes no representations about the suitability of this software for any purpose. 
 It is provided "as is" without expressed or implied warranty.
  */
-package cern.jet.random;
+package at.mabs.cern.jet.random;
 
 import java.util.Random;
 
 import at.mabs.util.random.Random64;
 
 import cern.jet.math.Arithmetic;
+//import cern.jet.random.Poisson;
 
 //import cern.jet.random.engine.RandomEngine;
 //import cern.jet.stat.Probability;

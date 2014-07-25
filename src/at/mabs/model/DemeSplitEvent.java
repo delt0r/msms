@@ -26,8 +26,8 @@ package at.mabs.model;
 
 import java.util.Random;
 
-import cern.jet.random.Binomial;
 
+import at.mabs.cern.jet.random.Binomial;
 import at.mabs.coalescent.LineageState;
 import at.mabs.model.selection.SelectionData;
 import at.mabs.util.random.RandomGenerator;

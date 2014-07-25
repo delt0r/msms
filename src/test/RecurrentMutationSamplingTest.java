@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 
+import at.mabs.cern.jet.random.Binomial;
 import at.mabs.util.random.Random64;
 
-import cern.jet.random.Binomial;
 
 /**
  * Just a test example...

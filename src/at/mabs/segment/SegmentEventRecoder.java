@@ -26,6 +26,7 @@ package at.mabs.segment;
 
 import java.util.*;
 
+import at.mabs.cern.jet.random.Poisson;
 import at.mabs.model.ModelHistroy;
 import at.mabs.util.Bag;
 import at.mabs.util.PartialSumTreeElement;
@@ -33,7 +34,6 @@ import at.mabs.util.PartialSumsTree;
 import at.mabs.util.Util;
 import at.mabs.util.random.RandomGenerator;
 
-import cern.jet.random.Poisson;
 
 /**
  * This is really the "bridge" between the coalesent events (joins/splits etc)

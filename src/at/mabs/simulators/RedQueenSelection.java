@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import cern.jet.random.Binomial;
 
+import at.mabs.cern.jet.random.Binomial;
 import at.mabs.model.Model;
 import at.mabs.model.ModelEvent;
 import at.mabs.model.ModelHistroy;
