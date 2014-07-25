@@ -549,6 +549,7 @@ public class CoalescentEventCalculator {
 		if(state.getCurrentTime()>=timeBound){
 			throw new RuntimeException(" ARG ran past the time bound of 1e5*N generations! Check that there is not complete isolation:"+timeBound+"\t"+state.getCurrentTime());
 		}
+		//System.out.println("FINISHING!!");
 		segmentRecorder.finishRecording();
 		// Node root =state.getLastNode();
 		// root.mutateSequence(modelHistroy.getNeutralMutationRate());

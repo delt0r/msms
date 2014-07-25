@@ -16,7 +16,8 @@ public interface RestartCondition {
 		}
 		
 		public boolean isMeet(double[] frequencys, int demeCount) {
-			for (double f : frequencys) {
+			for (int i=0;i<demeCount;i++) {
+				double f=frequencys[i];
 				if (f > 0)
 					return false;
 			}

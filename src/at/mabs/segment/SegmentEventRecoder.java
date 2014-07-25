@@ -323,7 +323,7 @@ public class SegmentEventRecoder {
 	}
 
 	public List<InfinteMutation> getMutationsSorted() {
-		assert finished;
+		assert finished:"Note that this assertion failure is normal when the -NC option is used. Since its sort of broken, but results should be correct";
 		if (!sorted)
 			mutations.sort();
 		return Collections.unmodifiableList(mutations);

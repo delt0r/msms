@@ -279,6 +279,7 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 				//System.err.println("Oh yea!"+Arrays.toString(thisGen));
 				selectionSimulationStep(thisGen, nextGen, ssm, time);
 				if (restartCondition.isMeet(nextGen, ndeme)) {
+					//System.out.println("Restart?");
 					return null;//bubble up the call stack to where we need it. 
 				}
 				// copy data back.
@@ -326,7 +327,7 @@ public class DefaultSelectionSimulator implements SelectionSimulator {
 			frequencys.setFrequencys(nextGen);
 			time=frequencys.getIndexTime();
 
-			//System.out.println("restart..");//)+restartCondition.isMeet(nextGen, ndeme)+"\t"+Arrays.toString(thisGen)+"\t"+restartCondition.getClass());
+			//System.out.println("restart.."+restartCondition.isMeet(nextGen, ndeme)+"\t"+Arrays.toString(nextGen)+"\t"+ndeme+"\ttime:"+time);
 			if (restartCondition!=null && restartCondition.isMeet(nextGen, ndeme)) {
 				return null;//bubble  the restart up the stack. 
 			}
