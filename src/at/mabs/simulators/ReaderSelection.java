@@ -127,7 +127,9 @@ public class ReaderSelection implements SelectionSimulator {
 		putFrequency(realTime, data);
 		frequencys.setFrequencys(data);
 		frequencys.setCurrentIndexAsStart();
+		
 		return new ArrayList<ModelEvent>();
+		
 		// return null;
 	}
 

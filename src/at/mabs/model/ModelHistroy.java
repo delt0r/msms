@@ -312,7 +312,7 @@ public class ModelHistroy {
 			List<ModelEvent> moreEvents = getSelectionSimulator().init(this);// more FIXME we just don't have the class design right here
 			events.addAll(moreEvents);
 			Collections.sort(events);
-			// System.out.println(events);
+			//System.out.println(events);
 			// System.err.println("more evets?:"+events);
 
 			// we find the start and keep calling till we are either at the last model, or

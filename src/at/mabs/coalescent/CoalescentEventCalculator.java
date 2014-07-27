@@ -516,13 +516,14 @@ public class CoalescentEventCalculator {
 		while (state.getLinagesActive() > 1 && state.getCurrentTime()<timeBound) {
 			//System.err.println("Lines:"+state.getCurrentTime()+"\t"+time+"\tTB:"+timeBound);
 			CoalescentEvent cevent =null;
+			//System.out.println("SelectionSTATEs:"+state.isSelection()+"\t"+state);
 			if (state.isSelection()) {
 				cevent =nextEventSelection(model);
 			} else {
 				cevent =nextEvent(model);
 			}
 
-			//System.err.println("CEvent:"+cevent+"\t"+state.getCurrentTime()+"\t"+model+"\ttimeBound:"+timeBound+"\t"+model.getSelectionData()+"\ttime:"+time);
+			//System.err.println("CEvent:"+cevent+"\t"+state.getCurrentTime()+"\t"+model+"\ttimeBound:"+timeBound+"\t"+model.getSelectionData()+"\ttime:"+time+"\t"+state.isSelection());
 			// System.out.println("State:"+state);
 			if (cevent == CoalescentEvent.NO_OP || (cevent.dt + state.getCurrentTime()) >= time) {
 				//System.err.println("NextModel");

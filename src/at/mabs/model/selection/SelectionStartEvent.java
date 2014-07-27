@@ -52,7 +52,7 @@ public class SelectionStartEvent extends ModelEvent {
 		//assert t==0:t;
 		if (frequencys != null)
 			this.frequencys =frequencys.clone();// just to be sure
-
+		
 	}
 
 	@Override
