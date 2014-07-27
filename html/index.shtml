@@ -1,4 +1,15 @@
 <!--#include virtual="header.html" -->
+<div id="content">
+	<h1>Bugfix Update</h1>
+	27 July 2014
+	<p>
+	A bugfix release is out. This should resolve most outstanding issues and makes way for the big
+	refactor release.<p>
+	<h2>Github!</h2>
+	Note that almost all activity on this project is now over at github. Issues on git hub is the 
+	correct way to raise any issues. 
+</div>
+
 <div id="oddcontent">
 	<h1>Bug Fixes, workarounds and refactors</h1>
 	14th May 2013
