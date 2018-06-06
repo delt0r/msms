@@ -38,7 +38,7 @@ public class Util {
 	static {
 		dfs =DecimalFormatSymbols.getInstance();
 		dfs.setDecimalSeparator('.');
-		defaultFormat =new DecimalFormat("0.00000", dfs);
+		defaultFormat =new DecimalFormat("0.0000000", dfs);
 		// defaultFormat.getDecimalFormatSymbols().setDecimalSeparator(',');
 		// System.out.println(defaultFormat.getDecimalFormatSymbols().getDecimalSeparator());
 	}

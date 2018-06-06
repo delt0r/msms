@@ -57,10 +57,10 @@ public class ExpBottleneck implements PopulationSizeModel{
 
 	@Override
 	public double generateWaitingTime(double t,double lambda, Random rand) {
-		double ncr2 =2*indv * (2*indv - 1) / 4.0;//diploid
+		double ncr2 =indv * (indv - 1) / 4.0;//diploid
 
 		if ( lambda > ncr2 ) {  // if number of alleles greater than 2*a
-			return 0.000001;   // then we coalesce here (using a small dt instead of 0).
+			return 0.000;   // then we coalesce here (using a small dt instead of 0).
 		} else {
 			return -N * Math.log(rand.nextDouble()) / lambda; // otherwise, we are in population size $b$ regime
 		}
