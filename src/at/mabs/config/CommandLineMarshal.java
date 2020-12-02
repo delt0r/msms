@@ -47,6 +47,7 @@ import at.mabs.coalescent.EventTracker;
 import at.mabs.model.ConstantPopulation;
 import at.mabs.model.DemeJoinEvent;
 import at.mabs.model.DemeSplitEvent;
+import at.mabs.model.ExpBottleneck;
 import at.mabs.model.ExpPopulationEvent;
 import at.mabs.model.FrequencyState;
 import at.mabs.model.MigrationChangeEvent;
@@ -424,6 +425,15 @@ public class CommandLineMarshal implements InitFinishParserObject{
 	public void addSizeChangeEvent(double time, double size) {
 		events.add(new PopulationSizeEvent(Math.round(time * 4 * N0), new ConstantPopulation(size * N0)));
 		if(time!=0)	
+		timeInvarient =false;
+	}
+
+        @CLNames(names ={ "-eB" })
+        @CLUsage("time num_indv size")
+	@CLDescription("An instanteous bottleneck of size num_indv to constant size of size*N0 at time t")
+	public void addExpBottleneck(double time, double num_indv, double size) {
+		events.add(new PopulationSizeEvent(Math.round(time * 4 * N0), new ExpBottleneck(num_indv, size * N0)));
+		if(time!=0) 
 		timeInvarient =false;
 	}
 
